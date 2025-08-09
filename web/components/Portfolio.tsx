@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs/promises";
+import Image from "next/image";
 
 type BeforeAfterPair = {
   title: string;
@@ -74,20 +75,22 @@ export default async function Portfolio() {
   }
 
   return (
-    <section id="portfolio" className="py-20 md:py-32 bg-dark-navy/50">
+    <section id="portfolio" className="py-24 md:py-40 bg-dark-navy/50">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white">Our Work</h2>
-          <p className="text-lg text-gray-400 mt-4">Quality you can see. Results that last.</p>
+        <div className="text-center mb-20">
+          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Our Work</h2>
+          <p className="text-lg text-gray-300/90 mt-4">Quality you can see. Results that last.</p>
         </div>
 
         {items.map((p, i) => (
           <div key={i} className="mb-20">
-            <h3 className="text-3xl font-bold text-center text-white mb-8">{p.title}</h3>
-            <div className="comparison-slider max-w-4xl mx-auto rounded-lg shadow-2xl">
-              <img src={p.beforeSrc} alt={`${p.alt} (before)`} className="before-image" />
-              <div className="after-image">
-                <img src={p.afterSrc} alt={`${p.alt} (after)`} className="after-image-content" />
+            <h3 className="text-3xl font-semibold text-center text-white mb-8 tracking-tight capitalize">{p.title}</h3>
+            <div className="comparison-slider max-w-4xl mx-auto rounded-lg shadow-2xl relative">
+              <div className="relative w-full aspect-[16/9]">
+                <Image src={p.beforeSrc} alt={`${p.alt} (before)`} fill sizes="(max-width: 1280px) 100vw, 1280px" className="before-image object-cover" />
+                <div className="after-image">
+                  <Image src={p.afterSrc} alt={`${p.alt} (after)`} fill sizes="(max-width: 1280px) 100vw, 1280px" className="after-image-content object-cover" />
+                </div>
               </div>
               <div className="slider-handle"></div>
             </div>

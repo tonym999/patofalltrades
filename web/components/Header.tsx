@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 export default function Header() {
   return (
@@ -7,7 +8,7 @@ export default function Header() {
         <div className="flex justify-between items-center">
           <div className="text-2xl font-bold text-white">
             <a href="#hero" className="flex items-center space-x-2">
-              <img src="/logo.png" alt="Pat Of All Trades logo" className="h-8 w-8 rounded" />
+              <Image src="/logo.png" alt="Pat Of All Trades logo" width={32} height={32} className="rounded" />
               <span className="tracking-wider">Pat Of All Trades</span>
             </a>
           </div>
