@@ -7,10 +7,10 @@ import SplitType from 'split-type';
 
 export default function Scripts() {
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger, SplitType);
+    gsap.registerPlugin(ScrollTrigger);
 
     // --- Global Animations ---
-    const animateOnScroll = (element, vars) => {
+    const animateOnScroll = (element: Element | string, vars?: gsap.TweenVars) => {
       gsap.from(element, {
         scrollTrigger: {
           trigger: element,
@@ -28,7 +28,7 @@ export default function Scripts() {
     // Animate section titles
     document.querySelectorAll('h2, h3').forEach(el => animateOnScroll(el));
     // Animate service cards
-    gsap.utils.toArray('.service-card').forEach((card, i) => {
+    (gsap.utils.toArray('.service-card') as Element[]).forEach((card, i) => {
       animateOnScroll(card, { delay: i * 0.1 });
     });
     // Animate about section content
@@ -43,11 +43,9 @@ export default function Scripts() {
     // --- Sticky Nav ---
     const nav = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
-      }
+      if (!nav) return;
+      if (window.scrollY > 50) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
     });
 
     // --- Hero Section Animations ---
@@ -65,12 +63,13 @@ export default function Scripts() {
 
     // --- Animated Counters ---
     const counters = document.querySelectorAll('.counter');
-    counters.forEach(counter => {
+    counters.forEach((counter) => {
       ScrollTrigger.create({
         trigger: counter,
         start: 'top 85%',
         onEnter: () => {
-          const target = +counter.getAttribute('data-target');
+          const attr = counter.getAttribute('data-target');
+          const target = attr ? +attr : 0;
           gsap.to(counter, {
             duration: 2,
             innerText: target,
@@ -83,39 +82,51 @@ export default function Scripts() {
     });
 
     // --- Before/After Slider ---
-    const slider = document.querySelector('.comparison-slider');
+    const slider = document.querySelector<HTMLElement>('.comparison-slider');
     if (slider) {
-      const afterImage = slider.querySelector('.after-image');
-      const handle = slider.querySelector('.slider-handle');
+      const afterImage = slider.querySelector<HTMLElement>('.after-image');
+      const handle = slider.querySelector<HTMLElement>('.slider-handle');
       let isDragging = false;
 
       const startDrag = () => isDragging = true;
       const stopDrag = () => isDragging = false;
 
-      const onDrag = (e) => {
+      const onDrag = (event: MouseEvent | TouchEvent) => {
         if (!isDragging) return;
-        let clientX = e.clientX || e.touches[0].clientX;
+        let clientX: number;
+        if (event instanceof TouchEvent) {
+          if (event.touches.length === 0) return;
+          clientX = event.touches[0].clientX;
+        } else {
+          clientX = event.clientX;
+        }
         const rect = slider.getBoundingClientRect();
         let x = clientX - rect.left;
         if (x < 0) x = 0;
         if (x > rect.width) x = rect.width;
 
         const widthPercentage = (x / rect.width) * 100;
-        afterImage.style.width = `${widthPercentage}%`;
-        handle.style.left = `${widthPercentage}%`;
+        if (afterImage && handle) {
+          afterImage.style.width = `${widthPercentage}%`;
+          handle.style.left = `${widthPercentage}%`;
+        }
       };
+
+      const onMouseMove = (e: MouseEvent) => onDrag(e);
+      const onTouchMove = (e: TouchEvent) => onDrag(e);
 
       slider.addEventListener('mousedown', startDrag);
       slider.addEventListener('touchstart', startDrag);
       window.addEventListener('mouseup', stopDrag);
       window.addEventListener('touchend', stopDrag);
-      window.addEventListener('mousemove', onDrag);
-      window.addEventListener('touchmove', onDrag);
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('touchmove', onTouchMove);
     }
 
     // --- Scroll Progress Bar ---
     const progressBar = document.getElementById('progress-bar');
     window.addEventListener('scroll', () => {
+      if (!progressBar) return;
       const scrollTotal = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       const scrolled = window.scrollY;
       const progress = (scrolled / scrollTotal) * 100;
@@ -127,7 +138,7 @@ export default function Scripts() {
     // A simple mock for demonstration. A real implementation would use Geolocation API.
     const londonBoroughs = ["Camden", "Greenwich", "Hackney", "Hammersmith", "Islington", "Kensington", "Lambeth", "Lewisham", "Southwark", "Tower Hamlets", "Wandsworth", "Westminster"];
     const randomBorough = londonBoroughs[Math.floor(Math.random() * londonBoroughs.length)];
-    boroughSpan.textContent = randomBorough;
+    if (boroughSpan) boroughSpan.textContent = randomBorough;
   }, []);
 
   return null;

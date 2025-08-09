@@ -1,4 +1,3 @@
-import BeforeAfterSlider from "./BeforeAfterSlider";
 import Image from "next/image";
 
 export default function Portfolio() {

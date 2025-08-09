@@ -1,5 +1,4 @@
 "use client";
-import { services } from "@/lib/data";
 import { useState } from "react";
 
 export default function Services() {

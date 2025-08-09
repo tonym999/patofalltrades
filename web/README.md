@@ -2,7 +2,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, set environment variables for email (Resend):
+
+```
+RESEND_API_KEY=your_resend_api_key
+CONTACT_TO_EMAIL=your_destination_email@example.com
+CONTACT_FROM_EMAIL="Pat Of All Trades <onboarding@resend.dev>"
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
