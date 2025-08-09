@@ -10,6 +10,7 @@ import WhatsAppWidget from '@/components/WhatsAppWidget';
 import MobileNav from '@/components/MobileNav';
 import ProgressBar from '@/components/ProgressBar';
 import Scripts from '@/components/Scripts';
+import ServiceAreas from '@/components/ServiceAreas';
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
         <Hero />
         <Services />
         <Portfolio />
+        <ServiceAreas />
         <About />
         <Testimonials />
         <Contact />

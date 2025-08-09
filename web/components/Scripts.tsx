@@ -133,12 +133,7 @@ export default function Scripts() {
       progressBar.style.width = `${progress}%`;
     });
 
-    // --- Location Detection ---
-    const boroughSpan = document.getElementById('borough-name');
-    // A simple mock for demonstration. A real implementation would use Geolocation API.
-    const londonBoroughs = ["Camden", "Greenwich", "Hackney", "Hammersmith", "Islington", "Kensington", "Lambeth", "Lewisham", "Southwark", "Tower Hamlets", "Wandsworth", "Westminster"];
-    const randomBorough = londonBoroughs[Math.floor(Math.random() * londonBoroughs.length)];
-    if (boroughSpan) boroughSpan.textContent = randomBorough;
+    // Location badge removed; keeping future hook point
   }, []);
 
   return null;

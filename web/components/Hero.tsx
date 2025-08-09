@@ -11,9 +11,7 @@ export default function Hero() {
           <a href="#contact" className="cta-btn text-dark-navy font-bold py-4 px-8 rounded-lg text-lg">Book a Consultation</a>
         </div>
       </div>
-      <div id="currently-serving" className="absolute bottom-5 left-5 z-10 text-white bg-black/30 backdrop-blur-sm px-3 py-1 rounded-lg text-sm">
-        Currently serving: <span id="borough-name">London</span>
-      </div>
+      {/* Removed dynamic borough badge; replaced with ServiceAreas section */}
     </section>
   );
 }
