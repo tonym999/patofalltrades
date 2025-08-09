@@ -2,7 +2,7 @@
 
 export default function Hero() {
   return (
-    <section id="hero" className="h-screen flex items-center justify-center relative overflow-hidden parallax-bg" style={{backgroundImage: "url('https://images.unsplash.com/photo-1531218150217-54595bc2b934?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3')"}}>
+    <section id="hero" className="h-screen flex items-center justify-center relative overflow-hidden parallax-bg" style={{backgroundImage: "url('hero.png')"}}>
       <div className="absolute inset-0 bg-black/60"></div>
       <div id="hero-content" className="text-center z-10 px-4">
         <h1 id="hero-title" className="text-5xl md:text-7xl font-black text-white uppercase tracking-wider mb-4" style={{textShadow: '2px 2px 10px rgba(0,0,0,0.5)'}}>London&apos;s Premier Handyman</h1>

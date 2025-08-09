@@ -42,3 +42,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Portfolio image pairs
+
+The portfolio section auto-discovers before/after image pairs from `public/portfolio/<category>/`.
+
+- Naming pattern: `{category}-{location}-{pairId}-{before|after}.{ext}`
+  - `category`: e.g., `kitchen`, `bathroom`, `exterior`
+  - `location`: short area or borough, kebab-case (e.g., `southwark`, `kensington`)
+  - `pairId`: 3-digit sequence per project (e.g., `001`, `002`)
+  - `before|after`: literal `before` or `after`
+  - `ext`: `jpg`, `jpeg`, `png`, or `webp`
+
+Example:
+
+```
+public/portfolio/kitchen/kitchen-southwark-001-before.jpg
+public/portfolio/kitchen/kitchen-southwark-001-after.jpg
+```
+
+If no valid pairs are present, the Portfolio section is hidden automatically.
