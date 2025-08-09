@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Node/Next.js (any subfolder like web/)
+**/node_modules/
+**/.next/
+**/out/
+**/dist/
+**/build/
+**/.turbo/
+**/.vercel/
+**/coverage/
+
+# Package managers
+**/npm-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+**/.pnpm-store/
+
+# Env files
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Editors/IDE
+.vscode/
+.idea/
+*.swp
+
+# Misc
+**/logs/
+**/*.log
+
