@@ -4,6 +4,11 @@ import type React from "react"
 import { motion, useReducedMotion, cubicBezier } from "framer-motion"
 import { Hammer, Wrench, Paintbrush, Zap } from "lucide-react"
 
+/**
+ * Renders a set of animated tool icons floating within an absolutely positioned container.
+ *
+ * Displays four tool icons (hammer, wrench, paintbrush, zap) with looping motion and opacity animations using `framer-motion`. Animation behavior adapts to user accessibility preferences for reduced motion. The icons are visually decorative and do not interfere with pointer events.
+ */
 export function FloatingTools() {
   type ToolConfig = {
     name: string

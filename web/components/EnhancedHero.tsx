@@ -11,6 +11,14 @@ interface EnhancedHeroProps {
   children: React.ReactNode
 }
 
+/**
+ * Renders a full-screen hero section with parallax scrolling effects, background image, floating tools, and an animated scroll indicator.
+ *
+ * The hero section animates its background and content based on scroll position, with all motion effects disabled if the user prefers reduced motion. The scroll indicator at the bottom center provides a visual cue for further scrolling.
+ *
+ * @param children - Content to display in the center of the hero section
+ * @returns The rendered hero section as a React element
+ */
 export function EnhancedHero({ children }: EnhancedHeroProps) {
   const heroRef = useRef<HTMLDivElement | null>(null)
   const prefersReducedMotion = useReducedMotion()
