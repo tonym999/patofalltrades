@@ -9,6 +9,10 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: e2e-${{ github.ref }}
+      cancel-in-progress: true
     defaults:
       run:
         working-directory: web
@@ -21,14 +25,30 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install deps
         run: npm ci --no-audit --no-fund
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
       - name: Run E2E (Chromium)
-        run: npm run test:e2e
+        run: npm run test:e2e -- --reporter=github
 
       - name: Upload report on failure
         if: failure()

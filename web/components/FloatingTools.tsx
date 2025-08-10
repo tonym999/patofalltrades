@@ -66,6 +66,7 @@ export function FloatingTools() {
           <motion.div
             key={tool.name}
             aria-hidden="true"
+            data-testid="decorative-icon"
             className="absolute text-amber-400/15"
             initial={initialProps}
             animate={animateProps}
