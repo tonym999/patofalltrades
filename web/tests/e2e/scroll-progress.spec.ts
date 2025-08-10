@@ -5,20 +5,50 @@ test.describe('Scroll progress indicator', () => {
     await page.goto('/')
   })
 
-  test('renders and grows with scroll', async ({ page }) => {
+  test('grows with scroll', async ({ page }) => {
     const bar = page.getByTestId('scroll-progress')
-    await expect(bar).toBeVisible()
+    await expect(bar).toBeAttached()
+    // Don't assert visibility; at scaleX=0 the element may be effectively hidden.
 
-    // initial scaleX should be ~0 at top
-    const initialTransform = await bar.evaluate(el => getComputedStyle(el).transform)
-    // transform matrix at origin-left scaleX=0 should be matrix(0, 0, 0, 1, 0, 0) or 'none' very early; accept both
-    expect(typeof initialTransform).toBe('string')
+    const getScaleX = (transform: string | null) => {
+      if (!transform || transform === 'none') return 0
+      // matrix(a, b, c, d, e, f) => a is scaleX
+      const match = transform.match(/matrix\(([^,]+)/)
+      if (!match) return 0
+      const a = parseFloat(match[1])
+      return isNaN(a) ? 0 : a
+    }
 
-    // Scroll down and expect transform to change (scaleX increases)
-    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'instant' as ScrollBehavior }))
-    await page.waitForTimeout(150)
-    const midTransform = await bar.evaluate(el => getComputedStyle(el).transform)
-    expect(midTransform).not.toBe(initialTransform)
+    const initialScale = await bar.evaluate(el => {
+      const t = getComputedStyle(el).transform
+      if (!t || t === 'none') return 0
+      const m = t.match(/matrix\(([^,]+)/)
+      if (!m) return 0
+      const a = parseFloat(m[1]!)
+      return isNaN(a) ? 0 : a
+    })
+
+    await page.evaluate(() => {
+      const doc = document.documentElement
+      window.scrollTo({ top: doc.scrollHeight / 2, behavior: 'auto' })
+    })
+
+    // Poll until scaleX increases or timeout
+    const start = Date.now()
+    let currentScale = initialScale
+    while (Date.now() - start < 1500 && currentScale <= initialScale) {
+      await page.waitForTimeout(50)
+      currentScale = await bar.evaluate(el => {
+        const t = getComputedStyle(el).transform
+        if (!t || t === 'none') return 0
+        const m = t.match(/matrix\(([^,]+)/)
+        if (!m) return 0
+        const a = parseFloat(m[1]!)
+        return isNaN(a) ? 0 : a
+      })
+    }
+
+    expect(currentScale).toBeGreaterThan(initialScale)
   })
 })
 

@@ -1,16 +1,19 @@
 "use client";
 
-import { motion, useScroll } from "framer-motion";
+import { motion, useScroll, useReducedMotion } from "framer-motion";
 
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) return null;
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 z-50 origin-left"
+      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 z-50 origin-left pointer-events-none"
       data-testid="scroll-progress"
       aria-hidden="true"
-      style={{ scaleX: scrollYProgress }}
+      style={{ scaleX: scrollYProgress, willChange: "transform" }}
     />
   );
 }
