@@ -7,8 +7,9 @@ export default defineConfig({
   testDir: './tests/e2e',
   timeout: 30_000,
   expect: { timeout: 5_000 },
+  forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: [['list'], ['html', { open: 'never' }]],
+  reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: BASE_URL,
     trace: 'retain-on-failure',
@@ -26,7 +27,7 @@ export default defineConfig({
     ? {
         command: 'npm run start:test',
         port: PORT,
-        timeout: 120_000,
+        timeout: 300_000,
         reuseExistingServer: !process.env.CI,
       }
     : undefined,

@@ -1,3 +1,7 @@
+# Playwright artifacts
+web/test-results/
+web/playwright-report/
+
 # OS
 .DS_Store
 Thumbs.db

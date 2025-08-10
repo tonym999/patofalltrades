@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "email": "email dev --dir web/emails --port 3001",
+    "email": "email dev --dir emails --port 3001",
     "start:test": "next build && next start -p 3000",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
