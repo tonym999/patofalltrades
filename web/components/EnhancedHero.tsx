@@ -29,11 +29,12 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
         {/* Background image with overlay */}
-        <div className="absolute inset-0 relative">
+        <div className="absolute inset-0">
           <Image
             src="/hero.png"
             alt="Handyman hero background"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
