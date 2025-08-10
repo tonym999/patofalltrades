@@ -12,6 +12,9 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
     concurrency:
       group: e2e-smoke-${{ github.ref }}
       cancel-in-progress: true
@@ -41,14 +44,23 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
       - name: Run E2E Smoke (Chromium)
         run: npm run test:e2e:smoke -- --reporter=github
+      - name: Upload smoke report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-smoke
+          path: web/playwright-report
 
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
     concurrency:
       group: e2e-${{ github.ref }}
       cancel-in-progress: true
@@ -83,8 +95,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
       - name: Run E2E (Chromium)
         if: github.event_name == 'push'
