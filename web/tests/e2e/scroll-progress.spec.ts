@@ -12,7 +12,7 @@ test.describe('Scroll progress indicator', () => {
     })
   })
 
-  test('grows with scroll', async ({ page }) => {
+  test('grows with scroll @smoke', async ({ page }) => {
     const bar = page.getByTestId('scroll-progress')
     await expect(bar).toBeAttached()
     // Don't assert visibility; at scaleX=0 the element may be effectively hidden.
