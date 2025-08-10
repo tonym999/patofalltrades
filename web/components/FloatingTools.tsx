@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-import { motion, useReducedMotion } from "framer-motion"
-import { Hammer, Wrench, Paintbrush, Zap, WrenchIcon as Screwdriver, Ruler } from "lucide-react"
+import { motion, useReducedMotion, cubicBezier } from "framer-motion"
+import { Hammer, Wrench, Paintbrush, Zap } from "lucide-react"
 
 export function FloatingTools() {
   type ToolConfig = {
@@ -49,49 +49,33 @@ export function FloatingTools() {
       duration: 16,
       path: { x: [0, -35, 25, 0], y: [0, 25, -30, 0] },
     },
-    {
-      name: "screwdriver",
-      icon: Screwdriver,
-      delay: 1.5,
-      position: { left: "15%", top: "50%" },
-      duration: 22,
-      path: { x: [0, 20, -40, 0], y: [0, -35, 15, 0] },
-    },
-    {
-      name: "ruler",
-      icon: Ruler,
-      delay: 2.5,
-      position: { right: "10%", top: "45%" },
-      duration: 19,
-      path: { x: [0, -30, 45, 0], y: [0, 20, -40, 0] },
-    },
   ]
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {tools.map((tool) => (
-        <motion.div
-          key={tool.name}
-          aria-hidden="true"
-          className="absolute text-amber-400/15"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0.1, 0.3, 0.1],
-            scale: [0.8, 1.2, 0.8],
-            rotate: [0, 360],
-            ...tool.path,
-          }}
-          transition={{
-            duration: tool.duration,
-            delay: tool.delay,
-            repeat: prefersReducedMotion ? 0 : Infinity,
-            ease: "easeInOut",
-          }}
-          style={tool.position}
-        >
-          <tool.icon size={28} />
-        </motion.div>
-      ))}
+      {tools.map((tool) => {
+        const reducedAnimate = { opacity: 0.2, scale: 1, rotate: 0, x: 0, y: 0 }
+        const fullAnimate = { opacity: [0.1, 0.3, 0.1], scale: [0.8, 1.2, 0.8], rotate: [0, 360], ...tool.path }
+        const animateProps = prefersReducedMotion ? reducedAnimate : fullAnimate
+        const initialProps = prefersReducedMotion ? reducedAnimate : { opacity: 0, scale: 0 }
+        const transitionProps: import("framer-motion").Transition = prefersReducedMotion
+          ? { duration: 0 }
+          : { duration: tool.duration, delay: tool.delay, repeat: Infinity, ease: cubicBezier(0.42, 0, 0.58, 1) }
+
+        return (
+          <motion.div
+            key={tool.name}
+            aria-hidden="true"
+            className="absolute text-amber-400/15"
+            initial={initialProps}
+            animate={animateProps}
+            transition={transitionProps}
+            style={tool.position}
+          >
+            <tool.icon size={28} aria-hidden="true" />
+          </motion.div>
+        )
+      })}
     </div>
   )
 }

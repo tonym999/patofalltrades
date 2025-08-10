@@ -4,6 +4,7 @@ import type React from "react"
 
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { useRef } from "react"
+import Image from "next/image"
 import { FloatingTools } from "@/components/FloatingTools"
 
 interface EnhancedHeroProps {
@@ -28,10 +29,15 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
         {/* Background image with overlay */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/hero.png')" }}
-        />
+        <div className="absolute inset-0 relative">
+          <Image
+            src="/hero.png"
+            alt="Handyman hero background"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80" />
       </motion.div>
 
