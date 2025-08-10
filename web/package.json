@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "email": "email dev --dir web/emails --port 3001"
+    "email": "email dev --dir web/emails --port 3001",
+    "start:test": "next build && next start -p 3000",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@react-email/components": "0.5.0",
@@ -30,6 +34,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "@playwright/test": "^1.54.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
