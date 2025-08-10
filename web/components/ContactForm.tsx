@@ -26,18 +26,30 @@ export default function ContactForm() {
   return (
     <div className="max-w-xl mx-auto glass-card rounded-xl p-8">
       <form onSubmit={onSubmit} aria-busy={status === "submitting"}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <input name="name" required type="text" placeholder="Your Name" autoComplete="name" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
-          <input name="email" required type="email" placeholder="Your Email" autoComplete="email" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+          <div>
+            <label htmlFor="name" className="block text-gray-300 mb-2">Name</label>
+            <input id="name" name="name" required type="text" placeholder="Your Name" autoComplete="name" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+          </div>
+          <div>
+            <label htmlFor="email" className="block text-gray-300 mb-2">Email</label>
+            <input id="email" name="email" required type="email" placeholder="your@email.com" autoComplete="email" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+          </div>
         </div>
-        <input name="phone" type="tel" placeholder="Phone (optional)" autoComplete="tel" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition mb-6" />
+        <div className="mb-6">
+          <label htmlFor="phone" className="block text-gray-300 mb-2">Phone (optional)</label>
+          <input id="phone" name="phone" type="tel" placeholder="Phone" autoComplete="tel" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+        </div>
         <label htmlFor="message" className="block text-gray-300 mb-2">Message</label>
+        <p id="message-help" className="sr-only">Tell us about your project, timeline, and any specifics you&#39;d like us to consider. Maximum 5000 characters.</p>
         <textarea
           id="message"
           name="message"
           required
           placeholder="Tell us about your project..."
           rows={6}
+          aria-describedby="message-help"
+          maxLength={5000}
           spellCheck={true}
           autoCorrect="on"
           autoCapitalize="sentences"
