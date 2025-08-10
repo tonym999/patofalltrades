@@ -28,6 +28,17 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Development workflow
+
+- **Dev server (with Turbopack)**: `npm run dev` starts the watcher. It hot-reloads changes using Fast Refresh.
+- **What hot-reloads**:
+  - Client components, styles, and static assets are swapped in place without a full page reload.
+  - Server components and API routes trigger a refresh on change.
+- **When to restart**: Changes to `next.config.ts`, `tsconfig.json`, or dependencies usually require stopping and re-running `npm run dev`.
+- **Windows note**: Avoid running `npm run build` while the dev server is active; Windows can lock `.next` files. Use one or the other.
+- **Production build**: `npm run build` then `npm start` to serve the optimized output.
+- **Images**: When using `next/image` with `fill`, ensure the parent has a positioned container (e.g., `relative` + explicit size or `absolute inset-0`) so the image can render.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
