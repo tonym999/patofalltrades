@@ -1,7 +1,11 @@
 import Link from "next/link"
 import { EnhancedHero } from "./EnhancedHero"
 
-// Your existing Hero component content
+/**
+ * Renders the hero section with a main heading, subheading, and call-to-action buttons for contacting or viewing the portfolio.
+ *
+ * Displays prominent branding and navigation links within an enhanced hero layout.
+ */
 export default function Hero() {
   return (
     <EnhancedHero>

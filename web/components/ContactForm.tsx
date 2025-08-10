@@ -1,6 +1,11 @@
 "use client";
 import { useState } from "react";
 
+/**
+ * Renders a contact form with fields for name, email, optional phone, and a message, handling form submission and displaying status messages.
+ *
+ * Submits form data to the `/api/contact` endpoint and provides user feedback for submission success or failure.
+ */
 export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
