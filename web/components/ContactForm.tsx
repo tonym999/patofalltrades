@@ -30,7 +30,17 @@ export default function ContactForm() {
           <input name="email" required type="email" placeholder="Your Email" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
         </div>
         <input name="phone" type="tel" placeholder="Phone (optional)" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition mb-6" />
-        <textarea name="message" required placeholder="Tell us about your project..." rows={6} className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 mb-6 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition"></textarea>
+        <textarea
+          name="message"
+          required
+          placeholder="Tell us about your project..."
+          rows={6}
+          spellCheck={false}
+          suppressHydrationWarning
+          autoCorrect="off"
+          autoCapitalize="off"
+          className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 mb-6 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition"
+        ></textarea>
         <button type="submit" className="cta-btn w-full text-dark-navy font-bold py-4 px-8 rounded-lg text-lg">
           {status === "submitting" ? "Sending..." : "Send Message"}
         </button>
