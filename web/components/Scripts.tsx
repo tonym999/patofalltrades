@@ -123,15 +123,7 @@ export default function Scripts() {
       window.addEventListener('touchmove', onTouchMove);
     }
 
-    // --- Scroll Progress Bar ---
-    const progressBar = document.getElementById('progress-bar');
-    window.addEventListener('scroll', () => {
-      if (!progressBar) return;
-      const scrollTotal = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrolled = window.scrollY;
-      const progress = (scrolled / scrollTotal) * 100;
-      progressBar.style.width = `${progress}%`;
-    });
+    // Scroll progress handled by framer-motion component now
 
     // Location badge removed; keeping future hook point
   }, []);

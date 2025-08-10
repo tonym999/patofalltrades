@@ -8,14 +8,12 @@ import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import WhatsAppWidget from '@/components/WhatsAppWidget';
 import MobileNav from '@/components/MobileNav';
-import ProgressBar from '@/components/ProgressBar';
 import Scripts from '@/components/Scripts';
 import ServiceAreas from '@/components/ServiceAreas';
 
 export default function Home() {
   return (
     <>
-      <ProgressBar />
       <Header />
       <main>
         <Hero />
