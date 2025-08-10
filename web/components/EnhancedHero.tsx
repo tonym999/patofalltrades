@@ -26,7 +26,11 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
     <section ref={heroRef} className="relative min-h-screen overflow-hidden">
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
-        {/* Your existing background image/video */}
+        {/* Background image with overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/hero.png')" }}
+        />
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80" />
       </motion.div>
 
