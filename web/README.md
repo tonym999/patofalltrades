@@ -62,3 +62,5 @@ public/portfolio/kitchen/kitchen-southwark-001-after.jpg
 ```
 
 If no valid pairs are present, the Portfolio section is hidden automatically.
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/tonym999/patofalltrades?utm_source=oss&utm_medium=github&utm_campaign=tonym999%2Fpatofalltrades&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
