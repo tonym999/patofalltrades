@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { ContactTemplate } from "@/emails/ContactTemplate";
 
 export async function POST(request: Request) {
   try {
@@ -41,16 +42,7 @@ export async function POST(request: Request) {
       to: [TO_EMAIL],
       replyTo: email,
       subject: `New enquiry from ${name}`,
-      html: `
-        <div style="font-family:Inter,system-ui,Arial;line-height:1.6">
-          <h2 style="margin:0 0 12px">New contact form submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || "—"}</p>
-          <p><strong>Message:</strong></p>
-          <p style="white-space:pre-wrap">${message}</p>
-        </div>
-      `,
+      react: ContactTemplate({ name, email, phone, message }),
     });
 
     return NextResponse.json({ ok: true });
