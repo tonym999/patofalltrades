@@ -1,38 +1,123 @@
 "use client";
 
+import { motion } from "framer-motion";
+import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
+import { GlassmorphismCard } from "./GlassmorphismCard";
+
+const services = [
+  {
+    icon: Settings,
+    title: "General Repairs",
+    description:
+      "From fixing squeaky doors to mounting TVs, we handle all your household repair needs with precision and care.",
+    features: ["Same-day service", "All materials included", "12-month guarantee"],
+    gradient: "from-blue-400 to-cyan-500",
+  },
+  {
+    icon: Paintbrush,
+    title: "Painting & Decorating",
+    description:
+      "Transform your space with our professional painting services. Interior and exterior work with premium materials.",
+    features: ["Premium paints", "Surface preparation", "Clean finish guarantee"],
+    gradient: "from-green-400 to-emerald-500",
+  },
+  {
+    icon: Zap,
+    title: "Electrical Work",
+    description:
+      "Safe and certified electrical installations, repairs, and maintenance. From light fixtures to full rewiring.",
+    features: ["Certified & insured", "Safety first", "Modern fittings"],
+    gradient: "from-amber-400 to-orange-500",
+  },
+  {
+    icon: Droplets,
+    title: "Plumbing Services",
+    description:
+      "Reliable plumbing solutions for leaks, installations, and emergency repairs. Available 24/7 for urgent issues.",
+    features: ["Leak detection", "Fast call-outs", "Neat installation"],
+    gradient: "from-indigo-400 to-sky-500",
+  },
+];
+
+const toSlug = (s: string): string =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
 export default function Services() {
   return (
-    <section id="services" className="py-24 md:py-40">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Our Services</h2>
-          <p className="text-lg text-gray-300/90 mt-4">From minor repairs to major renovations, we do it all.</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Service Card 1 */}
-          <div className="service-card glass-card rounded-xl p-8 text-center">
-            <div className="text-gold mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-white mb-2 tracking-tight">General Repairs</h3>
-            <p className="text-gray-300/90">Fixing leaks, patching walls, assembling furniture, and all the small jobs you need done right.</p>
-          </div>
-          {/* Service Card 2 */}
-          <div className="service-card glass-card rounded-xl p-8 text-center">
-            <div className="text-gold mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-white mb-2 tracking-tight">Painting & Decorating</h3>
-            <p className="text-gray-300/90">Transform your space with professional interior and exterior painting services.</p>
-          </div>
-          {/* Service Card 3 */}
-          <div className="service-card glass-card rounded-xl p-8 text-center">
-            <div className="text-gold mb-4">
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-white mb-2 tracking-tight">Plumbing & Electrical</h3>
-            <p className="text-gray-300/90">Certified experts for fixture installation, minor electrical work, and plumbing repairs.</p>
-          </div>
+    <section id="services" className="py-24 md:py-40 relative">
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,158,11,0.08),transparent_50%)]" />
+      </div>
+
+      <div className="container mx-auto px-6 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-white">Our Services</h2>
+          <p className="text-lg md:text-xl text-gray-300/90 mt-4 max-w-3xl mx-auto">
+            Comprehensive handyman services delivered with precision, professionalism, and pride. No job too big or small.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {services.map((service, index) => (
+            <GlassmorphismCard
+              key={service.title}
+              delay={index * 0.1}
+              className="p-8 h-full"
+              data-testid="service-card"
+              data-service={toSlug(service.title)}
+            >
+              <div
+                tabIndex={0}
+                data-testid="service-icon"
+                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 focus-visible:animate-[spin_1.2s_linear_infinite] group-focus-within:animate-[spin_1.2s_linear_infinite] group-hover:animate-[spin_1.2s_linear_infinite]`}
+              >
+                <service.icon className="w-8 h-8 text-white" />
+              </div>
+
+              <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200">
+                {service.title}
+              </h3>
+
+              <p className="text-gray-300 mb-4 leading-relaxed group-hover:text-gray-200 group-focus-within:text-gray-200 transition-colors duration-200">{service.description}</p>
+
+              {/* Focus/hover progress bar directly under description */}
+              <div className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`} aria-hidden="true">
+                <div
+                  data-testid="service-progress"
+                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full transition-[width] duration-[1800ms] ease-in-out`}
+                />
+              </div>
+
+              <ul className="space-y-2 mb-6">
+                {service.features.map((feature, featureIndex) => (
+                  <motion.li
+                    key={feature}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + featureIndex * 0.1 }}
+                    className="flex items-center text-sm text-gray-400"
+                  >
+                    <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3" />
+                    {feature}
+                  </motion.li>
+                ))}
+              </ul>
+
+              {/* Hover underline accent */}
+              <motion.div
+                initial={{ width: 0 }}
+                whileHover={{ width: "100%" }}
+                transition={{ duration: 0.3 }}
+                className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full`}
+              />
+            </GlassmorphismCard>
+          ))}
         </div>
       </div>
     </section>
