@@ -1,17 +1,33 @@
 "use client";
 
 import type React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 type MotionDivProps = React.ComponentProps<typeof motion.div>;
 
 interface GlassmorphismCardProps extends Omit<MotionDivProps, "children" | "className"> {
   children: React.ReactNode;
-  className?: string;
+  /**
+   * Classes applied to the inner content container
+   */
+  contentClassName?: string;
+  /**
+   * Classes applied to the outer motion.div wrapper
+   */
+  outerClassName?: string;
   hoverScale?: boolean;
   delay?: number;
 }
 
-export function GlassmorphismCard({ children, className = "", hoverScale = true, delay = 0, tabIndex = 0, ...rest }: GlassmorphismCardProps) {
+export function GlassmorphismCard({
+  children,
+  contentClassName = "",
+  outerClassName = "",
+  hoverScale = true,
+  delay = 0,
+  tabIndex = 0,
+  ...rest
+}: GlassmorphismCardProps) {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -19,7 +35,7 @@ export function GlassmorphismCard({ children, className = "", hoverScale = true,
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true }}
       whileHover={
-        hoverScale
+        hoverScale && !shouldReduceMotion
           ? {
               scale: 1.02,
               y: -5,
@@ -27,8 +43,7 @@ export function GlassmorphismCard({ children, className = "", hoverScale = true,
             }
           : {}
       }
-      className="group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl"
-      role="group"
+      className={`group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl ${outerClassName}`}
       tabIndex={tabIndex}
       {...rest}
     >
@@ -42,7 +57,7 @@ export function GlassmorphismCard({ children, className = "", hoverScale = true,
         relative bg-slate-800/40 backdrop-blur-md border-2 border-slate-700/50 
         group-hover:border-amber-400/70 group-focus-within:border-amber-400/80
         transition-all duration-500 rounded-xl overflow-hidden
-        ${className}
+        ${contentClassName}
       `}
       >
         <div className="relative z-10">{children}</div>

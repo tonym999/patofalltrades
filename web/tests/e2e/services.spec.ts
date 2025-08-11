@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Locator } from '@playwright/test'
 
-const readWidth = async (locator: any) => locator.evaluate((el: HTMLElement) => el.clientWidth)
+const readWidth = async (locator: Locator) => locator.evaluate((el: HTMLElement) => el.clientWidth)
 
 test.describe('Services full E2E', () => {
   test.beforeEach(async ({ page }) => {
@@ -18,27 +18,40 @@ test.describe('Services full E2E', () => {
       const icon = card.getByTestId('service-icon')
       const anim = await icon.evaluate(el => getComputedStyle(el as HTMLElement).animationName)
       expect(typeof anim).toBe('string')
+      expect(anim).not.toBe('none')
 
       const progress = card.getByTestId('service-progress')
       const start = await readWidth(progress)
       await page.waitForTimeout(400)
       const mid = await readWidth(progress)
       expect(mid).toBeGreaterThan(start)
-      await page.keyboard.press('Tab')
+      if (i < 3) {
+        await page.keyboard.press('Tab')
+        const next = cards.nth(i + 1)
+        await expect(next).toBeFocused()
+      }
     }
   })
 
   test('responsive columns', async ({ page }) => {
     const grid = page.locator('#services .grid')
-    await page.setViewportSize({ width: 500, height: 800 })
+    const cards = page.getByTestId('service-card')
     await expect(grid).toBeVisible()
-    await page.waitForTimeout(100)
+
+    const measureColumns = async () => {
+      const tops = await cards.evaluateAll((nodes) => nodes.map((n) => (n as HTMLElement).offsetTop))
+      const firstRowTop = Math.min(...tops)
+      return tops.filter((t) => t === firstRowTop).length
+    }
+
+    await page.setViewportSize({ width: 500, height: 800 })
+    await expect.poll(measureColumns).toBe(1)
 
     await page.setViewportSize({ width: 800, height: 800 })
-    await page.waitForTimeout(100)
+    await expect.poll(measureColumns).toBe(2)
 
     await page.setViewportSize({ width: 1200, height: 900 })
-    await page.waitForTimeout(100)
+    await expect.poll(measureColumns).toBe(4)
   })
 })
 

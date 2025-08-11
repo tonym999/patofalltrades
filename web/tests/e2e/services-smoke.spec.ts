@@ -1,8 +1,6 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Locator } from '@playwright/test'
 
-const readWidth = async (locator: any) => {
-  return await locator.evaluate((el: HTMLElement) => el.clientWidth)
-}
+const readWidth = async (locator: Locator) => locator.evaluate((el: HTMLElement) => el.clientWidth)
 
 test.describe('Services @smoke', () => {
   test.beforeEach(async ({ page }) => {
@@ -20,6 +18,7 @@ test.describe('Services @smoke', () => {
     const icon = first.getByTestId('service-icon')
     const animationName = await icon.evaluate(el => getComputedStyle(el as HTMLElement).animationName)
     expect(typeof animationName).toBe('string')
+    expect(animationName).not.toBe('none')
 
     const progress = first.getByTestId('service-progress')
     const container = await progress.evaluateHandle(el => el.parentElement as HTMLElement)
@@ -36,13 +35,11 @@ test.describe('Services @smoke', () => {
 
     // Move focus to next card to leave focus-within scope and wait for reset
     await cards.nth(1).focus()
-    let reset = await readWidth(progress)
-    const startReset = Date.now()
-    while (Date.now() - startReset < 1500 && reset / containerWidth > 0.2) {
-      await page.waitForTimeout(50)
-      reset = await readWidth(progress)
-    }
-    expect(reset / containerWidth).toBeLessThanOrEqual(0.2)
+    await expect.poll(async () => (await readWidth(progress)) / containerWidth, {
+      message: 'progress bar should reset width after focus leaves',
+      intervals: [50, 100, 150, 250],
+      timeout: 1500,
+    }).toBeLessThanOrEqual(0.2)
   })
 })
 

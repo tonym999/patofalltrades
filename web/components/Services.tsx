@@ -68,16 +68,15 @@ export default function Services() {
             <GlassmorphismCard
               key={service.title}
               delay={index * 0.1}
-              className="p-8 h-full"
+              contentClassName="p-8 h-full"
               data-testid="service-card"
               data-service={toSlug(service.title)}
             >
               <div
-                tabIndex={0}
                 data-testid="service-icon"
-                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 focus-visible:animate-[spin_1.2s_linear_infinite] group-focus-within:animate-[spin_1.2s_linear_infinite] group-hover:animate-[spin_1.2s_linear_infinite]`}
+                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg group-focus-within:animate-[spin_1.2s_linear_infinite] group-hover:animate-[spin_1.2s_linear_infinite]`}
               >
-                <service.icon className="w-8 h-8 text-white" />
+                <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
               </div>
 
               <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200">
@@ -90,7 +89,7 @@ export default function Services() {
               <div className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`} aria-hidden="true">
                 <div
                   data-testid="service-progress"
-                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full transition-[width] duration-[1800ms] ease-in-out`}
+                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full transition-[width] duration-[1800ms] ease-in-out motion-reduce:transition-none motion-reduce:duration-0`}
                 />
               </div>
 
@@ -101,6 +100,7 @@ export default function Services() {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 + featureIndex * 0.1 }}
+                    viewport={{ once: true }}
                     className="flex items-center text-sm text-gray-400"
                   >
                     <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3" />
@@ -109,12 +109,10 @@ export default function Services() {
                 ))}
               </ul>
 
-              {/* Hover underline accent */}
-              <motion.div
-                initial={{ width: 0 }}
-                whileHover={{ width: "100%" }}
-                transition={{ duration: 0.3 }}
-                className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full`}
+              {/* Hover underline accent (CSS-driven for group hover/focus) */}
+              <div
+                aria-hidden="true"
+                className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0`}
               />
             </GlassmorphismCard>
           ))}
