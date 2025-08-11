@@ -36,16 +36,41 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
     <section ref={heroRef} className="relative min-h-screen overflow-hidden">
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
-        {/* Background image with overlay */}
+        {/* Background image with overlay (responsive assets) */}
         <div className="absolute inset-0">
-          <Image
-            src="/hero.png"
-            alt="Handyman hero background"
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
+          {/* Mobile */}
+          <div className="block md:hidden absolute inset-0">
+            <Image
+              src="/hero-mobile.png"
+              alt="Handyman hero background"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+          {/* Tablet */}
+          <div className="hidden md:block lg:hidden absolute inset-0">
+            <Image
+              src="/hero-tablet.png"
+              alt="Handyman hero background"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+          {/* Desktop */}
+          <div className="hidden lg:block absolute inset-0">
+            <Image
+              src="/hero.png"
+              alt="Handyman hero background"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80" />
       </motion.div>
