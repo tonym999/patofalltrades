@@ -1,10 +1,14 @@
 "use client";
 
 import type React from "react";
+import { forwardRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 type MotionDivProps = React.ComponentProps<typeof motion.div>;
 
-interface GlassmorphismCardProps extends Omit<MotionDivProps, "children" | "className"> {
+interface GlassmorphismCardProps extends Omit<
+  MotionDivProps,
+  "children" | "className" | "initial" | "whileInView" | "whileHover" | "transition" | "viewport"
+> {
   children: React.ReactNode;
   /**
    * Classes applied to the inner content container
@@ -18,17 +22,20 @@ interface GlassmorphismCardProps extends Omit<MotionDivProps, "children" | "clas
   delay?: number;
 }
 
-export function GlassmorphismCard({
-  children,
-  contentClassName = "",
-  outerClassName = "",
-  hoverScale = true,
-  delay = 0,
-  tabIndex = 0,
-  ...rest
-}: GlassmorphismCardProps) {
+export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardProps>(function GlassmorphismCard(
+  {
+    children,
+    contentClassName = "",
+    outerClassName = "",
+    hoverScale = true,
+    delay = 0,
+    tabIndex = 0,
+    role,
+    ...rest
+  }: GlassmorphismCardProps,
+  ref
+) {
   const shouldReduceMotion = useReducedMotion();
-  // Respect prefers-reduced-motion for entrance animations
   const entranceMotionProps: Partial<MotionDivProps> = shouldReduceMotion
     ? { initial: false }
     : {
@@ -39,6 +46,7 @@ export function GlassmorphismCard({
       };
   return (
     <motion.div
+      ref={ref}
       {...entranceMotionProps}
       whileHover={
         hoverScale
@@ -49,6 +57,7 @@ export function GlassmorphismCard({
             }
           : {}
       }
+      role={role ?? (tabIndex >= 0 ? "group" : undefined)}
       className={`group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl ${outerClassName}`}
       tabIndex={tabIndex}
       {...rest}
@@ -62,7 +71,7 @@ export function GlassmorphismCard({
         className={`
         relative bg-slate-800/40 backdrop-blur-md border-2 border-slate-700/50 
         group-hover:border-amber-400/70 group-focus-within:border-amber-400/80
-        transition-all duration-500 rounded-xl overflow-hidden
+        transition-colors duration-500 rounded-xl overflow-hidden
         ${contentClassName}
       `}
       >
@@ -70,6 +79,6 @@ export function GlassmorphismCard({
       </div>
     </motion.div>
   );
-}
+});
 
 
