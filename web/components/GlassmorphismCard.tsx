@@ -28,14 +28,20 @@ export function GlassmorphismCard({
   ...rest
 }: GlassmorphismCardProps) {
   const shouldReduceMotion = useReducedMotion();
+  // Respect prefers-reduced-motion for entrance animations
+  const entranceMotionProps: Partial<MotionDivProps> = shouldReduceMotion
+    ? { initial: false }
+    : {
+        initial: { opacity: 0, y: 50 },
+        whileInView: { opacity: 1, y: 0 },
+        transition: { duration: 0.6, delay },
+        viewport: { once: true },
+      };
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay }}
-      viewport={{ once: true }}
+      {...entranceMotionProps}
       whileHover={
-        hoverScale && !shouldReduceMotion
+        hoverScale
           ? {
               scale: 1.02,
               y: -5,
