@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
-import { GlassmorphismCard } from "@/components/GlassmorphismCard";
+import { GlassmorphismCard } from "./GlassmorphismCard";
 
 const services = [
   {
@@ -68,13 +68,13 @@ export default function Services() {
             <GlassmorphismCard
               key={service.title}
               delay={index * 0.1}
-              className="p-8 h-full"
+              contentClassName="p-8 h-full"
               data-testid="service-card"
               data-service={toSlug(service.title)}
             >
               <div
                 data-testid="service-icon"
-                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg md:group-hover:animate-[spin_1.8s_linear] md:group-focus-within:animate-[spin_1.8s_linear] motion-reduce:animate-none`}
+                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg group-focus-within:animate-[spin_1.2s_linear_infinite] group-hover:animate-[spin_1.2s_linear_infinite]`}
               >
                 <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
               </div>
@@ -86,10 +86,10 @@ export default function Services() {
               <p className="text-gray-300 mb-4 leading-relaxed group-hover:text-gray-200 group-focus-within:text-gray-200 transition-colors duration-200">{service.description}</p>
 
               {/* Focus/hover progress bar directly under description */}
-              <div className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition-opacity duration-300`} aria-hidden="true">
+              <div className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`} aria-hidden="true">
                 <div
                   data-testid="service-progress"
-                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} md:group-hover:w-full md:group-focus-within:w-full transition-[width] duration-[1800ms] ease-in-out motion-reduce:transition-none motion-reduce:duration-0`}
+                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full transition-[width] duration-[1800ms] ease-in-out motion-reduce:transition-none motion-reduce:duration-0`}
                 />
               </div>
 
@@ -121,3 +121,5 @@ export default function Services() {
     </section>
   );
 }
+
+
