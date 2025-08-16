@@ -5,6 +5,7 @@ test.describe('Mobile sticky contact bar', () => {
   test.use({ viewport: { width: 390, height: 844 } })
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
     // Ensure sufficient page height and reset scroll position
     await page.evaluate(() => {
       document.body.style.minHeight = '300vh'
