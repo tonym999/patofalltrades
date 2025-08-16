@@ -136,7 +136,7 @@ ensure_config() {
 Host github.com github
   HostName github.com
   User git
-  IdentityFile ${KEY}
+  IdentityFile "${KEY}"
   AddKeysToAgent yes
   IdentitiesOnly yes
 
@@ -144,7 +144,7 @@ Host github-443
   HostName ssh.github.com
   User git
   Port 443
-  IdentityFile ${KEY}
+  IdentityFile "${KEY}"
   AddKeysToAgent yes
   IdentitiesOnly yes
 EOF
@@ -152,11 +152,12 @@ EOF
   fi
 
   # Ensure IdentityFile reflects KEY for existing entries
-  if grep -qE '^Host (github|github\.com)([[:space:]]|$)' "${SSH_CONFIG}"; then
-    awk -v key="${KEY}" '
+  if grep -qE '^Host (github|github\.com|github-443)([[:space:]]|$)' "${SSH_CONFIG}"; then
+    awk -v key="${KEY}" -v q='"' '
       BEGIN{host=""}
       /^Host /{host=$0}
-      host ~ /github(\.com)?$/ && $1=="IdentityFile"{$2=key}
+      # Update IdentityFile lines within github-related Host blocks, quoting the path
+      (host ~ /(^|[[:space:]])github(\\.com)?([[:space:]]|$)/ || host ~ /(^|[[:space:]])github-443([[:space:]]|$)/) && $1=="IdentityFile"{$2=q key q}
       {print}
     ' "${SSH_CONFIG}" > "${SSH_CONFIG}.tmp" && mv "${SSH_CONFIG}.tmp" "${SSH_CONFIG}"
   fi
