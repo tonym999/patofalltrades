@@ -151,14 +151,16 @@ EOF
     log "Wrote GitHub entries to ${SSH_CONFIG}"
   fi
 
-  # Ensure IdentityFile reflects KEY for existing entries
+  # Ensure IdentityFile reflects KEY for existing entries (both github and github-443 blocks)
   if grep -qE '^Host (github|github\.com|github-443)([[:space:]]|$)' "${SSH_CONFIG}"; then
     awk -v key="${KEY}" -v q='"' '
-      BEGIN{host=""}
-      /^Host /{host=$0}
-      # Update IdentityFile lines within github-related Host blocks, quoting the path
-      (host ~ /(^|[[:space:]])github(\\.com)?([[:space:]]|$)/ || host ~ /(^|[[:space:]])github-443([[:space:]]|$)/) && $1=="IdentityFile"{$2=q key q}
-      {print}
+      BEGIN { in_block=0 }
+      /^Host / {
+        host_line=$0
+        in_block = (host_line ~ /(^|[[:space:]])github(\\.com)?([[:space:]]|$)/ || host_line ~ /(^|[[:space:]])github-443([[:space:]]|$)/)
+      }
+      in_block && $1=="IdentityFile" { $2=q key q }
+      { print }
     ' "${SSH_CONFIG}" > "${SSH_CONFIG}.tmp" && mv "${SSH_CONFIG}.tmp" "${SSH_CONFIG}"
   fi
 }
