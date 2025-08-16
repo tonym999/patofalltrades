@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail, MessageCircle, Phone, X } from "lucide-react";
 import { CONTACT_INFO } from "@/config/contact";
@@ -8,6 +8,7 @@ import { CONTACT_INFO } from "@/config/contact";
 export default function StickyContactBar() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     let rafId: number | null = null
@@ -27,6 +28,13 @@ export default function StickyContactBar() {
       if (rafId !== null) cancelAnimationFrame(rafId)
     }
   }, [])
+
+  // Move focus to the close button when the panel opens for better a11y
+  useEffect(() => {
+    if (isExpanded) {
+      closeButtonRef.current?.focus();
+    }
+  }, [isExpanded])
 
   const contactOptions = [
     {
@@ -85,6 +93,7 @@ export default function StickyContactBar() {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-white font-semibold">Get In Touch</h3>
                     <button
+                      ref={closeButtonRef}
                       onClick={() => setIsExpanded(false)}
                       className="text-gray-400 hover:text-white"
                       aria-label="Close contact options"
