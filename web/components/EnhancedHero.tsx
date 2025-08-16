@@ -43,6 +43,7 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
             alt="Handyman hero background"
             fill
             sizes="100vw"
+            priority
             className="object-cover"
           />
         </div>
