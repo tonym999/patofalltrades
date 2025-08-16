@@ -19,7 +19,7 @@ export default function Hero() {
         </p>
 
         {/* CTAs with mobile-first sizing */}
-        <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
           <Link
             href="/contact"
             className="cta-btn text-slate-900 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg"

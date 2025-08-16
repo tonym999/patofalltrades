@@ -3,41 +3,50 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail, MessageCircle, Phone, X } from "lucide-react";
+import { CONTACT_INFO } from "../config/contact";
 
 export default function StickyContactBar() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
+    let rafId = 0 as number | 0
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 800);
-    };
+      if (rafId) return
+      rafId = requestAnimationFrame(() => {
+        setIsVisible(window.scrollY > 800)
+        rafId = 0
+      })
+    }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true })
     // Run once on mount in case the user lands mid-page
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    handleScroll()
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      if (rafId) cancelAnimationFrame(rafId)
+    }
+  }, [])
 
   const contactOptions = [
     {
       icon: Phone,
       label: "Call Now",
-      href: "tel:+447123456789",
+      href: `tel:${CONTACT_INFO.phoneE164}`,
       color: "bg-blue-500 hover:bg-blue-600",
       description: "Speak directly with Pat",
     },
     {
       icon: MessageCircle,
       label: "WhatsApp",
-      href: "https://wa.me/447123456789",
+      href: `https://wa.me/${CONTACT_INFO.whatsappDigits}`,
       color: "bg-green-500 hover:bg-green-600",
       description: "Quick message response",
     },
     {
       icon: Mail,
       label: "Email",
-      href: "mailto:pat@patofalltrades.co.uk",
+      href: `mailto:${CONTACT_INFO.email}`,
       color: "bg-amber-500 hover:bg-amber-600",
       description: "Detailed project info",
     },
@@ -123,7 +132,7 @@ export default function StickyContactBar() {
 
                 <div className="flex space-x-2">
                   <motion.a
-                    href="tel:+447123456789"
+                    href={`tel:${CONTACT_INFO.phoneE164}`}
                     whileTap={{ scale: 0.95 }}
                     className="bg-amber-500 hover:bg-amber-600 text-slate-900 px-4 py-2 rounded-lg font-medium text-sm transition-colors"
                   >

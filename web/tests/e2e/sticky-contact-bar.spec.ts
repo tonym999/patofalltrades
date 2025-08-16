@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { CONTACT_INFO } from '../../config/contact'
 
 test.describe('Mobile sticky contact bar', () => {
   test.beforeEach(async ({ page }) => {
@@ -34,13 +35,13 @@ test.describe('Mobile sticky contact bar', () => {
 
     // Verify key contact options
     const callLink = page.getByRole('link', { name: 'Call Now' }).first()
-    await expect(callLink).toHaveAttribute('href', 'tel:+447123456789')
+    await expect(callLink).toHaveAttribute('href', `tel:${CONTACT_INFO.phoneE164}`)
 
     const waLink = page.getByRole('link', { name: 'WhatsApp' })
-    await expect(waLink).toHaveAttribute('href', 'https://wa.me/447123456789')
+    await expect(waLink).toHaveAttribute('href', `https://wa.me/${CONTACT_INFO.whatsappDigits}`)
 
     const emailLink = page.getByRole('link', { name: 'Email' })
-    await expect(emailLink).toHaveAttribute('href', 'mailto:pat@patofalltrades.co.uk')
+    await expect(emailLink).toHaveAttribute('href', `mailto:${CONTACT_INFO.email}`)
 
     // Close via the close button inside the panel
     await page.getByRole('button', { name: 'Close contact options' }).click()
