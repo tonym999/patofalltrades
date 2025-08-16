@@ -310,7 +310,7 @@ ensure_upstream_and_push() {
     warn "Skipping push (enable with --push)."
     return
   fi
-  if git rev-parse --abbrev-ref --symbolic-full-name @{upstream} >/dev/null 2>&1; then
+  if git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' >/dev/null 2>&1; then
     log "Upstream already set; pushing normally…"
     git push
   else
