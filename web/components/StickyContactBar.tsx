@@ -3,19 +3,19 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail, MessageCircle, Phone, X } from "lucide-react";
-import { CONTACT_INFO } from "../config/contact";
+import { CONTACT_INFO } from "@/config/contact";
 
 export default function StickyContactBar() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    let rafId = 0 as number | 0
+    let rafId: number | null = null
     const handleScroll = () => {
-      if (rafId) return
+      if (rafId !== null) return
       rafId = requestAnimationFrame(() => {
         setIsVisible(window.scrollY > 800)
-        rafId = 0
+        rafId = null
       })
     }
 
@@ -24,7 +24,7 @@ export default function StickyContactBar() {
     handleScroll()
     return () => {
       window.removeEventListener("scroll", handleScroll)
-      if (rafId) cancelAnimationFrame(rafId)
+      if (rafId !== null) cancelAnimationFrame(rafId)
     }
   }, [])
 
@@ -79,6 +79,7 @@ export default function StickyContactBar() {
                   initial={{ y: 100, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: 100, opacity: 0 }}
+                  id="contact-options-panel"
                   className="bg-slate-900/95 backdrop-blur-md border-t border-amber-400/20 p-4"
                 >
                   <div className="flex justify-between items-center mb-4">
@@ -95,7 +96,7 @@ export default function StickyContactBar() {
                   <div className="space-y-3">
                     {contactOptions.map((option, index) => (
                       <motion.a
-                        key={index}
+                        key={`contact-${option.label}`}
                         href={option.href}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -143,6 +144,8 @@ export default function StickyContactBar() {
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsExpanded((prev) => !prev)}
                     className="border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-slate-900 px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+                    aria-controls="contact-options-panel"
+                    aria-expanded={isExpanded}
                   >
                     More
                   </motion.button>

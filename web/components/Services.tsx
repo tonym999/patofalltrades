@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
 import { GlassmorphismCard } from "./GlassmorphismCard";
 
@@ -43,6 +43,16 @@ const toSlug = (s: string): string =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 export default function Services() {
+  const shouldReduceMotion = useReducedMotion();
+
+  const headingMotionProps = shouldReduceMotion
+    ? { initial: false as const }
+    : {
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        transition: { duration: 0.8 },
+        viewport: { once: true as const },
+      };
   return (
     <section id="services" className="py-24 md:py-40 relative">
       <div className="absolute inset-0 opacity-5">
@@ -51,10 +61,7 @@ export default function Services() {
 
       <div className="container mx-auto px-6 relative">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          {...headingMotionProps}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white">Our Services</h2>
@@ -97,9 +104,9 @@ export default function Services() {
                 {service.features.map((feature, featureIndex) => (
                   <motion.li
                     key={feature}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + featureIndex * 0.1 }}
+                    initial={shouldReduceMotion ? undefined : { opacity: 0, x: -20 }}
+                    whileInView={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
+                    transition={shouldReduceMotion ? undefined : { delay: 0.2 + featureIndex * 0.1 }}
                     viewport={{ once: true }}
                     className="flex items-center text-sm text-gray-400"
                   >

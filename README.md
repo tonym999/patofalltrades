@@ -33,11 +33,11 @@ bash scripts/setup_github_ssh_ci.sh --set-git-identity --name "Your Name" --emai
 - `--name` / `--email` (`USER_NAME_DEFAULT` / `EMAIL_DEFAULT`): values used when `--set-git-identity` is provided.
 
 ### Examples
-- First-time setup, no push:
+- First-time setup (no push)
 ```bash
 bash scripts/setup_github_ssh_ci.sh --install-deps --gh-login --add-key
 ```
-- Force SSH over 443 (e.g., corporate network):
+- Force SSH over 443 (corporate networks) and push
 ```bash
 bash scripts/setup_github_ssh_ci.sh --force-443 --push
 ```
@@ -49,7 +49,7 @@ bash scripts/setup_github_ssh_ci.sh --force-443 --push
 - Port 22 blocked:
   - Re-run with `--force-443` or rely on automatic fallback.
 - Want Windows browser login from WSL:
-  - Keep `--gh-login` enabled (default); a one-time device code flow will be shown.
+  - Keep `--gh-login` enabled (default); the script will prompt with a one-time device code flow.
 
 For full options:
 ```bash

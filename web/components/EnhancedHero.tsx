@@ -20,7 +20,7 @@ interface EnhancedHeroProps {
  * @returns The rendered hero section as a React element
  */
 export function EnhancedHero({ children }: EnhancedHeroProps) {
-  const heroRef = useRef<HTMLDivElement | null>(null)
+  const heroRef = useRef<HTMLElement | null>(null)
   const prefersReducedMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -33,7 +33,7 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
   const opacity = useTransform(scrollYProgress, [0, 0.5], prefersReducedMotion ? [1, 1] : [1, 0])
 
   return (
-    <section ref={heroRef} className="relative min-h-screen overflow-hidden">
+    <section ref={heroRef} className="relative min-h-screen supports-[height:100dvh]:min-h-[100dvh] overflow-hidden">
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
         {/* Single responsive image with sizes; lets the browser pick the right src from Next.js-generated srcset */}
@@ -56,7 +56,7 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
       </div>
 
       {/* Content with parallax */}
-      <motion.div style={{ y: textY, opacity }} className="relative z-20 min-h-screen flex items-center justify-center">
+      <motion.div style={{ y: textY, opacity }} className="relative z-20 min-h-screen supports-[height:100dvh]:min-h-[100dvh] flex items-center justify-center">
         {children}
       </motion.div>
 

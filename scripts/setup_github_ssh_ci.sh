@@ -117,9 +117,9 @@ ensure_key() {
 }
 
 ensure_agent_and_add_key() {
-  # Start agent if not running, then ensure our key is loaded
-  if ! pgrep -u "$USER" ssh-agent >/dev/null 2>&1; then
-    eval "$(ssh-agent -s)" >/dev/null
+  # Prefer probing agent directly; start if needed
+  if ! ssh-add -l >/dev/null 2>&1; then
+    eval "$(ssh-agent -s)" >/dev/null 2>&1 || true
   fi
   local key_fpr
   key_fpr="$(ssh-keygen -lf "${KEY}" | awk '{print $2}')"
@@ -131,12 +131,12 @@ ensure_agent_and_add_key() {
 ensure_config() {
   touch "${SSH_CONFIG}" && chmod 600 "${SSH_CONFIG}"
   if ! grep -qE '^Host (github|github\.com)([[:space:]]|$)' "${SSH_CONFIG}"; then
-    cat >> "${SSH_CONFIG}" <<'EOF'
+    cat >> "${SSH_CONFIG}" <<EOF
 
 Host github.com github
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ${KEY}
   AddKeysToAgent yes
   IdentitiesOnly yes
 
@@ -144,11 +144,21 @@ Host github-443
   HostName ssh.github.com
   User git
   Port 443
-  IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ${KEY}
   AddKeysToAgent yes
   IdentitiesOnly yes
 EOF
     log "Wrote GitHub entries to ${SSH_CONFIG}"
+  fi
+
+  # Ensure IdentityFile reflects KEY for existing entries
+  if grep -qE '^Host (github|github\.com)([[:space:]]|$)' "${SSH_CONFIG}"; then
+    awk -v key="${KEY}" '
+      BEGIN{host=""}
+      /^Host /{host=$0}
+      host ~ /github(\.com)?$/ && $1=="IdentityFile"{$2=key}
+      {print}
+    ' "${SSH_CONFIG}" > "${SSH_CONFIG}.tmp" && mv "${SSH_CONFIG}.tmp" "${SSH_CONFIG}"
   fi
 }
 
@@ -226,23 +236,19 @@ parse_owner_repo_from_remote() {
   fi
 
   if [[ "${url}" =~ ^git@([^:]+):([^/]+)/([^.]+)(\.git)?$ ]]; then
-    HOST="${BASH_REMATCH[1]}"
     OWNER="${BASH_REMATCH[2]}"
     REPO="${BASH_REMATCH[3]}"
   elif [[ "${url}" =~ ^https://github\.com/([^/]+)/([^.]+)(\.git)?$ ]]; then
-    HOST="github.com"
     OWNER="${BASH_REMATCH[1]}"
     REPO="${BASH_REMATCH[2]}"
   else
     # Fallback: try gh to detect current repo from cwd
     if gh repo view --json nameWithOwner >/dev/null 2>&1; then
       IFS='/' read -r OWNER REPO <<<"$(gh repo view --json nameWithOwner --jq .nameWithOwner)"
-      HOST="github.com"
     else
       # Final fallback: prompt once
       read -rp "GitHub owner (e.g., tonym999): " OWNER
       read -rp "Repo name (e.g., patofalltrades): " REPO
-      HOST="github.com"
     fi
   fi
   [[ -n "${OWNER:-}" && -n "${REPO:-}" ]] || { err "Could not determine owner/repo."; exit 1; }
@@ -301,7 +307,7 @@ ensure_upstream_and_push() {
     warn "Skipping push (enable with --push)."
     return
   fi
-  if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
+  if git rev-parse --abbrev-ref --symbolic-full-name @{upstream} >/dev/null 2>&1; then
     log "Upstream already set; pushing normally…"
     git push
   else
