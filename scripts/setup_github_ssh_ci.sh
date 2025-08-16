@@ -130,7 +130,8 @@ ensure_agent_and_add_key() {
 
 ensure_config() {
   touch "${SSH_CONFIG}" && chmod 600 "${SSH_CONFIG}"
-  if ! grep -qE '^Host (github|github\.com)([[:space:]]|$)' "${SSH_CONFIG}"; then
+  # Append blocks only if none of the github host aliases exist to avoid duplicates
+  if ! grep -qE '^Host (github|github\.com|github-443)([[:space:]]|$)' "${SSH_CONFIG}"; then
     cat >> "${SSH_CONFIG}" <<EOF
 
 Host github.com github
