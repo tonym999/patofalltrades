@@ -1,6 +1,6 @@
 # Playwright artifacts
-web/test-results/
-web/playwright-report/
+**/test-results/
+**/playwright-report/
 
 # OS
 .DS_Store
