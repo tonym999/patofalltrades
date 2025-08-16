@@ -9,7 +9,7 @@ We include `scripts/setup_github_ssh_ci.sh` to streamline SSH setup for pushing 
 - Switches the repo remote to SSH and falls back to port 443 if port 22 is blocked.
 - Optionally pushes your current branch.
 
-It is safe to keep in the repo: all potentially sensitive actions are opt-in via flags or environment variables.
+It is safe to keep this script in the repo: all potentially sensitive actions are opt-in via flags or environment variables.
 
 ### Quickstart
 
@@ -48,8 +48,8 @@ bash scripts/setup_github_ssh_ci.sh --force-443 --push
   - Add the public key to GitHub: copy `~/.ssh/id_ed25519.pub` into `https://github.com/settings/keys`.
 - Port 22 blocked:
   - Re-run with `--force-443` or rely on automatic fallback.
-- Want Windows browser login from WSL:
-  - Keep `--gh-login` enabled (default); the script will prompt with a one-time device code flow.
+- Windows browser login from WSL:
+  - Keep `--gh-login` enabled (default); the script will use the device code flow and open your Windows browser.
 
 For full options:
 ```bash
