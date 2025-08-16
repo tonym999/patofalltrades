@@ -80,4 +80,3 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
     </motion.div>
   );
 });
-
