@@ -84,7 +84,7 @@ export default function Services() {
             <GlassmorphismCard
               key={service.title}
               delay={index * 0.1}
-              contentClassName="p-8 h-full"
+              contentClassName="p-6 sm:p-8 h-full"
               data-testid="service-card"
               data-service={toSlug(service.title)}
             >
