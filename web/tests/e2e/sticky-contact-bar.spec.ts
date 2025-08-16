@@ -2,10 +2,9 @@ import { test, expect } from '@playwright/test'
 import { CONTACT_INFO } from '../../config/contact'
 
 test.describe('Mobile sticky contact bar', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    // Emulate a small/mobile viewport so elements with `md:hidden` are visible
-    await page.setViewportSize({ width: 390, height: 844 })
     // Ensure sufficient page height and reset scroll position
     await page.evaluate(() => {
       document.body.style.minHeight = '300vh'

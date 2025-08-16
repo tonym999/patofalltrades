@@ -3,6 +3,15 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
 import { GlassmorphismCard } from "./GlassmorphismCard";
+import type { LucideIcon } from "lucide-react";
+
+type Service = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  features: readonly string[];
+  gradient: string;
+};
 
 const services = [
   {
@@ -37,7 +46,7 @@ const services = [
     features: ["Leak detection", "Fast call-outs", "Neat installation"],
     gradient: "from-indigo-400 to-sky-500",
   },
-];
+ ] as const satisfies readonly Service[];
 
 const toSlug = (s: string): string =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
