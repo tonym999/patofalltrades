@@ -90,7 +90,7 @@ export default function Services() {
             >
               <div
                 data-testid="service-icon"
-                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg group-focus-within:animate-[spin_1.2s_linear_infinite] group-hover:animate-[spin_1.2s_linear_infinite]`}
+                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg motion-safe:group-focus-within:animate-[spin_1800ms_linear] motion-safe:group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none`}
               >
                 <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
               </div>
