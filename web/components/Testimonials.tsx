@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { MapPin } from "lucide-react";
 import { GlassmorphismCard } from "@/components/GlassmorphismCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
 import { testimonials as testimonialsData } from "@/config/testimonials";
