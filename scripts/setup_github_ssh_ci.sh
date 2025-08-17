@@ -218,13 +218,17 @@ add_ssh_key_to_github() {
   local pub="${KEY}.pub"
   [[ -f "${pub}" ]] || { err "Public key not found: ${pub}"; return; }
 
-  # Check if this fingerprint already exists on GitHub
-  local fpr
-  fpr="$(ssh-keygen -lf "${pub}" | awk '{print $2}')"
+  # Check if this key already exists on GitHub by comparing base64 key material
+  local key_b64
+  key_b64="$(awk '{print $2}' "${pub}" | tr -d '\n')"
+  if [[ -z "${key_b64}" ]]; then
+    err "Could not parse public key material from ${pub}"
+    return
+  fi
   local existing
-  existing="$(gh ssh-key list --json fingerprint --jq ".[] | select(.fingerprint==\"${fpr}\") | .fingerprint" || true)"
+  existing="$(gh ssh-key list --json key --jq ".[] | select(.key==\"${key_b64}\") | .key" || true)"
   if [[ -n "${existing}" ]]; then
-    log "SSH key already present on GitHub (fingerprint ${fpr})."
+    log "SSH key already present on GitHub (key material matches)."
   else
     log "Adding SSH key to GitHub account…"
     gh ssh-key add "${pub}" -t "WSL $(hostname) $(date +%F)" >/dev/null
