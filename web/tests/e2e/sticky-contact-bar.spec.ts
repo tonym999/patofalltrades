@@ -1,8 +1,8 @@
 import { test, expect, devices } from '@playwright/test'
+test.use({ ...devices['iPhone 12'] })
 import { CONTACT_INFO } from '../../config/contact'
 
 test.describe('Mobile sticky contact bar', () => {
-  test.use({ ...devices['iPhone 12'] })
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
