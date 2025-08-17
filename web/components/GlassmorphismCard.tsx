@@ -49,7 +49,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
       ref={ref}
       {...entranceMotionProps}
       whileHover={
-        hoverScale
+        hoverScale && !shouldReduceMotion
           ? {
               scale: 1.02,
               y: -5,
@@ -80,5 +80,3 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
     </motion.div>
   );
 });
-
-

@@ -65,7 +65,7 @@ The portfolio section auto-discovers before/after image pairs from `public/portf
   - `before|after`: literal `before` or `after`
   - `ext`: `jpg`, `jpeg`, `png`, or `webp`
 
-Example:
+Example
 
 ```
 public/portfolio/kitchen/kitchen-southwark-001-before.jpg

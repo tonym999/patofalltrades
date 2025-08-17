@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
+import StickyContactBar from "../components/StickyContactBar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] })
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <ScrollProgress />
         {children}
+        <StickyContactBar />
         <Analytics />
       </body>
     </html>

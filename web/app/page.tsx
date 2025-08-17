@@ -25,7 +25,9 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
-      <WhatsAppWidget />
+      <div className="hidden md:block">
+        <WhatsAppWidget />
+      </div>
       <MobileNav />
       <Scripts />
     </>

@@ -1,8 +1,17 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
 import { GlassmorphismCard } from "./GlassmorphismCard";
+import type { LucideIcon } from "lucide-react";
+
+type Service = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  features: readonly string[];
+  gradient: string;
+};
 
 const services = [
   {
@@ -37,12 +46,22 @@ const services = [
     features: ["Leak detection", "Fast call-outs", "Neat installation"],
     gradient: "from-indigo-400 to-sky-500",
   },
-];
+ ] as const satisfies readonly Service[];
 
 const toSlug = (s: string): string =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 export default function Services() {
+  const shouldReduceMotion = useReducedMotion();
+
+  const headingMotionProps = shouldReduceMotion
+    ? { initial: false as const }
+    : {
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        transition: { duration: 0.8 },
+        viewport: { once: true as const },
+      };
   return (
     <section id="services" className="py-24 md:py-40 relative">
       <div className="absolute inset-0 opacity-5">
@@ -51,10 +70,7 @@ export default function Services() {
 
       <div className="container mx-auto px-6 relative">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          {...headingMotionProps}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white">Our Services</h2>
@@ -68,13 +84,13 @@ export default function Services() {
             <GlassmorphismCard
               key={service.title}
               delay={index * 0.1}
-              contentClassName="p-8 h-full"
+              contentClassName="p-6 sm:p-8 h-full"
               data-testid="service-card"
               data-service={toSlug(service.title)}
             >
               <div
                 data-testid="service-icon"
-                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg group-focus-within:animate-[spin_1.2s_linear_infinite] group-hover:animate-[spin_1.2s_linear_infinite]`}
+                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg motion-safe:group-focus-within:animate-[spin_1800ms_linear] motion-safe:group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none`}
               >
                 <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
               </div>
@@ -97,9 +113,9 @@ export default function Services() {
                 {service.features.map((feature, featureIndex) => (
                   <motion.li
                     key={feature}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + featureIndex * 0.1 }}
+                    initial={shouldReduceMotion ? undefined : { opacity: 0, x: -20 }}
+                    whileInView={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
+                    transition={shouldReduceMotion ? undefined : { delay: 0.2 + featureIndex * 0.1 }}
                     viewport={{ once: true }}
                     className="flex items-center text-sm text-gray-400"
                   >
@@ -121,6 +137,5 @@ export default function Services() {
     </section>
   );
 }
-
 
 
