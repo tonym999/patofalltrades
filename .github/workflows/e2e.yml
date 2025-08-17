@@ -15,7 +15,6 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      actions: read
     concurrency:
       group: e2e-smoke-${{ github.ref }}
       cancel-in-progress: true
@@ -29,13 +28,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Setup npm cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: npm
+          cache-dependency-path: web/package-lock.json
       - name: Install deps
         run: npm ci --no-audit --no-fund
       - name: Cache Playwright browsers
@@ -45,8 +39,8 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers and OS deps (webkit for libwoff2dec)
+        run: npx playwright install --with-deps chromium webkit
       - name: Run E2E Smoke (Chromium)
         run: npm run test:e2e:smoke -- --reporter=github
       - name: Upload smoke report on failure
@@ -57,11 +51,11 @@ jobs:
           path: web/playwright-report
 
   e2e:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       contents: read
-      actions: read
     concurrency:
       group: e2e-${{ github.ref }}
       cancel-in-progress: true
@@ -76,14 +70,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Setup npm cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: npm
+          cache-dependency-path: web/package-lock.json
 
       - name: Install deps
         run: npm ci --no-audit --no-fund
@@ -96,11 +84,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers and OS deps (webkit for libwoff2dec)
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Run E2E (Chromium)
-        if: github.event_name == 'push'
         run: npm run test:e2e -- --reporter=github
 
       - name: Upload report on failure
