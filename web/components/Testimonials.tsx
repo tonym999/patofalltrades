@@ -14,7 +14,7 @@ export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPointerOver, setIsPointerOver] = useState(false);
   const [isFocusWithin, setIsFocusWithin] = useState(false);
-  const [isInView, setIsInView] = useState(true);
+  const [isInView, setIsInView] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const [isUserPaused, setIsUserPaused] = useState(false);
 
@@ -47,7 +47,7 @@ export default function Testimonials() {
       autoplayIntervalRef.current = null;
     }
 
-    const shouldPlay = !isUserPaused && !isPointerOver && !isFocusWithin && isInView && isDocumentVisible;
+    const shouldPlay = !reduceMotion && !isUserPaused && !isPointerOver && !isFocusWithin && isInView && isDocumentVisible;
     if (!shouldPlay) return;
 
     const intervalMs = 5000;
@@ -61,7 +61,7 @@ export default function Testimonials() {
         autoplayIntervalRef.current = null;
       }
     };
-  }, [isUserPaused, isPointerOver, isFocusWithin, isInView, isDocumentVisible, total]);
+  }, [reduceMotion, isUserPaused, isPointerOver, isFocusWithin, isInView, isDocumentVisible, total]);
 
   useEffect(() => {
     return () => {
@@ -154,6 +154,8 @@ export default function Testimonials() {
               }`}
               aria-label={`Show testimonial ${index + 1}: ${t.name} from ${t.area}`}
               aria-current={index === currentIndex}
+              aria-selected={index === currentIndex}
+              tabIndex={index === currentIndex ? 0 : -1}
               data-testid={`testimonial-dot-${index}`}
               role="tab"
             />

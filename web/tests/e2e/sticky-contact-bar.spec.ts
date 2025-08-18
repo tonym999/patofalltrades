@@ -19,14 +19,18 @@ test.describe('Mobile sticky contact bar', () => {
     await expect(moreButton).toBeHidden()
 
     await page.evaluate(() => window.scrollTo({ top: 1000, behavior: 'auto' }))
-    await page.getByTestId('sticky-contact-bar').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => window.scrollY >= 1000)
+    const bar = page.getByTestId('sticky-contact-bar').first()
+    await bar.waitFor({ state: 'visible' })
     await expect(moreButton).toBeVisible()
   })
 
   test('expands to show contact options and can be closed', async ({ page }) => {
     // Reveal the bar
     await page.evaluate(() => window.scrollTo({ top: 1000, behavior: 'auto' }))
-    await page.getByTestId('sticky-contact-bar').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => window.scrollY >= 1000)
+    const bar = page.getByTestId('sticky-contact-bar').first()
+    await bar.waitFor({ state: 'visible' })
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
 
@@ -54,7 +58,9 @@ test.describe('Mobile sticky contact bar', () => {
   test('disappears when scrolling back to top', async ({ page }) => {
     // Scroll down to show bar
     await page.evaluate(() => window.scrollTo({ top: 1000, behavior: 'auto' }))
-    await page.getByTestId('sticky-contact-bar').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => window.scrollY >= 1000)
+    const bar = page.getByTestId('sticky-contact-bar').first()
+    await bar.waitFor({ state: 'visible' })
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
     // Scroll back to top and expect the bar to be hidden
@@ -73,7 +79,9 @@ test.describe('Mobile sticky contact bar', () => {
       window.scrollTo({ top: 0, behavior: 'auto' })
     })
     await page.evaluate(() => window.scrollTo({ top: 1000, behavior: 'auto' }))
-    await page.getByTestId('sticky-contact-bar').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => window.scrollY >= 1000)
+    const bar = page.getByTestId('sticky-contact-bar').first()
+    await bar.waitFor({ state: 'visible' })
     // Verify animations preference does not block functionality
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
@@ -81,7 +89,9 @@ test.describe('Mobile sticky contact bar', () => {
 
   test('supports keyboard navigation', async ({ page }) => {
     await page.evaluate(() => window.scrollTo({ top: 1000, behavior: 'auto' }))
-    await page.getByTestId('sticky-contact-bar').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => window.scrollY >= 1000)
+    const bar = page.getByTestId('sticky-contact-bar').first()
+    await bar.waitFor({ state: 'visible' })
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
     // Focus via keyboard and activate with Enter

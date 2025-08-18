@@ -15,7 +15,11 @@ export default function StickyContactBar() {
     const handleScroll = () => {
       if (rafId !== null) return
       rafId = requestAnimationFrame(() => {
-        setIsVisible(window.scrollY > 800)
+        const y =
+          typeof window.scrollY === "number"
+            ? window.scrollY
+            : (window.pageYOffset ?? document.documentElement.scrollTop ?? document.body.scrollTop ?? 0)
+        setIsVisible(y > 800)
         rafId = null
       })
     }
@@ -23,9 +27,12 @@ export default function StickyContactBar() {
     window.addEventListener("scroll", handleScroll, { passive: true })
     // Run once on mount in case the user lands mid-page
     handleScroll()
+    // And again on the next tick to catch any programmatic scroll during load
+    const t = setTimeout(handleScroll, 0)
     return () => {
       window.removeEventListener("scroll", handleScroll)
       if (rafId !== null) cancelAnimationFrame(rafId)
+      clearTimeout(t)
     }
   }, [])
 

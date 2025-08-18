@@ -22,6 +22,7 @@ export function StarRating({ rating, max = 5, className = "", ariaLabel }: StarR
     <div
       className={`inline-flex items-center gap-1 text-amber-400 ${className}`}
       aria-label={label}
+      title={label}
       role="img"
       data-testid="star-rating"
     >

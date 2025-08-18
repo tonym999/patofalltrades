@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Testimonials', () => {
   test('renders and supports navigation and autoplay pause', async ({ page }) => {
     await page.goto('/')
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
 
     // Scroll into view
     const section = page.locator('#testimonials')
@@ -14,7 +15,7 @@ test.describe('Testimonials', () => {
     const initial = await quote.textContent()
     expect(initial && initial.length > 10).toBeTruthy()
 
-    // Click on dot 2 (index 1) and ensure it activates and changes text
+    // Click the second dot (index 1) and ensure it activates and changes text
     const dot1 = page.getByTestId('testimonial-dot-1')
     await dot1.click()
     await expect(dot1).toHaveAttribute('aria-current', 'true')

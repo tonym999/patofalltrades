@@ -56,6 +56,7 @@ export function TestimonialCard({
           }`}
           data-testid="testimonial-quote"
           aria-live="polite"
+          aria-atomic="true"
         >
           <span className="inline-flex items-start gap-2">
             <Quote className="w-4 h-4 translate-y-[1px] opacity-70" aria-hidden="true" />
@@ -82,7 +83,7 @@ export function TestimonialCard({
 
   if (href) {
     return (
-      <Link href={href} role="link" className={baseClass}>
+      <Link href={href} className={baseClass}>
         {content}
       </Link>
     );

@@ -8,7 +8,7 @@ export interface Testimonial {
   verified?: boolean;
 }
 
-export const testimonials: Testimonial[] = [
+export const testimonials = [
   {
     name: "Sarah Johnson",
     area: "Kensington",
@@ -43,6 +43,6 @@ export const testimonials: Testimonial[] = [
       "Exceptional craftsmanship! Pat painted our entire house and the finish is flawless. Clean, professional, and great value for money.",
     service: "Full House Painting",
   },
-];
+ ] as const satisfies ReadonlyArray<Testimonial>;
 
 
