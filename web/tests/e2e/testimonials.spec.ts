@@ -38,8 +38,11 @@ test.describe('Testimonials', () => {
     const activeDot = page.locator('[role="tab"][aria-current="true"]').first()
     await expect(activeDot).toBeVisible()
 
-    const stars = page.locator('[role="img"][aria-label*="out of 5"]')
-    await expect(stars.first()).toBeVisible()
+    const stars = page.locator('[role="img"][data-testid="star-rating"]').first()
+    await expect(stars).toBeVisible()
+    // Accessible label should match rounded rating and max handling
+    const aria = await stars.getAttribute('aria-label')
+    expect(aria).toMatch(/Rated \d+ out of 5/)
   })
 })
 

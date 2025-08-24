@@ -45,7 +45,6 @@ export function TestimonialCard({
         <StarRating
           rating={rating}
           max={ratingMax}
-          ariaLabel={`Rated ${Math.round(rating)} out of ${ratingMax}`}
           className="self-start mt-0.5"
         />
 
