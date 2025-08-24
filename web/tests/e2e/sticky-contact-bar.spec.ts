@@ -4,7 +4,7 @@ import { CONTACT_INFO } from '../../config/contact'
 
 test.describe('Mobile sticky contact bar', () => {
   const scrollToAndSettle = async (page: any, y: number) => {
-    await page.evaluate(async (targetY) => {
+    await page.evaluate(async (targetY: number) => {
       window.scrollTo({ top: targetY, behavior: 'auto' })
       await new Promise<void>((resolve) => {
         let last = -1
