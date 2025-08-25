@@ -20,8 +20,9 @@ export default function StickyContactBar() {
       if (rafId !== null) return
       rafId = requestAnimationFrame(() => {
         const y =
-          window.scrollY ??
+          document.scrollingElement?.scrollTop ??
           window.pageYOffset ??
+          window.scrollY ??
           document.documentElement?.scrollTop ??
           document.body?.scrollTop ??
           0
@@ -42,17 +43,17 @@ export default function StickyContactBar() {
     }
   }, [])
 
-  // Lock background scroll while expanded (mobile Safari friendly)
+  // Lock background scroll on Y while expanded (mobile Safari friendly)
   useEffect(() => {
     if (!isExpanded) return;
     const { body, documentElement } = document;
-    const prevBodyOverflow = body.style.overflow;
-    const prevHtmlOverflow = documentElement.style.overflow;
-    body.style.overflow = "hidden";
-    documentElement.style.overflow = "hidden";
+    const prevBodyOverflowY = body.style.overflowY;
+    const prevHtmlOverflowY = documentElement.style.overflowY;
+    body.style.overflowY = "hidden";
+    documentElement.style.overflowY = "hidden";
     return () => {
-      body.style.overflow = prevBodyOverflow;
-      documentElement.style.overflow = prevHtmlOverflow;
+      body.style.overflowY = prevBodyOverflowY;
+      documentElement.style.overflowY = prevHtmlOverflowY;
     };
   }, [isExpanded])
 
@@ -82,7 +83,7 @@ export default function StickyContactBar() {
       if (!panel) return;
       const focusable = Array.from(
         panel.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [contenteditable="true"], [tabindex]:not([tabindex="-1"])'
         )
       );
       if (focusable.length === 0) return;
@@ -95,7 +96,7 @@ export default function StickyContactBar() {
           last.focus();
         }
       } else {
-        if (active === last) {
+        if (active === last || !panel.contains(active)) {
           e.preventDefault();
           first.focus();
         }
@@ -239,6 +240,7 @@ export default function StickyContactBar() {
                     aria-expanded={isExpanded}
                     aria-haspopup="dialog"
                     type="button"
+                    aria-label="More contact options"
                   >
                     More
                   </motion.button>
