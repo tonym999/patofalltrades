@@ -23,8 +23,10 @@ test.describe('Mobile sticky contact bar', () => {
       () => {
         if (document.querySelector('[data-testid="sticky-contact-bar"]')) return true
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight
-        const next = Math.min((window.scrollY ?? 0) + Math.round(window.innerHeight * 0.25), maxScroll)
+        const current = (document.scrollingElement?.scrollTop ?? window.pageYOffset ?? window.scrollY ?? 0)
+        const next = Math.min(current + Math.round(window.innerHeight * 0.25), maxScroll)
         window.scrollTo(0, next)
+        window.dispatchEvent(new Event('scroll'))
         return false
       },
       { polling: 'raf', timeout: 10_000 }
@@ -58,13 +60,13 @@ test.describe('Mobile sticky contact bar', () => {
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeHidden()
 
-    const bar = await revealBar(page)
+    await revealBar(page)
     await expect(moreButton).toBeVisible()
   })
 
   test('expands to show contact options and can be closed', async ({ page }) => {
     // Reveal the bar
-    const bar = await revealBar(page)
+    await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
 
@@ -93,7 +95,7 @@ test.describe('Mobile sticky contact bar', () => {
 
   test('disappears when scrolling back to top', async ({ page }) => {
     // Scroll down to show bar
-    const bar = await revealBar(page)
+    await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
     // Scroll back to top and expect the bar to be hidden
@@ -111,14 +113,14 @@ test.describe('Mobile sticky contact bar', () => {
       document.documentElement.scrollTop = 0
       window.scrollTo({ top: 0, behavior: 'auto' })
     })
-    const bar = await revealBar(page)
+    await revealBar(page)
     // Verify animations preference does not block functionality
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
   })
 
   test('supports keyboard navigation', async ({ page }) => {
-    const bar = await revealBar(page)
+    await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
     // Focus via keyboard and activate with Enter
@@ -128,10 +130,17 @@ test.describe('Mobile sticky contact bar', () => {
     const closeBtn = page.getByRole('button', { name: 'Close contact options' })
     await expect(closeBtn).toBeVisible()
     await expect(closeBtn).toBeFocused()
+    // Wrap-around focus trap checks: Shift+Tab from first wraps to last, Tab from last wraps to first
+    const panel = page.locator('#contact-options-panel')
+    const emailLink = panel.getByRole('link', { name: 'Email' })
+    await page.keyboard.press('Shift+Tab')
+    await expect(emailLink).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(closeBtn).toBeFocused()
   })
 
   test('backdrop click closes and returns focus', async ({ page }) => {
-    const bar = await revealBar(page)
+    await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await moreButton.click()
     await expect(page.getByRole('dialog')).toBeVisible()
@@ -143,7 +152,7 @@ test.describe('Mobile sticky contact bar', () => {
   })
 
   test('Escape closes the dialog and returns focus', async ({ page }) => {
-    const bar = await revealBar(page)
+    await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await moreButton.click()
     const dialog = page.getByRole('dialog')
