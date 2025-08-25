@@ -143,7 +143,8 @@ export default function StickyContactBar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
+              className="fixed inset-0 bg-black/50 z-[60] md:hidden"
+              data-testid="contact-overlay"
               onClick={() => { setIsExpanded(false); moreButtonRef.current?.focus(); }}
             />
           )}
@@ -152,7 +153,7 @@ export default function StickyContactBar() {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+            className="fixed bottom-0 left-0 right-0 z-[70] md:hidden"
             data-testid="sticky-contact-bar"
           >
             <AnimatePresence>

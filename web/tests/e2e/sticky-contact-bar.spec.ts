@@ -1,47 +1,37 @@
 import { test, expect, devices } from '@playwright/test'
+import type { Page, Locator } from '@playwright/test'
 test.use({ ...devices['iPhone 12'] })
 import { CONTACT_INFO } from '../../config/contact'
 
 test.describe('Mobile sticky contact bar', () => {
-  const scrollToAndSettle = async (page: any, y: number) => {
-    await page.evaluate(async (targetY: number) => {
-      window.scrollTo({ top: targetY, behavior: 'auto' })
-      await new Promise<void>((resolve) => {
-        let last = -1
-        let stableFrames = 0
-        let frames = 0
-        const MAX_FRAMES = 120
-        const tick = () => {
-          const cur = typeof window.scrollY === 'number' ? window.scrollY : (window.pageYOffset ?? 0)
-          stableFrames = cur === last ? stableFrames + 1 : 0
-          last = cur
-          if (stableFrames >= 2 || frames++ > MAX_FRAMES) {
-            return requestAnimationFrame(() => resolve())
-          }
-          requestAnimationFrame(tick)
-        }
-        requestAnimationFrame(tick)
-      })
-      window.dispatchEvent(new Event('scroll'))
-    }, y)
+  const scrollToAndSettle = async (page: Page, y: number) => {
+    await page.evaluate((targetY) => window.scrollTo({ top: targetY, behavior: 'auto' }), y)
+    await page.waitForFunction(
+      (target) => {
+        const y = (window.scrollY ?? window.pageYOffset ?? document.documentElement?.scrollTop ?? document.body?.scrollTop ?? 0)
+        return Math.abs(y - target) < 1
+      },
+      y,
+      { polling: 'raf' }
+    )
+    await page.evaluate(() => window.dispatchEvent(new Event('scroll')))
   }
 
-  const revealByIncrementalScroll = async (page: any) => {
-    await page.evaluate(async () => {
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
-      let attempts = 0
-      return await new Promise<void>((resolve) => {
-        const step = () => {
-          if (document.querySelector('[data-testid="sticky-contact-bar"]')) return resolve()
-          if (attempts++ > 60) return resolve()
-          const next = Math.min(window.scrollY + Math.round(window.innerHeight * 0.25), maxScroll)
-          window.scrollTo({ top: next, behavior: 'auto' })
-          window.dispatchEvent(new Event('scroll'))
-          requestAnimationFrame(() => setTimeout(step, 30))
-        }
-        step()
-      })
-    })
+  const revealBar = async (page: Page): Promise<Locator> => {
+    // Incrementally scroll on each RAF until the bar appears or timeout hits
+    await page.waitForFunction(
+      () => {
+        if (document.querySelector('[data-testid="sticky-contact-bar"]')) return true
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+        const next = Math.min((window.scrollY ?? 0) + Math.round(window.innerHeight * 0.25), maxScroll)
+        window.scrollTo(0, next)
+        return false
+      },
+      { polling: 'raf', timeout: 10_000 }
+    )
+    const bar = page.getByTestId('sticky-contact-bar').first()
+    await bar.waitFor({ state: 'visible' })
+    return bar
   }
 
   test.beforeEach(async ({ page }) => {
@@ -68,24 +58,22 @@ test.describe('Mobile sticky contact bar', () => {
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeHidden()
 
-    await revealByIncrementalScroll(page)
-    const bar = page.getByTestId('sticky-contact-bar').first()
-    await bar.waitFor({ state: 'visible' })
+    const bar = await revealBar(page)
     await expect(moreButton).toBeVisible()
   })
 
   test('expands to show contact options and can be closed', async ({ page }) => {
     // Reveal the bar
-    await revealByIncrementalScroll(page)
-    const bar = page.getByTestId('sticky-contact-bar').first()
-    await bar.waitFor({ state: 'visible' })
+    const bar = await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
 
     // Expand
+    await expect(moreButton).toHaveAttribute('aria-expanded', 'false')
     await moreButton.click()
     const heading = page.getByRole('heading', { name: 'Get In Touch', level: 3 })
     await expect(heading).toBeVisible()
+    await expect(moreButton).toHaveAttribute('aria-expanded', 'true')
 
     // Verify key contact options
     const panel = page.locator('#contact-options-panel')
@@ -105,9 +93,7 @@ test.describe('Mobile sticky contact bar', () => {
 
   test('disappears when scrolling back to top', async ({ page }) => {
     // Scroll down to show bar
-    await revealByIncrementalScroll(page)
-    const bar = page.getByTestId('sticky-contact-bar').first()
-    await bar.waitFor({ state: 'visible' })
+    const bar = await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
     // Scroll back to top and expect the bar to be hidden
@@ -125,18 +111,14 @@ test.describe('Mobile sticky contact bar', () => {
       document.documentElement.scrollTop = 0
       window.scrollTo({ top: 0, behavior: 'auto' })
     })
-    await revealByIncrementalScroll(page)
-    const bar = page.getByTestId('sticky-contact-bar').first()
-    await bar.waitFor({ state: 'visible' })
+    const bar = await revealBar(page)
     // Verify animations preference does not block functionality
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
   })
 
   test('supports keyboard navigation', async ({ page }) => {
-    await revealByIncrementalScroll(page)
-    const bar = page.getByTestId('sticky-contact-bar').first()
-    await bar.waitFor({ state: 'visible' })
+    const bar = await revealBar(page)
     const moreButton = page.getByRole('button', { name: 'More' })
     await expect(moreButton).toBeVisible()
     // Focus via keyboard and activate with Enter
@@ -146,6 +128,30 @@ test.describe('Mobile sticky contact bar', () => {
     const closeBtn = page.getByRole('button', { name: 'Close contact options' })
     await expect(closeBtn).toBeVisible()
     await expect(closeBtn).toBeFocused()
+  })
+
+  test('backdrop click closes and returns focus', async ({ page }) => {
+    const bar = await revealBar(page)
+    const moreButton = page.getByRole('button', { name: 'More' })
+    await moreButton.click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    // Click explicit overlay near top-left to avoid the bottom sheet area intercepting
+    await page.getByTestId('contact-overlay').click({ position: { x: 10, y: 10 } })
+    await expect(page.getByRole('dialog')).toBeHidden()
+    await expect(moreButton).toBeFocused()
+    await expect(moreButton).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('Escape closes the dialog and returns focus', async ({ page }) => {
+    const bar = await revealBar(page)
+    const moreButton = page.getByRole('button', { name: 'More' })
+    await moreButton.click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+    await expect(moreButton).toBeFocused()
+    await expect(moreButton).toHaveAttribute('aria-expanded', 'false')
   })
 })
 
