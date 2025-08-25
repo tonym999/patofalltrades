@@ -9,6 +9,7 @@ export default function StickyContactBar() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const moreButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     let rafId: number | null = null
@@ -16,9 +17,11 @@ export default function StickyContactBar() {
       if (rafId !== null) return
       rafId = requestAnimationFrame(() => {
         const y =
-          typeof window.scrollY === "number"
-            ? window.scrollY
-            : (window.pageYOffset ?? document.documentElement.scrollTop ?? document.body.scrollTop ?? 0)
+          window.scrollY ??
+          window.pageYOffset ??
+          document.documentElement?.scrollTop ??
+          document.body?.scrollTop ??
+          0
         setIsVisible(y > 800)
         rafId = null
       })
@@ -28,11 +31,11 @@ export default function StickyContactBar() {
     // Run once on mount in case the user lands mid-page
     handleScroll()
     // And again on the next tick to catch any programmatic scroll during load
-    const t = setTimeout(handleScroll, 0)
+    const timeoutId: number = window.setTimeout(handleScroll, 0)
     return () => {
       window.removeEventListener("scroll", handleScroll)
       if (rafId !== null) cancelAnimationFrame(rafId)
-      clearTimeout(t)
+      window.clearTimeout(timeoutId)
     }
   }, [])
 
@@ -77,7 +80,7 @@ export default function StickyContactBar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/50 z-40 md:hidden"
-              onClick={() => setIsExpanded(false)}
+              onClick={() => { setIsExpanded(false); moreButtonRef.current?.focus(); }}
             />
           )}
 
@@ -95,13 +98,16 @@ export default function StickyContactBar() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: 100, opacity: 0 }}
                   id="contact-options-panel"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="contact-options-title"
                   className="bg-slate-900/95 backdrop-blur-md border-t border-amber-400/20 p-4"
                 >
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-white font-semibold">Get In Touch</h3>
+                    <h3 id="contact-options-title" className="text-white font-semibold">Get In Touch</h3>
                     <button
                       ref={closeButtonRef}
-                      onClick={() => setIsExpanded(false)}
+                      onClick={() => { setIsExpanded(false); moreButtonRef.current?.focus(); }}
                       className="text-gray-400 hover:text-white"
                       aria-label="Close contact options"
                     >
@@ -157,6 +163,7 @@ export default function StickyContactBar() {
                     Call Now
                   </motion.a>
                   <motion.button
+                    ref={moreButtonRef}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsExpanded((prev) => !prev)}
                     className="border border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-slate-900 px-4 py-2 rounded-lg font-medium text-sm transition-colors"
