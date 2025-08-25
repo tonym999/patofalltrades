@@ -127,7 +127,7 @@ export default function Testimonials() {
             >
               <GlassmorphismCard
                 outerClassName="rounded-2xl"
-                contentClassName="p-0 rounded-2xl h-[280px] md:h-[240px]"
+                contentClassName="p-0 rounded-2xl min-h-[280px] md:min-h-[240px]"
               >
                 <TestimonialCard
                   quote={testimonials[currentIndex].text}
@@ -146,7 +146,7 @@ export default function Testimonials() {
         <div className="flex justify-center gap-3 mb-8" role="tablist" aria-label="Testimonials navigation">
           {testimonials.map((t, index) => (
             <button
-              key={t.name + index}
+              key={index}
               type="button"
               onClick={() => goTo(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 cursor-pointer ${
