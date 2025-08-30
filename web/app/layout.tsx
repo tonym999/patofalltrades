@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import StickyContactBar from "../components/StickyContactBar";
+import dynamic from "next/dynamic";
+const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"), { ssr: false });
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] })
@@ -28,6 +30,7 @@ export default function RootLayout({
         <ScrollProgress />
         {children}
         <StickyContactBar />
+        <MobileCtaBar />
         <Analytics />
       </body>
     </html>
