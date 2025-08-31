@@ -45,13 +45,22 @@ jobs:
         run: npm run test:e2e:smoke
       - name: Upload smoke report on failure
         if: failure()
+        run: |
+          echo "workspace: $GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE" || true
+          echo "--- web dir ---" && ls -la "$GITHUB_WORKSPACE/web" || true
+          echo "--- test-results ---" && ls -la "$GITHUB_WORKSPACE/web/test-results" || true
+          echo "--- playwright-report ---" && ls -la "$GITHUB_WORKSPACE/web/playwright-report" || true
+          echo "--- sample screenshots ---" && find "$GITHUB_WORKSPACE" -name "*.png" -type f | head -20 || true
+      - name: Upload smoke artifacts on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-smoke
           if-no-files-found: ignore
           path: |
-            web/test-results/**
-            web/playwright-report/**
+            ${{ github.workspace }}/web/test-results/**
+            ${{ github.workspace }}/web/playwright-report/**
 
   e2e:
     if: github.event_name == 'push'
@@ -93,6 +102,15 @@ jobs:
       - name: Run E2E (Chromium)
         run: npm run test:e2e
 
+      - name: Upload report on failure (debug)
+        if: failure()
+        run: |
+          echo "workspace: $GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE" || true
+          echo "--- web dir ---" && ls -la "$GITHUB_WORKSPACE/web" || true
+          echo "--- test-results ---" && ls -la "$GITHUB_WORKSPACE/web/test-results" || true
+          echo "--- playwright-report ---" && ls -la "$GITHUB_WORKSPACE/web/playwright-report" || true
+          echo "--- sample screenshots ---" && find "$GITHUB_WORKSPACE" -name "*.png" -type f | head -20 || true
       - name: Upload report on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -100,7 +118,7 @@ jobs:
           name: playwright-report
           if-no-files-found: ignore
           path: |
-            web/test-results/**
-            web/playwright-report/**
+            ${{ github.workspace }}/web/test-results/**
+            ${{ github.workspace }}/web/playwright-report/**
 
 
