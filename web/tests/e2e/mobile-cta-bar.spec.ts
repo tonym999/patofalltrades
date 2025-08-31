@@ -68,6 +68,40 @@ test.describe('Mobile CTA Bar', () => {
 		// Check arbitrary property is applied on the padding container via test id
 		const barContainer = page.getByTestId('mobile-cta-padding')
 		const paddingBottom = await barContainer.evaluate(el => getComputedStyle(el).paddingBottom)
-		expect(paddingBottom).not.toBe('0px')
+		const pb = Number.parseFloat((paddingBottom || '0px').toString())
+		expect(pb).toBeGreaterThanOrEqual(12)
+	})
+
+	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {
+		async function contrastOf(locator: import('@playwright/test').Locator): Promise<number> {
+			const styles = await locator.evaluate((el: Element) => {
+				const cs = getComputedStyle(el)
+				return { color: cs.color, backgroundColor: cs.backgroundColor }
+			})
+			const parseRgb = (s: string): [number, number, number] => {
+				const m = s.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i)
+				return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [0, 0, 0]
+			}
+			const [cr, cg, cb] = parseRgb(styles.color)
+			const [br, bg, bb] = parseRgb(styles.backgroundColor)
+			const toLin = (v: number): number => {
+				const x = v / 255
+				return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)
+			}
+			const lum = (r: number, g: number, b: number): number => 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b)
+			const Ltext = lum(cr, cg, cb)
+			const Lbg = lum(br, bg, bb)
+			const lighter = Math.max(Ltext, Lbg)
+			const darker = Math.min(Ltext, Lbg)
+			return (lighter + 0.05) / (darker + 0.05)
+		}
+
+		const call = page.getByRole('link', { name: 'Call' })
+		const callContrast = await contrastOf(call)
+		expect(callContrast).toBeGreaterThanOrEqual(4.5)
+
+		const getQuote = page.getByRole('link', { name: 'Get Quote' })
+		const quoteContrast = await contrastOf(getQuote)
+		expect(quoteContrast).toBeGreaterThanOrEqual(4.5)
 	})
 })
