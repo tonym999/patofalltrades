@@ -84,8 +84,16 @@ test.describe('Mobile CTA Bar', () => {
 					}
 					return 'rgb(255, 255, 255)'
 				}
-				const color = getComputedStyle(el).color
-				const backgroundColor = effectiveBg(el)
+				function normalizeToRgb(colorStr: string): string {
+					const tmp = document.createElement('div')
+					tmp.style.color = colorStr
+					document.body.appendChild(tmp)
+					const rgb = getComputedStyle(tmp).color
+					tmp.remove()
+					return rgb
+				}
+				const color = normalizeToRgb(getComputedStyle(el).color)
+				const backgroundColor = normalizeToRgb(effectiveBg(el))
 				return { color, backgroundColor }
 			})
 			const parseRgb = (s: string): [number, number, number] => {
