@@ -42,13 +42,16 @@ jobs:
       - name: Install Playwright browsers and OS deps (webkit for libwoff2dec)
         run: npx playwright install --with-deps chromium webkit
       - name: Run E2E Smoke (Chromium)
-        run: npm run test:e2e:smoke -- --reporter=github
+        run: npm run test:e2e:smoke
       - name: Upload smoke report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-smoke
-          path: web/playwright-report
+          if-no-files-found: ignore
+          path: |
+            web/test-results/**
+            web/playwright-report/**
 
   e2e:
     if: github.event_name == 'push'
@@ -88,13 +91,16 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
 
       - name: Run E2E (Chromium)
-        run: npm run test:e2e -- --reporter=github
+        run: npm run test:e2e
 
       - name: Upload report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: web/playwright-report
+          if-no-files-found: ignore
+          path: |
+            web/test-results/**
+            web/playwright-report/**
 
 
