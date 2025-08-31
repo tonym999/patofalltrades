@@ -1,4 +1,5 @@
 import { test, expect, devices, Page } from '@playwright/test'
+import { CONTACT_INFO } from '../../config/contact'
 
 test.use({ ...devices['iPhone 12'] })
 
@@ -14,7 +15,7 @@ test.describe('Mobile CTA Bar', () => {
 		await ensureMobile(page)
 	})
 
-	test('renders on mobile view and shows buttons', async ({ page }) => {
+	test('renders on mobile view and shows buttons @smoke', async ({ page }) => {
 		const bar = page.getByRole('link', { name: 'Get Quote' })
 		await expect(bar).toBeVisible()
 		const call = page.getByRole('link', { name: 'Call' })
@@ -23,7 +24,7 @@ test.describe('Mobile CTA Bar', () => {
 
 	test('tel link opens dialer scheme', async ({ page }) => {
 		const call = page.getByRole('link', { name: 'Call' })
-		await expect(call).toHaveAttribute('href', /tel:\+447?123456789/) // E.164 number present
+		await expect(call).toHaveAttribute('href', `tel:${CONTACT_INFO.phoneE164}`)
 	})
 
 	test('Get Quote scrolls to #contact and focuses first field', async ({ page }) => {
@@ -64,9 +65,8 @@ test.describe('Mobile CTA Bar', () => {
 	})
 
 	test('respects safe-area bottom padding', async ({ page }) => {
-		// Check arbitrary property is applied on the inner padding container (two levels up from link)
-		const getQuote = page.getByRole('link', { name: 'Get Quote' })
-		const barContainer = getQuote.locator('xpath=ancestor::div[2]')
+		// Check arbitrary property is applied on the padding container via test id
+		const barContainer = page.getByTestId('mobile-cta-padding')
 		const paddingBottom = await barContainer.evaluate(el => getComputedStyle(el).paddingBottom)
 		expect(paddingBottom).not.toBe('0px')
 	})

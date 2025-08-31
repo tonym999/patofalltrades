@@ -7,12 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "playwright:install": "playwright install --with-deps",
     "email": "email dev --dir emails --port 3001",
     "start:test": "next build && next start -p 3000",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test --grep \"@smoke\"",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report"
+  },
+  "engines": {
+    "node": ">=18.18.0 <19 || >=20.9.0 <21 || >=22"
   },
   "dependencies": {
     "@react-email/components": "0.5.0",
