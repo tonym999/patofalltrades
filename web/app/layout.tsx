@@ -3,8 +3,7 @@ import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import StickyContactBar from "../components/StickyContactBar";
-import dynamic from "next/dynamic";
-const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"), { ssr: false });
+import MobileCtaBar from "../components/MobileCtaBar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] })
@@ -17,6 +16,12 @@ export const metadata: Metadata = {
     shortcut: '/logo.ico',
     apple: '/logo.png',
   },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover' as const,
 };
 
 export default function RootLayout({
