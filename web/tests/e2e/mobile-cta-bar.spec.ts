@@ -75,8 +75,18 @@ test.describe('Mobile CTA Bar', () => {
 	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {
 		async function contrastOf(locator: import('@playwright/test').Locator): Promise<number> {
 			const styles = await locator.evaluate((el: Element) => {
-				const cs = getComputedStyle(el)
-				return { color: cs.color, backgroundColor: cs.backgroundColor }
+				function effectiveBg(element: Element): string {
+					let node: Element | null = element
+					while (node) {
+						const bg = getComputedStyle(node as Element).backgroundColor
+						if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') return bg
+						node = (node as HTMLElement).parentElement
+					}
+					return 'rgb(255, 255, 255)'
+				}
+				const color = getComputedStyle(el).color
+				const backgroundColor = effectiveBg(el)
+				return { color, backgroundColor }
 			})
 			const parseRgb = (s: string): [number, number, number] => {
 				const m = s.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i)
