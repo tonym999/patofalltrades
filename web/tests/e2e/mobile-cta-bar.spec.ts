@@ -75,26 +75,37 @@ test.describe('Mobile CTA Bar', () => {
 	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {
 		async function contrastOf(locator: import('@playwright/test').Locator): Promise<number> {
 			const styles = await locator.evaluate((el: Element) => {
-				function effectiveBg(element: Element): string {
-					let node: Element | null = element
-					while (node) {
-						const bg = getComputedStyle(node as Element).backgroundColor
-						if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') return bg
-						node = (node as HTMLElement).parentElement
+				const re = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/i
+				const parse = (s: string): [number, number, number, number] => {
+					const m = s.match(re)
+					return m ? [Number(m[1]), Number(m[2]), Number(m[3]), m[4] !== undefined ? Number(m[4]) : 1] : [0,0,0,0]
+				}
+				const clamp01 = (n: number) => Math.max(0, Math.min(1, n))
+				const composite = (over: [number,number,number,number], under: [number,number,number,number]): [number,number,number,number] => {
+					const a = clamp01(over[3]) + clamp01(under[3]) * (1 - clamp01(over[3]))
+					const r = Math.round((over[0] * over[3] + under[0] * under[3] * (1 - over[3])) / (a || 1))
+					const g = Math.round((over[1] * over[3] + under[1] * under[3] * (1 - over[3])) / (a || 1))
+					const b = Math.round((over[2] * over[3] + under[2] * under[3] * (1 - over[3])) / (a || 1))
+					return [r,g,b,a]
+				}
+				// Build effective background under text by compositing ancestor backgrounds
+				let node: Element | null = el as Element
+				let bg: [number,number,number,number] = [255,255,255,1] // start with page white
+				const stack: string[] = []
+				while (node) {
+					const s = getComputedStyle(node)
+					stack.push(s.backgroundColor)
+					node = (node as HTMLElement).parentElement
+				}
+				// Apply from root to element
+				for (let i = stack.length - 1; i >= 0; i--) {
+					const c = parse(stack[i])
+					if (c[3] > 0) {
+						bg = composite(c, bg)
 					}
-					return 'rgb(255, 255, 255)'
 				}
-				function normalizeToRgb(colorStr: string): string {
-					const tmp = document.createElement('div')
-					tmp.style.color = colorStr
-					document.body.appendChild(tmp)
-					const rgb = getComputedStyle(tmp).color
-					tmp.remove()
-					return rgb
-				}
-				const color = normalizeToRgb(getComputedStyle(el).color)
-				const backgroundColor = normalizeToRgb(effectiveBg(el))
-				return { color, backgroundColor }
+				const color = parse(getComputedStyle(el).color)
+				return { color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`, backgroundColor: `rgb(${bg[0]}, ${bg[1]}, ${bg[2]})` }
 			})
 			const parseRgb = (s: string): [number, number, number] => {
 				const m = s.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i)
