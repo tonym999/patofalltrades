@@ -43,7 +43,7 @@ export default function MobileCtaBar() {
         <div className="max-w-screen-md mx-auto flex items-center gap-3">
           <a
             href={`tel:${CONTACT_INFO.phoneE164}`}
-            className="flex-1 inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-blue-600 text-white font-semibold shadow-sm hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+            className="flex-1 inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-blue-700 text-white font-semibold shadow-sm hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
           >
             Call
           </a>
