@@ -150,7 +150,7 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 50;
+    z-index: 60;
     animation: pulse 2s infinite;
 }
 
