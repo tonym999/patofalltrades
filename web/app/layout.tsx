@@ -36,8 +36,10 @@ export default function RootLayout({
         <ScrollProgress />
         {children}
         <StickyContactBar />
-        <MobileTabsNav />
+        {/* Primary actions nav first in DOM for focus order */}
         <MobileCtaBar />
+        {/* Secondary tabs nav after CTA in DOM */}
+        <MobileTabsNav />
         <Analytics />
       </body>
     </html>
