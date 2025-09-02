@@ -68,11 +68,14 @@ export default function MobileTabsNav() {
     const ro = new ResizeObserver(update);
     ro.observe(el);
     window.addEventListener("orientationchange", update);
+    window.addEventListener("resize", update);
     window.addEventListener("load", update);
     return () => {
       ro.disconnect();
       window.removeEventListener("orientationchange", update);
+      window.removeEventListener("resize", update);
       window.removeEventListener("load", update);
+      document.documentElement.style.setProperty("--tabs-height", "0px");
     };
   }, []);
 

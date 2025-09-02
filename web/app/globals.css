@@ -29,7 +29,7 @@ body {
 /* Ensure content is not obscured by fixed bottom bars on small screens */
 @media (max-width: 767px) {
   main {
-    padding-bottom: calc(var(--cta-height) + var(--tabs-height) + 12px);
+    padding-bottom: max(calc(var(--cta-height) + var(--tabs-height) + 12px), env(safe-area-inset-bottom));
   }
 }
 

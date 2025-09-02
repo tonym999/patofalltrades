@@ -46,16 +46,20 @@ export default function MobileCtaBar() {
     const ro = new ResizeObserver(update);
     ro.observe(el);
     window.addEventListener("orientationchange", update);
+    window.addEventListener("resize", update);
     window.addEventListener("load", update);
     return () => {
       ro.disconnect();
       window.removeEventListener("orientationchange", update);
+      window.removeEventListener("resize", update);
       window.removeEventListener("load", update);
+      document.documentElement.style.setProperty("--cta-height", "0px");
     };
   }, []);
 
   return (
-    <div
+    <nav
+      aria-label="Primary actions"
       className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-700/60"
       ref={containerRef}
     >
@@ -79,7 +83,7 @@ export default function MobileCtaBar() {
           </Link>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 
