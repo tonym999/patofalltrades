@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import StickyContactBar from "../components/StickyContactBar";
+import MobileCtaBar from "../components/MobileCtaBar";
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] })
@@ -17,6 +18,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover' as const,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,6 +35,7 @@ export default function RootLayout({
         <ScrollProgress />
         {children}
         <StickyContactBar />
+        <MobileCtaBar />
         <Analytics />
       </body>
     </html>
