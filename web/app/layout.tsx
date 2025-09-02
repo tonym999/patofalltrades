@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import StickyContactBar from "../components/StickyContactBar";
 import MobileCtaBar from "../components/MobileCtaBar";
+import MobileTabsNav from "../components/MobileTabsNav";
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] })
@@ -35,6 +36,7 @@ export default function RootLayout({
         <ScrollProgress />
         {children}
         <StickyContactBar />
+        <MobileTabsNav />
         <MobileCtaBar />
         <Analytics />
       </body>

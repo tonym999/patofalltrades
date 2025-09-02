@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { CONTACT_INFO } from "@/config/contact";
 
 export default function MobileCtaBar() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   const handleGetQuote = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     // Respect modifier/middle clicks and let browser handle them
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
@@ -32,9 +34,30 @@ export default function MobileCtaBar() {
     // Otherwise allow navigation to the route (keep href="#contact" on same page; consider "/#contact" if needed)
   }, []);
 
+  // Expose CTA height to CSS var so other UI can offset
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const h = el.offsetHeight || 0;
+      document.documentElement.style.setProperty("--cta-height", `${h}px`);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("orientationchange", update);
+    window.addEventListener("load", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("orientationchange", update);
+      window.removeEventListener("load", update);
+    };
+  }, []);
+
   return (
     <div
       className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-700/60"
+      ref={containerRef}
     >
       <div
         className="px-4 pt-2 pb-2 pb-[max(env(safe-area-inset-bottom),12px)]"
