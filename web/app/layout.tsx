@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
-import StickyContactBar from "../components/StickyContactBar";
 import dynamic from "next/dynamic";
 const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"));
 const MobileTabsNav = dynamic(() => import("../components/MobileTabsNav"));
@@ -36,7 +35,6 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <ScrollProgress />
         {children}
-        <StickyContactBar />
         {/* Primary actions nav first in DOM for focus order */}
         <MobileCtaBar />
         {/* Secondary tabs nav after CTA in DOM */}
