@@ -7,7 +7,6 @@ import Testimonials from '@/components/Testimonials';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import WhatsAppWidget from '@/components/WhatsAppWidget';
-import MobileNav from '@/components/MobileNav';
 import Scripts from '@/components/Scripts';
 import ServiceAreas from '@/components/ServiceAreas';
 
@@ -28,7 +27,7 @@ export default function Home() {
       <div className="hidden md:block">
         <WhatsAppWidget />
       </div>
-      <MobileNav />
+      {/* Legacy MobileNav removed in favor of MobileTabsNav */}
       <Scripts />
     </>
   );

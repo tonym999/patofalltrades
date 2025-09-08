@@ -14,6 +14,9 @@
   --gold: var(--accent);
   --dark-navy: var(--bg-900);
   --light-navy: #1a1f2e;
+  /* dynamic heights for fixed mobile UI */
+  --cta-height: 0px;
+  --tabs-height: 0px;
 }
 
 body {
@@ -21,6 +24,13 @@ body {
   background-image: linear-gradient(180deg, var(--bg-900), var(--bg-950));
   color: #f0f0f0;
   overflow-x: hidden;
+}
+
+/* Ensure content is not obscured by fixed bottom bars on small screens */
+@media (max-width: 767px) {
+  main {
+    padding-bottom: max(calc(var(--cta-height) + var(--tabs-height) + 12px), env(safe-area-inset-bottom));
+  }
 }
 
 /* Glassmorphism Card Effect */
@@ -140,7 +150,7 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 50;
+    z-index: 60;
     animation: pulse 2s infinite;
 }
 

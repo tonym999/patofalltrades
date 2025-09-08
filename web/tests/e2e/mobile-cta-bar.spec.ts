@@ -1,13 +1,10 @@
 import { test, expect, devices, Page } from '@playwright/test'
+import { ensureMobile } from './utils/ensureMobile'
 import { CONTACT_INFO } from '../../config/contact'
 
 test.use({ ...devices['iPhone 12'] })
 
 test.describe('Mobile CTA Bar', () => {
-	async function ensureMobile(page: Page) {
-		await page.emulateMedia({ reducedMotion: 'reduce' })
-		await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' })
-	}
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/')
