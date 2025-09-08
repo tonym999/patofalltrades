@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import dynamic from "next/dynamic";
+import ClientOnly from "../components/ClientOnly";
 const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"));
 const MobileTabsNav = dynamic(() => import("../components/MobileTabsNav"));
 import "./globals.css";
@@ -36,9 +37,13 @@ export default function RootLayout({
         <ScrollProgress />
         {children}
         {/* Primary actions nav first in DOM for focus order */}
-        <MobileCtaBar />
+        <ClientOnly>
+          <MobileCtaBar />
+        </ClientOnly>
         {/* Secondary tabs nav after CTA in DOM */}
-        <MobileTabsNav />
+        <ClientOnly>
+          <MobileTabsNav />
+        </ClientOnly>
         <Analytics />
       </body>
     </html>

@@ -56,36 +56,46 @@ export default function MobileTabsNav() {
     closeMenu("item_click");
   }, [closeMenu]);
 
-  // Observe section visibility to set active tab
+  // Observe section visibility to set active tab (retry until sections mount)
   useEffect(() => {
     if (observerRef.current) {
       observerRef.current.disconnect();
       observerRef.current = null;
     }
 
-    const sections = TABS.map(t => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
-    if (sections.length === 0) return;
-
-    const io = new IntersectionObserver(
-      entries => {
-        // choose the section with greatest intersection ratio in viewport bottom area
-        let topCandidate: { id: string; ratio: number; top: number } | null = null;
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          const rect = e.target.getBoundingClientRect();
-          const ratio = e.intersectionRatio + Math.max(0, 1 - Math.abs(rect.top) / window.innerHeight);
-          const id = (e.target as HTMLElement).id;
-          if (!topCandidate || ratio > topCandidate.ratio) {
-            topCandidate = { id, ratio, top: rect.top };
+    let cancelled = false;
+    let io: IntersectionObserver | null = null;
+    const setup = () => {
+      if (cancelled) return;
+      const sections = TABS.map(t => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
+      if (sections.length === 0) {
+        requestAnimationFrame(setup);
+        return;
+      }
+      io = new IntersectionObserver(
+        entries => {
+          let topCandidate: { id: string; ratio: number; top: number } | null = null;
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const rect = e.target.getBoundingClientRect();
+            const ratio = e.intersectionRatio + Math.max(0, 1 - Math.abs(rect.top) / window.innerHeight);
+            const id = (e.target as HTMLElement).id;
+            if (!topCandidate || ratio > topCandidate.ratio) {
+              topCandidate = { id, ratio, top: rect.top };
+            }
           }
-        }
-        if (topCandidate) setActiveId(topCandidate.id);
-      },
-      { rootMargin: "0px 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
-    );
-    sections.forEach(s => io.observe(s));
-    observerRef.current = io;
-    return () => io.disconnect();
+          if (topCandidate) setActiveId(topCandidate.id);
+        },
+        { rootMargin: "0px 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+      );
+      sections.forEach(s => io!.observe(s));
+      observerRef.current = io;
+    };
+    setup();
+    return () => {
+      cancelled = true;
+      io?.disconnect();
+    };
   }, []);
 
   // Expose height to CSS var for layout padding calculations
@@ -112,7 +122,7 @@ export default function MobileTabsNav() {
     };
   }, []);
 
-  const items = useMemo(() => TABS, []);
+  const items = TABS;
 
   // Close on Escape and lock scroll when open
   useEffect(() => {
@@ -172,8 +182,9 @@ export default function MobileTabsNav() {
     handleMenuItemClick("Get in Touch");
     // Close first to restore scrolling, then scroll and focus
     window.setTimeout(() => {
+      const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
       try {
-        contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        contactSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
       } catch {
         contactSection.scrollIntoView();
       }
@@ -194,10 +205,10 @@ export default function MobileTabsNav() {
       <nav
         aria-label="Site navigation"
         className="md:hidden fixed inset-x-0 z-[55] bg-slate-900/95 backdrop-blur border-t border-slate-700/60"
-        style={{ bottom: "var(--cta-height)" }}
+        style={{ bottom: "var(--cta-height, 0px)" }}
         ref={containerRef}
       >
-        <ul className="flex items-stretch justify-around px-2 pt-1 pb-1 pb-[max(env(safe-area-inset-bottom),8px)]">
+        <ul className="flex items-stretch justify-around px-2 pt-1 pb-[max(env(safe-area-inset-bottom),8px)]">
           {items.map(item => {
             const Icon = item.icon;
             const isActive = activeId === item.id;
