@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * MobileTabsNav renders the fixed bottom tabs bar on mobile and an accessible
+ * bottom-sheet Menu for secondary navigation. It exposes its height via a CSS
+ * variable for layout padding, supports focus trapping, scroll lock, and
+ * emits analytics events for open/close/item clicks.
+ */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Hammer, Briefcase, Star, MoreHorizontal, X as XIcon } from "lucide-react";
@@ -263,22 +269,22 @@ export default function MobileTabsNav() {
               </div>
 
               <div className="grid grid-cols-1 divide-y divide-slate-700/60">
-                <Link href="#services" onClick={() => handleMenuItemClick("Services")} className="py-3 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                <Link href="#services" onClick={() => handleMenuItemClick("Services")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
                   Services
                 </Link>
-                <Link href="#portfolio" onClick={() => handleMenuItemClick("Work")} className="py-3 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                <Link href="#portfolio" onClick={() => handleMenuItemClick("Work")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
                   Work
                 </Link>
-                <Link href="#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="py-3 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                <Link href="#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
                   Areas We Serve
                 </Link>
-                <Link href="#about" onClick={() => handleMenuItemClick("About")} className="py-3 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                <Link href="#about" onClick={() => handleMenuItemClick("About")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
                   About
                 </Link>
-                <Link href="#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="py-3 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                <Link href="#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
                   Reviews
                 </Link>
-                <Link href="/#contact" onClick={handleGetInTouchClick} className="py-3 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                <Link href="/#contact" onClick={handleGetInTouchClick} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
                   Get in Touch
                 </Link>
               </div>

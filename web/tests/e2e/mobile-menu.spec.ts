@@ -42,9 +42,10 @@ test.describe('Mobile bottom sheet Menu', () => {
 
   test('shows all expected items', async ({ page }) => {
     await page.getByTestId('menu-open-button').click()
+    const dialog = page.getByRole('dialog', { name: 'Menu' })
     const items = ['Services', 'Work', 'Areas We Serve', 'About', 'Reviews', 'Get in Touch']
     for (const label of items) {
-      await expect(page.getByRole('link', { name: label })).toBeVisible()
+      await expect(dialog.getByRole('link', { name: label })).toBeVisible()
     }
   })
 
