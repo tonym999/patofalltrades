@@ -47,7 +47,7 @@
         "args": ["-l"]
       }
     },
-    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.defaultProfile.linux": "zsh-login",
     "terminal.integrated.automationProfile.linux": {
       "path": "/usr/bin/zsh",
       "args": ["-l"]

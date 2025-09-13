@@ -49,6 +49,11 @@ Commit Standards (Conventional Commits):
 - docs(scope): description
 - test(scope): description
 - refactor(scope): description
+ - perf(scope): description
+ - style(scope): description
+ - build(scope): description
+ - ci(scope): description
+ - revert: <commit-hash-or-subject>
 
 Testing Rules (Playwright):
 - Add at least one smoke test under `tests/smoke/` validating the critical path.

@@ -18,7 +18,7 @@ You are a development automation agent with access to GitHub MCP tools. Your tas
 
 ### 2. Branch Creation
 Create a new feature branch following this naming convention:
-```
+```text
 feature/[ticket-id]-[brief-description]
 ```
 Example: `feature/PROJ-123-add-user-authentication`
@@ -57,7 +57,7 @@ test.describe('Smoke Test - [Feature Name]', () => {
 - Verify integration with existing features
 
 #### c. Test Organization
-```
+```text
 tests/
 ├── smoke/
 │   └── [feature-name].smoke.spec.ts
@@ -160,7 +160,10 @@ If any step fails:
 
 Replace these with actual values:
 - `GITHUB_TOKEN`: [Your GitHub access token]
-- `PROJECT_URL`: https://github.com/users/tonym999/projects/2
+  - Scope minimally (repo:status, pull_request, contents). Avoid `repo:all` unless required.
+  - Never echo or write tokens to logs or artifacts.
+  - Inject via CI secret store; do not commit to files.
+- `PROJECT_URL`: <https://github.com/users/tonym999/projects/2>
 - `DEFAULT_BASE_BRANCH`: main
 - `TEST_TIMEOUT`: 30000
 - `PLAYWRIGHT_CONFIG_PATH`: playwright.config.ts
@@ -175,7 +178,7 @@ Replace these with actual values:
 
 ## Example Usage
 
-```
+```text
 Agent, please:
 1. Get the current in-progress ticket from project board
 2. Create a feature branch for ticket implementation
@@ -210,7 +213,7 @@ const nitpickPatterns = [
 ```
 
 ### Auto-Resolution Workflow
-```
+```gherkin
 When: "CodeRabbit review is complete"
 Then:
   1. GET /repos/{owner}/{repo}/pulls/{pr_number}/comments

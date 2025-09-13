@@ -5,7 +5,7 @@
 - Provide patterns for functional tests
 
 ## Structure
-```
+```text
 tests/
 ├── smoke/
 ├── functional/
