@@ -15,6 +15,8 @@ You are a development automation agent with access to GitHub MCP tools. Your tas
   - Description
   - Acceptance criteria
   - Any linked issues or PRs
+ - Ensure the issue is present on the project board:
+   - If creating a new issue, add it to the project (Projects v2). Prefer GraphQL mutation to add the issue to the project. If automation rules already file items automatically, confirm presence; otherwise, add explicitly.
 
 ### 2. Branch Creation
 Create a new feature branch following this naming convention:
@@ -101,6 +103,7 @@ Push changes to remote:
 - Push the feature branch to origin
 - Ensure all commits are pushed
 - Verify the branch appears on GitHub
+ - When opening the PR, include an issue-closing footer in the PR description (e.g., `Closes #<issue-number>`) so the PR links to the issue and auto-closes it on merge. If the project board does not auto-link PRs, add the PR to the project explicitly.
 
 ## Required MCP Operations
 
@@ -113,6 +116,9 @@ Use the following GitHub MCP operations in sequence:
 5. **Create Test Files**: Add Playwright test files
 6. **Commit Changes**: Stage and commit all changes
 7. **Push Branch**: Push to remote repository
+8. **Add Issue to Project**: If the issue is not on the project board, add it (Projects v2 GraphQL). Verify column/state.
+9. **Create Pull Request**: Open a PR with `Closes #<issue-number>` in the body.
+10. **Add PR to Project**: If not auto-added by automation, add the PR to the same project and set status to "In Review".
 
 ## Output Requirements
 
@@ -145,6 +151,7 @@ Provide the following information upon completion:
 - [ ] Create Pull Request
 - [ ] Request Code Review
 - [ ] Update ticket status to "Review"
+ - [ ] Verify issue and PR are on the project board (and in correct column)
 ```
 
 ## Error Handling
