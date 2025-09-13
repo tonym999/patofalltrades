@@ -40,3 +40,8 @@ Thumbs.db
 **/logs/
 **/*.log
 
+# Local overrides and Cursor config
+.cursor/
+.cursorignore
+.cursorrules.local
+prompts/local/**

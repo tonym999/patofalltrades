@@ -1,0 +1,72 @@
+# GitHub Workflow Automation Rules
+
+Project: https://github.com/users/tonym999/projects/2/views/1?layout=board
+Base branch: main
+Branch pattern: feature/[ticket-id]-[description]
+Commit format: conventional commits
+Test requirements: Minimum 1 smoke test per feature
+
+---
+
+Scope:
+- This file defines the AI-assisted workflow for ticket-to-deployment automation using Cursor AI and GitHub MCP.
+
+Core Workflow:
+1) Ticket selection
+   - Fetch in-progress tickets from the GitHub Project board.
+   - Prefer tickets with clear scope and minimal external dependencies.
+2) Branching
+   - Create a new branch from `main` using: feature/[ticket-id]-[kebab-description]
+3) Implementation
+   - Make focused edits that satisfy the ticket acceptance criteria.
+   - Add or update tests according to the Test Requirements section.
+4) Testing
+   - Ensure at least one smoke test per feature exists under `tests/smoke/`.
+   - Add functional tests under `tests/functional/` when applicable.
+5) Commit & Push
+   - Use conventional commits (e.g., `feat(profile): add user profile page`).
+   - Push branch to origin and prepare for PR.
+
+MCP Guidance:
+- Use the GitHub MCP server to:
+  - Query the Project board for in-progress tickets.
+  - Create issues, branches (via instructions), labels, and comments as needed.
+- Use the Playwright MCP server (when available) to run headless verifications.
+
+Project Board Access:
+- Project: https://github.com/users/tonym999/projects/2
+- View: In-Progress (board layout)
+- Strategy: Filter to items in progress, select one ticket, derive ticket id and description.
+
+Branching Rules:
+- Name format: feature/[ticket-id]-[description]
+- Description must be lowercase kebab-case; keep it concise and meaningful.
+
+Commit Standards (Conventional Commits):
+- feat(scope): description
+- fix(scope): description
+- chore(scope): description
+- docs(scope): description
+- test(scope): description
+- refactor(scope): description
+
+Testing Rules (Playwright):
+- Add at least one smoke test under `tests/smoke/` validating the critical path.
+- Add functional tests under `tests/functional/` for detailed behaviors.
+- Use fixtures under `tests/fixtures/` if setup is shared across tests.
+
+Error Handling:
+- If a step fails (API/network), retry up to 2 times with exponential backoff.
+- If still failing, log context and proceed to next actionable step or request assistance.
+
+Documentation:
+- Update `docs/ai-workflow.md` if new workflow steps or caveats are introduced.
+
+Definition of Done (per ticket):
+- Branch created following the pattern
+- Implementation complete and lint-clean
+- Playwright smoke test present
+- Commit(s) use conventional commits
+- Branch pushed and ready for PR
+
+
