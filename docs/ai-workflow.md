@@ -13,14 +13,16 @@ This document explains the automated development workflow powered by Cursor AI a
 6. After CodeRabbit review completes, address actionable items and nitpicks, push fixes, and resolve comment threads.
 
 ## MCP Steps
-- Get Project Items → Get Issue Details → Create Branch → Create/Modify Files → Create Test Files → Commit Changes → Push Branch
+- Get Project Items → Get Issue Details → Create Branch → Create/Modify Files → Create Test Files → Commit Changes → Push Branch → Open Pull Request
 
 ## Testing
 - At least one smoke test per feature under `tests/smoke/`.
 - Functional tests under `tests/functional/`.
- - Run locally: `npx playwright test`
+- Run locally: `npx playwright test`
+- CI: cache Playwright browsers and run `npx playwright install --with-deps && npx playwright test`
 
 ## CodeRabbit Patterns
+(Conventions to standardize reviews; not machine‑parsed by tooling.)
 - Actionable markers: `🔧 Actionable:`, `⚠️ Issue:`, `🐛 Bug:`, `🚨 Critical:`
 - Nitpick markers: `💭 Nitpick:`, `💡 Suggestion:`, `📝 Style:`, `✨ Enhancement:`
 
@@ -28,6 +30,11 @@ This document explains the automated development workflow powered by Cursor AI a
 - Ensure GitHub authentication is configured.
 - If Playwright is missing, install browsers (Linux/CI): `npx playwright install --with-deps`.
 - Retry transient network steps before escalating.
+
+## Security & Secrets
+- Store GITHUB_TOKEN via GitHub CLI (`gh auth login`) or repo/Org secrets; never commit tokens.
+- Minimum scopes: repo, workflow. For PR automation from forks, use fine‑grained PAT or `GITHUB_TOKEN` with `permissions` set in workflow.
+- Add a `.env.example` documenting required vars (e.g., PROJECT_URL, DEFAULT_BASE_BRANCH).
 
 ## Onboarding
 - Review `prompts/` templates, `.cursorrules`, and branch/commit conventions.
