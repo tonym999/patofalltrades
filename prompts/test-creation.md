@@ -6,7 +6,7 @@
 
 ## Structure
 ```text
-tests/
+web/tests/e2e/
 ├── smoke/
 ├── functional/
 └── fixtures/
@@ -30,6 +30,16 @@ test.describe('Smoke Test - [Feature Name]', () => {
 - Use descriptive `describe` and `test` names.
 - Prefer data-testids for selectors.
 - Isolate network with fixtures/mocks when necessary.
+- Include basic accessibility checks where relevant:
+  ```ts
+  const snapshot = await page.accessibility.snapshot()
+  expect(snapshot).toBeTruthy()
+  ```
+- Optionally capture perf metrics if meaningful (e.g., navigation timing):
+  ```ts
+  const perf = JSON.parse(await page.evaluate(() => JSON.stringify(performance.timing)))
+  expect(perf).toBeDefined()
+  ```
 
 ## Fixtures
-- Place reusable setup in `tests/fixtures/` and import where needed.
+- Place reusable setup in `web/tests/e2e/fixtures/` and import where needed.

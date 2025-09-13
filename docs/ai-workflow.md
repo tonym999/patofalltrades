@@ -16,8 +16,8 @@ This document explains the automated development workflow powered by Cursor AI a
 - Get Project Items → Get Issue Details → Create Branch → Create/Modify Files → Create Test Files → Commit Changes → Push Branch → Open Pull Request
 
 ## Testing
-- At least one smoke test per feature under `tests/smoke/`.
-- Functional tests under `tests/functional/`.
+- At least one smoke test per feature under `web/tests/e2e/smoke/`.
+- Functional tests under `web/tests/e2e/functional/`.
 - Run locally: `npx playwright test`
 - CI: cache Playwright browsers and run `npx playwright install --with-deps && npx playwright test`
 

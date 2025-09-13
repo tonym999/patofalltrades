@@ -13,16 +13,18 @@ Scope:
 
 Core Workflow:
 1) Ticket selection
-   - Fetch in-progress tickets from the GitHub Project board.
-   - Prefer tickets with clear scope and minimal external dependencies.
+   - Auto-fetch the top (or only) In-Progress ticket from the project board.
+   - If none exist, prompt the user for a new ticket idea (e.g., "Add contact form", "Optimize SEO").
 2) Branching
    - Create a new branch from `main` using: feature/[ticket-id]-[kebab-description]
+   - After branching, run dependency install in app folder (e.g., `cd web && npm install`).
 3) Implementation
    - Make focused edits that satisfy the ticket acceptance criteria.
    - Add or update tests according to the Test Requirements section.
 4) Testing
-   - Ensure at least one smoke test per feature exists under `tests/smoke/`.
-   - Add functional tests under `tests/functional/` when applicable.
+   - Ensure at least one smoke test per feature exists under `web/tests/e2e/smoke/`.
+   - Add functional tests under `web/tests/e2e/functional/` when applicable.
+   - Include basic accessibility checks (e.g., `await page.accessibility.snapshot()`) and consider performance metrics where relevant.
 5) Commit & Push
    - Use conventional commits (e.g., `feat(profile): add user profile page`).
    - Push branch to origin and prepare for PR.
@@ -56,9 +58,10 @@ Commit Standards (Conventional Commits):
  - revert: <commit-hash-or-subject>
 
 Testing Rules (Playwright):
-- Add at least one smoke test under `tests/smoke/` validating the critical path.
-- Add functional tests under `tests/functional/` for detailed behaviors.
-- Use fixtures under `tests/fixtures/` if setup is shared across tests.
+- Add at least one smoke test under `web/tests/e2e/smoke/` validating the critical path.
+- Add functional tests under `web/tests/e2e/functional/` for detailed behaviors.
+- Use fixtures under `web/tests/e2e/fixtures/` if setup is shared across tests.
+- Include an accessibility snapshot for at least one critical-path test when feasible.
 
 Error Handling:
 - If a step fails (API/network), retry up to 2 times with exponential backoff.
