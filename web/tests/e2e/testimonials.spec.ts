@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { AxeBuilder } from '@axe-core/playwright'
 
 test.describe('Testimonials', () => {
   test('renders and supports navigation and autoplay pause', async ({ page }) => {
@@ -46,9 +47,9 @@ test.describe('Testimonials', () => {
     // Accessible label should match rounded rating and max handling
     const aria = await stars.getAttribute('aria-label')
     expect(aria).toMatch(/Rated \d+ out of 5/)
-    // Optional: a11y snapshot for coverage
-    const ax = await page.accessibility.snapshot({ root: (await section.elementHandle())! })
-    expect(ax).toBeTruthy()
+    // A11y: Axe scan scoped to testimonials section
+    const results = await new AxeBuilder({ page }).include('#testimonials').analyze()
+    expect(results.violations).toHaveLength(0)
   })
 })
 
