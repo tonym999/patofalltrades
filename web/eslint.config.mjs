@@ -9,8 +9,30 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+const playwrightOverrides = compat
+  .extends("plugin:playwright/recommended")
+  .map((conf) => ({
+    ...conf,
+    files: ["tests/e2e/**", "tests/e2e/functional/**"],
+  }));
+
 const eslintConfig = [
+  {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      ".turbo/**",
+      ".vercel/**",
+      "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...playwrightOverrides,
 ];
 
 export default eslintConfig;

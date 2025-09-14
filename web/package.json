@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:ci": "eslint . --max-warnings=0",
     "playwright:install": "playwright install --with-deps",
     "email": "email dev --dir emails --port 3001",
     "start:test": "next build && next start -p 3000",
@@ -40,6 +42,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^15.5.2",
+    "eslint-plugin-playwright": "^2.2.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
