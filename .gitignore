@@ -17,6 +17,7 @@ Thumbs.db
 **/.turbo/
 **/.vercel/
 **/coverage/
+**/.eslintcache
 
 # Package managers
 **/npm-debug.log*
