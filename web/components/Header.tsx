@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
+import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
   useEffect(() => {
@@ -12,14 +13,14 @@ export default function Header() {
       const open = (e as CustomEvent<{ open: boolean }>).detail?.open ?? false;
       btn.setAttribute("aria-expanded", String(open));
     };
-    window.addEventListener("mobile-menu-state", onState as EventListener);
-    return () => window.removeEventListener("mobile-menu-state", onState as EventListener);
+    window.addEventListener(MOBILE_MENU_STATE, onState as EventListener);
+    return () => window.removeEventListener(MOBILE_MENU_STATE, onState as EventListener);
   }, []);
   const openMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       // Signal MobileTabsNav to open its bottom-sheet menu with opener context
       window.dispatchEvent(
-        new CustomEvent("open-mobile-menu", {
+        new CustomEvent(OPEN_MOBILE_MENU, {
           detail: { trigger: e.currentTarget as HTMLElement, source: "header" },
         })
       );
