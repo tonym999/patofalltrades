@@ -19,10 +19,13 @@ export default function MobileTabsNav() {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const openMenu = useCallback((source: "tabs_nav" | "header" = "tabs_nav") => {
+  const openMenu = useCallback((source: "tabs_nav" | "header" = "header") => {
     setIsMenuOpen(true);
     try {
       track("menu_open", { surface: "mobile_bottom_sheet", source });
+    } catch {}
+    try {
+      window.dispatchEvent(new CustomEvent("mobile-menu-state", { detail: { open: true } }));
     } catch {}
   }, []);
 
@@ -30,6 +33,9 @@ export default function MobileTabsNav() {
     setIsMenuOpen(false);
     try {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
+    } catch {}
+    try {
+      window.dispatchEvent(new CustomEvent("mobile-menu-state", { detail: { open: false } }));
     } catch {}
     if (trigger !== "item_click") {
       // Prefer last opener; fallback to header hamburger if available
@@ -89,7 +95,7 @@ export default function MobileTabsNav() {
       panelRef.current.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
       )
-    ).filter(el => el.offsetParent !== null);
+    ).filter(el => el.getClientRects().length > 0);
     if (focusable.length === 0) return;
     const first = focusable[0] as HTMLElement;
     const last = focusable[focusable.length - 1] as HTMLElement;

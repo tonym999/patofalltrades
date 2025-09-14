@@ -1,8 +1,19 @@
 "use client";
 import Image from "next/image";
+import { useEffect } from "react";
 import { Menu as MenuIcon } from "lucide-react";
 
 export default function Header() {
+  useEffect(() => {
+    const btn = document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLButtonElement | null;
+    if (!btn) return;
+    const onState = (e: Event) => {
+      const open = (e as CustomEvent<{ open: boolean }>).detail?.open ?? false;
+      btn.setAttribute("aria-expanded", String(open));
+    };
+    window.addEventListener("mobile-menu-state", onState as EventListener);
+    return () => window.removeEventListener("mobile-menu-state", onState as EventListener);
+  }, []);
   const openMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       // Signal MobileTabsNav to open its bottom-sheet menu with opener context
@@ -28,6 +39,7 @@ export default function Header() {
               type="button"
               aria-label="Open menu"
               aria-controls="mobile-menu-panel"
+              aria-haspopup="dialog"
               className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-slate-800 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               onClick={openMobileMenu}
               data-testid="header-hamburger"
