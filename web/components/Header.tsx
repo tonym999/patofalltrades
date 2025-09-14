@@ -9,12 +9,12 @@ export default function Header() {
   useEffect(() => {
     const btn = document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLButtonElement | null;
     if (!btn) return;
-    const onState = (e: Event) => {
-      const open = (e as CustomEvent<{ open: boolean }>).detail?.open ?? false;
+    const onState = (e: WindowEventMap[typeof MOBILE_MENU_STATE]) => {
+      const open = e.detail?.open ?? false;
       btn.setAttribute("aria-expanded", String(open));
     };
-    window.addEventListener(MOBILE_MENU_STATE, onState as EventListener);
-    return () => window.removeEventListener(MOBILE_MENU_STATE, onState as EventListener);
+    window.addEventListener(MOBILE_MENU_STATE, onState);
+    return () => window.removeEventListener(MOBILE_MENU_STATE, onState);
   }, []);
   const openMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     try {

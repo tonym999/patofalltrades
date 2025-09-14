@@ -6,4 +6,15 @@ export type OpenMobileMenuDetail = {
   source?: "header" | "tabs_nav";
 };
 
+export type MobileMenuStateDetail = {
+  open: boolean;
+};
+
+declare global {
+  interface WindowEventMap {
+    "open-mobile-menu": CustomEvent<OpenMobileMenuDetail>;
+    "mobile-menu-state": CustomEvent<MobileMenuStateDetail>;
+  }
+}
+
 
