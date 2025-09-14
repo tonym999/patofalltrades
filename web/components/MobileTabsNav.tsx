@@ -30,9 +30,6 @@ export default function MobileTabsNav() {
     try {
       track("menu_open", { surface: "mobile_bottom_sheet", source });
     } catch {}
-    try {
-      window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open: true } }));
-    } catch {}
   }, []);
 
   const closeMenu = useCallback((trigger: "backdrop" | "close_button" | "escape" | "item_click") => {
@@ -41,9 +38,6 @@ export default function MobileTabsNav() {
     setIsMenuOpen(false);
     try {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
-    } catch {}
-    try {
-      window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open: false } }));
     } catch {}
     if (trigger !== "item_click") {
       // Prefer last opener; fallback to header hamburger if available
@@ -64,6 +58,13 @@ export default function MobileTabsNav() {
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
     }
     prevOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
+
+  // Centralize menu state event dispatch for header aria-expanded sync
+  useEffect(() => {
+    try {
+      window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open: isMenuOpen } }));
+    } catch {}
   }, [isMenuOpen]);
 
   const handleMenuItemClick = useCallback((itemName: string) => {
@@ -109,7 +110,7 @@ export default function MobileTabsNav() {
     e.preventDefault();
     handleMenuItemClick("Get in Touch");
     // Close first to restore scrolling, then scroll and focus
-    window.setTimeout(() => {
+    requestAnimationFrame(() => {
       const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
       try {
         contactSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
@@ -128,7 +129,7 @@ export default function MobileTabsNav() {
       if (window.location.hash !== targetHash) {
         history.replaceState(null, "", targetHash);
       }
-    }, 0);
+    });
   }, [handleMenuItemClick]);
 
   return (
@@ -137,9 +138,9 @@ export default function MobileTabsNav() {
         open={isMenuOpen}
         onOpenChange={(open) => {
           setIsMenuOpen(open);
-          try {
-            window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open } }));
-          } catch {}
+          if (!open && !closingRef.current) {
+            try { track("menu_close", { surface: "mobile_bottom_sheet", trigger: "gesture" }); } catch {}
+          }
         }}
         modal
       >
@@ -155,12 +156,6 @@ export default function MobileTabsNav() {
           aria-labelledby="mobile-menu-title"
           className="fixed inset-x-0 bottom-0 z-[80] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
           style={{ paddingBottom: "max(env(safe-area-inset-bottom), 12px)" }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              e.preventDefault();
-              closeMenu("escape");
-            }
-          }}
         >
           <div className="max-w-screen-md mx-auto px-4 pt-2 pb-2">
             <Drawer.Handle className="mx-auto my-2 h-1.5 w-10 rounded-full bg-slate-600/70" aria-hidden="true" />

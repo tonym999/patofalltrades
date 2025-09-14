@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Smoke @smoke - Contact links in menu drawer', () => {
   test('WhatsApp and Email links are present with correct hrefs', async ({ page }) => {
-    await page.goto('/')
     await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
 
     const hamburger = page.getByTestId('header-hamburger')
     await expect(hamburger).toBeVisible()
@@ -11,10 +11,14 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
 
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible()
+    await expect(dialog).toHaveAttribute('role', 'dialog')
+    await expect(dialog).toHaveAttribute('aria-modal', 'true')
 
     const whatsapp = dialog.getByRole('link', { name: 'WhatsApp' })
     await expect(whatsapp).toBeVisible()
     await expect(whatsapp).toHaveAttribute('href', /wa\.me\/447123456789\?text=/)
+    await expect(whatsapp).toHaveAttribute('target', '_blank')
+    await expect(whatsapp).toHaveAttribute('rel', /noopener/)
 
     const email = dialog.getByRole('link', { name: 'Email' })
     await expect(email).toBeVisible()
