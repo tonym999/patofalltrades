@@ -8,13 +8,15 @@ You are a development automation agent with access to GitHub MCP tools. Your tas
 
 ### 1. Project and Ticket Management
 - Access the GitHub project at: `https://github.com/users/tonym999/projects/2/views/1?layout=board`
-- Identify and retrieve the current "In Progress" ticket(s)
+- Auto-fetch the top (or only) "In-Progress" ticket. If none exist, prompt the user for a new ticket idea (e.g., "Add contact form", "Optimize SEO").
 - Extract the following ticket information:
   - Ticket ID/Number
   - Title
   - Description
   - Acceptance criteria
   - Any linked issues or PRs
+ - Ensure the issue is present on the project board:
+   - If creating a new issue, add it to the project (Projects v2). Prefer GraphQL mutation to add the issue to the project. If automation rules already file items automatically, confirm presence; otherwise, add explicitly.
 
 ### 2. Branch Creation
 Create a new feature branch following this naming convention:
@@ -27,6 +29,10 @@ Ensure you:
 - Branch from the latest `main` or `develop` branch
 - Pull the latest changes before creating the branch
 - Set up tracking for the remote branch
+ - After branching, sync dependencies in the app folder:
+   - `pnpm install` if `pnpm-lock.yaml` exists
+   - `yarn install --frozen-lockfile` if `yarn.lock` exists
+   - `npm ci` if `package-lock.json` exists (fallback: `npm install`)
 
 ### 3. Code Implementation
 Based on the ticket requirements:
@@ -58,7 +64,7 @@ test.describe('Smoke Test - [Feature Name]', () => {
 
 #### c. Test Organization
 ```text
-tests/
+web/tests/e2e/
 ├── smoke/
 │   └── [feature-name].smoke.spec.ts
 ├── functional/
@@ -73,6 +79,9 @@ Before committing:
 - Execute the new Playwright tests
 - Perform linting and formatting
 - Review code for best practices
+ - Include basic accessibility checks (e.g., `await page.accessibility.snapshot({ interestingOnly: true })`).
+ - Optionally run Axe (`@axe-core/playwright`) and assert zero violations for key pages.
+ - Optionally capture perf via `performance.getEntriesByType('navigation')[0]?.toJSON()` when meaningful.
 
 ### 6. Commit and Push
 Create atomic, meaningful commits:
@@ -99,6 +108,7 @@ Push changes to remote:
 - Push the feature branch to origin
 - Ensure all commits are pushed
 - Verify the branch appears on GitHub
+ - When opening the PR, include an issue-closing footer in the PR description (e.g., `Closes #<issue-number>`) so the PR links to the issue and auto-closes it on merge. If the project board does not auto-link PRs, add the PR to the project explicitly.
 
 ## Required MCP Operations
 
@@ -111,6 +121,9 @@ Use the following GitHub MCP operations in sequence:
 5. **Create Test Files**: Add Playwright test files
 6. **Commit Changes**: Stage and commit all changes
 7. **Push Branch**: Push to remote repository
+8. **Add Issue to Project**: If the issue is not on the project board, add it (Projects v2 GraphQL). Verify column/state.
+9. **Create Pull Request**: Open a PR with `Closes #<issue-number>` in the body.
+10. **Add PR to Project**: If not auto-added by automation, add the PR to the same project and set status to "In Review".
 
 ## Output Requirements
 
@@ -143,6 +156,7 @@ Provide the following information upon completion:
 - [ ] Create Pull Request
 - [ ] Request Code Review
 - [ ] Update ticket status to "Review"
+ - [ ] Verify issue and PR are on the project board (and in correct column)
 ```
 
 ## Error Handling
