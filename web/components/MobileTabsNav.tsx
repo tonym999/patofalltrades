@@ -2,25 +2,28 @@
 
 /**
  * MobileTabsNav renders an accessible bottom-sheet Menu for secondary navigation on mobile.
- * It is opened by the header's hamburger button via a CustomEvent and supports:
+ * Implemented with Vaul (Radix-based Drawer) to ensure robust a11y and focus trapping.
+ * Opened by the header's hamburger via CustomEvent and supports:
  * - Focus trapping and ESC/overlay close
- * - Scroll lock while open and focus return to the opener
+ * - Body scroll lock while open and focus return to the opener
  * - Analytics events for open/close/item clicks
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-type OpenMobileMenuDetail = { trigger?: HTMLElement; source?: "header" | "tabs_nav" };
-const OPEN_MOBILE_MENU = "open-mobile-menu" as const;
-import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 import Link from "next/link";
-import { X as XIcon } from "lucide-react";
+import { Drawer } from "vaul";
+import { Mail as MailIcon, MessageCircle as WhatsAppIcon, X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
+import { CONTACT_INFO } from "@/config/contact";
+import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
+import type { OpenMobileMenuDetail } from "@/lib/mobileMenuEvents";
 
 export default function MobileTabsNav() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   // Ref to the element that opened the menu (for focus return)
   const openerRef = useRef<HTMLElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  // Close button ref no longer needed
+  // Guard to avoid double-handling close (overlay + internal)
+  const closingRef = useRef<boolean>(false);
 
   const openMenu = useCallback((source: "tabs_nav" | "header" = "header") => {
     setIsMenuOpen(true);
@@ -28,24 +31,40 @@ export default function MobileTabsNav() {
       track("menu_open", { surface: "mobile_bottom_sheet", source });
     } catch {}
     try {
-      window.dispatchEvent(new CustomEvent("mobile-menu-state", { detail: { open: true } }));
+      window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open: true } }));
     } catch {}
   }, []);
 
   const closeMenu = useCallback((trigger: "backdrop" | "close_button" | "escape" | "item_click") => {
+    if (closingRef.current) return;
+    closingRef.current = true;
     setIsMenuOpen(false);
     try {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
     } catch {}
     try {
-      window.dispatchEvent(new CustomEvent("mobile-menu-state", { detail: { open: false } }));
+      window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open: false } }));
     } catch {}
     if (trigger !== "item_click") {
       // Prefer last opener; fallback to header hamburger if available
       (openerRef.current ??
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
     }
+    // Reset guard on next tick so subsequent opens work
+    setTimeout(() => {
+      closingRef.current = false;
+    }, 0);
   }, []);
+
+  // Restore focus when the drawer closes via Vaul interactions (e.g., drag-to-close)
+  const prevOpenRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (!isMenuOpen && prevOpenRef.current) {
+      (openerRef.current ??
+        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
+    }
+    prevOpenRef.current = isMenuOpen;
+  }, [isMenuOpen]);
 
   const handleMenuItemClick = useCallback((itemName: string) => {
     try {
@@ -67,7 +86,7 @@ export default function MobileTabsNav() {
     return () => window.removeEventListener(OPEN_MOBILE_MENU, onOpen as EventListener);
   }, [openMenu]);
 
-  // Close on Escape and lock scroll when open
+  // Vaul handles focus trap, Escape and scroll lock. We still listen for Escape to track analytics.
   useEffect(() => {
     if (!isMenuOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -77,44 +96,10 @@ export default function MobileTabsNav() {
       }
     };
     document.addEventListener("keydown", onKey);
-    const originalOverflow = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
-    // Focus first focusable
-    window.setTimeout(() => {
-      const first = panelRef.current?.querySelector<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      first?.focus();
-    }, 0);
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.documentElement.style.overflow = originalOverflow;
     };
   }, [isMenuOpen, closeMenu]);
-
-  const handleTrapTab = useCallback((e: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (e.key !== "Tab" || !panelRef.current) return;
-    const focusable = Array.from(
-      panelRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    ).filter(el => el.getClientRects().length > 0);
-    if (focusable.length === 0) return;
-    const first = focusable[0] as HTMLElement;
-    const last = focusable[focusable.length - 1] as HTMLElement;
-    const active = document.activeElement as HTMLElement | null;
-    if (e.shiftKey) {
-      if (active === first || !panelRef.current.contains(active)) {
-        e.preventDefault();
-        last.focus();
-      }
-    } else {
-      if (active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  }, []);
 
   const handleGetInTouchClick = useCallback((e: ReactMouseEvent<HTMLAnchorElement>) => {
     // Respect modifier/middle clicks
@@ -148,63 +133,96 @@ export default function MobileTabsNav() {
 
   return (
     <>
-      {isMenuOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/50 z-[70] md:hidden"
-            onClick={() => closeMenu("backdrop")}
-            aria-hidden="true"
-            data-testid="menu-overlay"
-          />
-          <div
-            id="mobile-menu-panel"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="mobile-menu-title"
-            ref={panelRef}
-            onKeyDown={handleTrapTab}
-            className="fixed inset-x-0 bottom-0 z-[80] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
-            style={{
-              paddingBottom: "max(env(safe-area-inset-bottom), 12px)",
-            }}
-          >
-            <div className="max-w-screen-md mx-auto px-4 pt-3 pb-2">
-              <div className="flex items-center justify-between mb-2">
-                <h3 id="mobile-menu-title" className="text-white font-semibold">Menu</h3>
-                <button
-                  type="button"
-                  onClick={() => closeMenu("close_button")}
-                  className="text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
-                  aria-label="Close menu"
-                >
-                  <XIcon size={20} aria-hidden="true" />
-                </button>
-              </div>
+      <Drawer.Root
+        open={isMenuOpen}
+        onOpenChange={(open) => {
+          setIsMenuOpen(open);
+          try {
+            window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open } }));
+          } catch {}
+        }}
+        modal
+      >
+        <Drawer.Overlay
+          className="fixed inset-0 bg-black/50 z-[70] md:hidden"
+          data-testid="menu-overlay"
+          onClick={() => closeMenu("backdrop")}
+        />
+        <Drawer.Content
+          id="mobile-menu-panel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="mobile-menu-title"
+          className="fixed inset-x-0 bottom-0 z-[80] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
+          style={{ paddingBottom: "max(env(safe-area-inset-bottom), 12px)" }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              closeMenu("escape");
+            }
+          }}
+        >
+          <div className="max-w-screen-md mx-auto px-4 pt-2 pb-2">
+            <Drawer.Handle className="mx-auto my-2 h-1.5 w-10 rounded-full bg-slate-600/70" aria-hidden="true" />
+            <div className="flex items-center justify-between mb-2">
+              <h3 id="mobile-menu-title" className="text-white font-semibold">Menu</h3>
+              <button
+                type="button"
+                onClick={() => closeMenu("close_button")}
+                className="text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
+                aria-label="Close menu"
+              >
+                <XIcon size={20} aria-hidden="true" />
+              </button>
+            </div>
 
-              <div className="grid grid-cols-1 divide-y divide-slate-700/60">
-                <Link href="#services" onClick={() => handleMenuItemClick("Services")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
-                  Services
-                </Link>
-                <Link href="#portfolio" onClick={() => handleMenuItemClick("Work")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
-                  Work
-                </Link>
-                <Link href="#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
-                  Areas We Serve
-                </Link>
-                <Link href="#about" onClick={() => handleMenuItemClick("About")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
-                  About
-                </Link>
-                <Link href="#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
-                  Reviews
-                </Link>
-                <Link href="/#contact" onClick={handleGetInTouchClick} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
-                  Get in Touch
-                </Link>
+            <div className="grid grid-cols-1 divide-y divide-slate-700/60">
+              <Link href="#services" onClick={() => handleMenuItemClick("Services")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                Services
+              </Link>
+              <Link href="#portfolio" onClick={() => handleMenuItemClick("Work")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                Work
+              </Link>
+              <Link href="#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                Areas We Serve
+              </Link>
+              <Link href="#about" onClick={() => handleMenuItemClick("About")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                About
+              </Link>
+              <Link href="#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                Reviews
+              </Link>
+              <Link href="/#contact" onClick={handleGetInTouchClick} className="py-3 min-h-[44px] flex items-center text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded">
+                Get in Touch
+              </Link>
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-slate-700/60">
+              <h4 className="sr-only">Contact</h4>
+              <div className="grid grid-cols-1 gap-2">
+                <a
+                  href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat,")}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  className="py-3 min-h-[44px] inline-flex items-center gap-2 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
+                  aria-label="WhatsApp chat with Pat"
+                >
+                  <WhatsAppIcon size={18} aria-hidden="true" />
+                  <span>WhatsApp</span>
+                </a>
+                <a
+                  href={`mailto:${CONTACT_INFO.email}`}
+                  className="py-3 min-h-[44px] inline-flex items-center gap-2 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
+                  aria-label="Email Pat"
+                >
+                  <MailIcon size={18} aria-hidden="true" />
+                  <span>Email</span>
+                </a>
               </div>
             </div>
           </div>
-        </>
-      )}
+        </Drawer.Content>
+      </Drawer.Root>
     </>
   );
 }
