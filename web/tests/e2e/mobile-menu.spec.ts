@@ -1,4 +1,4 @@
-import { test, expect, devices, Page } from '@playwright/test'
+import { test, expect, devices } from '@playwright/test'
 import { ensureMobile } from './utils/ensureMobile'
 
 test.use({ ...devices['iPhone 12'] })
@@ -15,6 +15,7 @@ test.describe('Mobile bottom sheet Menu', () => {
   test('opens and closes via button and backdrop @smoke', async ({ page }) => {
     const menuBtn = page.getByTestId('header-hamburger')
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await expect(menuBtn).toHaveAccessibleName(/menu/i)
     await menuBtn.click()
     const dialog = page.getByRole('dialog', { name: 'Menu' })
     await expect(dialog).toBeVisible()
@@ -27,6 +28,7 @@ test.describe('Mobile bottom sheet Menu', () => {
   test('Escape closes and returns focus', async ({ page }) => {
     const menuBtn = page.getByTestId('header-hamburger')
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await expect(menuBtn).toHaveAccessibleName(/menu/i)
     await menuBtn.click()
     const dialog = page.getByRole('dialog', { name: 'Menu' })
     await expect(dialog).toBeVisible()
@@ -38,6 +40,7 @@ test.describe('Mobile bottom sheet Menu', () => {
   test('shows all expected items', async ({ page }) => {
     const menuBtn = page.getByTestId('header-hamburger')
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await expect(menuBtn).toHaveAccessibleName(/menu/i)
     await menuBtn.click()
     const dialog = page.getByRole('dialog', { name: 'Menu' })
     const items = ['Services', 'Work', 'Areas We Serve', 'About', 'Reviews', 'Get in Touch']
@@ -49,6 +52,7 @@ test.describe('Mobile bottom sheet Menu', () => {
   test('Get in Touch scrolls and focuses name input', async ({ page }) => {
     const menuBtn = page.getByTestId('header-hamburger')
     await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await expect(menuBtn).toHaveAccessibleName(/menu/i)
     await menuBtn.click()
     const getInTouch = page.getByRole('link', { name: 'Get in Touch' })
     await getInTouch.click()

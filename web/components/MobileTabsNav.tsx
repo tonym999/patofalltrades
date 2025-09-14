@@ -8,6 +8,8 @@
  * - Analytics events for open/close/item clicks
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+type OpenMobileMenuDetail = { trigger?: HTMLElement; source?: "header" | "tabs_nav" };
+const OPEN_MOBILE_MENU = "open-mobile-menu" as const;
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
 import Link from "next/link";
 import { X as XIcon } from "lucide-react";
@@ -18,7 +20,7 @@ export default function MobileTabsNav() {
   // Ref to the element that opened the menu (for focus return)
   const openerRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  // Close button ref no longer needed
 
   const openMenu = useCallback((source: "tabs_nav" | "header" = "header") => {
     setIsMenuOpen(true);
@@ -56,13 +58,13 @@ export default function MobileTabsNav() {
 
   // Listen to header hamburger trigger, capture opener
   useEffect(() => {
-    const onOpen = (evt: Event) => {
-      const detail = (evt as CustomEvent<{ trigger?: HTMLElement; source?: "header" | "tabs_nav" }>).detail;
+    const onOpen = (evt: CustomEvent<OpenMobileMenuDetail>) => {
+      const detail = evt.detail;
       openerRef.current = detail?.trigger ?? (document.activeElement as HTMLElement | null);
       openMenu(detail?.source ?? "header");
     };
-    window.addEventListener("open-mobile-menu", onOpen as EventListener);
-    return () => window.removeEventListener("open-mobile-menu", onOpen as EventListener);
+    window.addEventListener(OPEN_MOBILE_MENU, onOpen as EventListener);
+    return () => window.removeEventListener(OPEN_MOBILE_MENU, onOpen as EventListener);
   }, [openMenu]);
 
   // Close on Escape and lock scroll when open
@@ -170,7 +172,6 @@ export default function MobileTabsNav() {
               <div className="flex items-center justify-between mb-2">
                 <h3 id="mobile-menu-title" className="text-white font-semibold">Menu</h3>
                 <button
-                  ref={closeButtonRef}
                   type="button"
                   onClick={() => closeMenu("close_button")}
                   className="text-gray-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
