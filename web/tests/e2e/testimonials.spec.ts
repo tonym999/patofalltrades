@@ -13,7 +13,7 @@ test.describe('Testimonials', () => {
     const quote = page.getByTestId('testimonial-quote')
     await expect(quote).toBeVisible()
     await expect(quote).toHaveText(/.{11,}/)
-    const initialText = await quote.textContent()
+    const initialText = await quote.innerText()
 
     // Click the second dot (index 1) and ensure it activates and changes text
     const dot1 = page.getByTestId('testimonial-dot-1')
@@ -21,7 +21,7 @@ test.describe('Testimonials', () => {
     await expect(dot1).toHaveAttribute('aria-current', 'true')
 
     // Changed: ensure text differs from initial
-    await expect(quote).not.toHaveText(initialText || '')
+    await expect(quote).not.toHaveText(initialText)
 
     // Verify autoplay is paused for at least 5s after manual interaction
     // eslint-disable-next-line playwright/no-wait-for-timeout -- explicit pause duration is part of the spec
@@ -35,6 +35,7 @@ test.describe('Testimonials', () => {
     // Navigation moves to the next testimonial (dot2)
     const dot2 = page.getByTestId('testimonial-dot-2')
     await expect(dot2).toHaveAttribute('aria-current', 'true')
+    await expect(dot1).not.toHaveAttribute('aria-current', 'true')
 
     // A11y: active dot has aria-current and stars have accessible label
     const activeDot = page.locator('[role="tab"][aria-current="true"]').first()
@@ -46,7 +47,7 @@ test.describe('Testimonials', () => {
     const aria = await stars.getAttribute('aria-label')
     expect(aria).toMatch(/Rated \d+ out of 5/)
     // Optional: a11y snapshot for coverage
-    const ax = await page.accessibility.snapshot()
+    const ax = await page.accessibility.snapshot({ root: (await section.elementHandle())! })
     expect(ax).toBeTruthy()
   })
 })
