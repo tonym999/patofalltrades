@@ -65,7 +65,7 @@ export default function MobileCtaBar() {
       ref={containerRef}
     >
       <div
-        className="px-4 pt-2 pb-2 pb-[max(env(safe-area-inset-bottom),12px)]"
+        className="px-4 pt-2 pb-[max(env(safe-area-inset-bottom),12px)]"
         data-testid="mobile-cta-padding"
       >
         <div className="max-w-screen-md mx-auto grid grid-cols-3 gap-3">

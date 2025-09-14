@@ -1,10 +1,11 @@
 "use client";
 
 /**
- * MobileTabsNav renders the fixed bottom tabs bar on mobile and an accessible
- * bottom-sheet Menu for secondary navigation. It exposes its height via a CSS
- * variable for layout padding, supports focus trapping, scroll lock, and
- * emits analytics events for open/close/item clicks.
+ * MobileTabsNav renders an accessible bottom-sheet Menu for secondary navigation on mobile.
+ * It is opened by the header's hamburger button via a CustomEvent and supports:
+ * - Focus trapping and ESC/overlay close
+ * - Scroll lock while open and focus return to the opener
+ * - Analytics events for open/close/item clicks
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
@@ -128,14 +129,17 @@ export default function MobileTabsNav() {
       } catch {
         contactSection.scrollIntoView();
       }
-      const firstField = document.getElementById("name") as HTMLInputElement | null;
+      const firstField = document.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+        '#contact input, #contact textarea, #contact select, #quote input, #quote textarea, #quote select'
+      );
       if (firstField) {
         window.setTimeout(() => {
           firstField.focus({ preventScroll: true });
         }, 250);
       }
-      if (window.location.hash !== "#contact") {
-        history.replaceState(null, "", "#contact");
+      const targetHash = (contactSection as HTMLElement).id ? `#${(contactSection as HTMLElement).id}` : "#contact";
+      if (window.location.hash !== targetHash) {
+        history.replaceState(null, "", targetHash);
       }
     }, 0);
   }, [handleMenuItemClick]);
