@@ -26,7 +26,7 @@ test.describe('Testimonials', () => {
     // Verify autoplay is paused for at least 5s after manual interaction
     await page.waitForTimeout(5500)
     const stillSame = await quote.textContent()
-    expect(stillSame).toBe(afterClick)
+    await expect(quote).toHaveText(afterClick || '')
 
     // Keyboard navigation (ArrowRight) should move to next testimonial
     await section.focus()
