@@ -31,6 +31,7 @@ export default function Header() {
               className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-slate-800 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               onClick={openMobileMenu}
               data-testid="header-hamburger"
+              data-menu-trigger="mobile-menu"
             >
               <MenuIcon size={22} aria-hidden="true" />
             </button>

@@ -34,7 +34,7 @@ export default function MobileTabsNav() {
     if (trigger !== "item_click") {
       // Prefer last opener; fallback to header hamburger if available
       (openerRef.current ??
-        (document.querySelector('[data-testid="header-hamburger"]') as HTMLElement | null))?.focus();
+        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
     }
   }, []);
 
