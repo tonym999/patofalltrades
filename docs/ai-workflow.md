@@ -18,6 +18,8 @@ This document explains the automated development workflow powered by Cursor AI a
 ## Testing
 - At least one smoke test per feature under `web/tests/e2e/smoke/`.
 - Functional tests under `web/tests/e2e/functional/`.
+- Include a basic accessibility check in at least one critical-path test (e.g., `await page.accessibility.snapshot({ interestingOnly: true })`).
+- Optionally capture navigation timing metrics for perf monitoring when meaningful.
 - Run locally: `npx playwright test`
 - CI: cache Playwright browsers and run `npx playwright install --with-deps && npx playwright test`
 

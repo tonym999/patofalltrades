@@ -32,13 +32,15 @@ test.describe('Smoke Test - [Feature Name]', () => {
 - Isolate network with fixtures/mocks when necessary.
 - Include basic accessibility checks where relevant:
   ```ts
-  const snapshot = await page.accessibility.snapshot()
+  const snapshot = await page.accessibility.snapshot({ interestingOnly: true })
   expect(snapshot).toBeTruthy()
   ```
 - Optionally capture perf metrics if meaningful (e.g., navigation timing):
   ```ts
-  const perf = JSON.parse(await page.evaluate(() => JSON.stringify(performance.timing)))
-  expect(perf).toBeDefined()
+  const nav = await page.evaluate(() => performance.getEntriesByType('navigation')[0]?.toJSON())
+  expect(nav).toBeDefined()
+  // Example: sanity check key timings exist
+  expect((nav as any).domContentLoadedEventEnd).toBeGreaterThan(0)
   ```
 
 ## Fixtures

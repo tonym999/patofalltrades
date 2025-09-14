@@ -13,11 +13,14 @@ Scope:
 
 Core Workflow:
 1) Ticket selection
-   - Auto-fetch the top (or only) In-Progress ticket from the project board.
+   - Auto-fetch the top (or only) In-Progress ticket from the project board. "Top" should follow the board's sort order; make the column name configurable (e.g., In-Progress vs In Progress).
    - If none exist, prompt the user for a new ticket idea (e.g., "Add contact form", "Optimize SEO").
 2) Branching
    - Create a new branch from `main` using: feature/[ticket-id]-[kebab-description]
-   - After branching, run dependency install in app folder (e.g., `cd web && npm install`).
+   - After branching, sync deps in the app folder:
+     - If `pnpm-lock.yaml` → `pnpm install`
+     - Else if `yarn.lock` → `yarn install --frozen-lockfile`
+     - Else if `package-lock.json` → `npm ci` (fallback: `npm install`)
 3) Implementation
    - Make focused edits that satisfy the ticket acceptance criteria.
    - Add or update tests according to the Test Requirements section.
@@ -62,6 +65,7 @@ Testing Rules (Playwright):
 - Add functional tests under `web/tests/e2e/functional/` for detailed behaviors.
 - Use fixtures under `web/tests/e2e/fixtures/` if setup is shared across tests.
 - Include an accessibility snapshot for at least one critical-path test when feasible.
+- Optionally add Axe (`@axe-core/playwright`) for actionable violations on key pages.
 
 Error Handling:
 - If a step fails (API/network), retry up to 2 times with exponential backoff.
@@ -76,5 +80,6 @@ Definition of Done (per ticket):
 - Playwright smoke test present
 - Commit(s) use conventional commits
 - Branch pushed and ready for PR
+ - Issue and PR are present on the project board in the correct column
 
 

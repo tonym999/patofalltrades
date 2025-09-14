@@ -8,7 +8,7 @@ You are a development automation agent with access to GitHub MCP tools. Your tas
 
 ### 1. Project and Ticket Management
 - Access the GitHub project at: `https://github.com/users/tonym999/projects/2/views/1?layout=board`
-- Auto-fetch the top (or only) "In Progress" ticket. If none exist, prompt the user for a new ticket idea (e.g., "Add contact form", "Optimize SEO").
+- Auto-fetch the top (or only) "In-Progress" ticket. If none exist, prompt the user for a new ticket idea (e.g., "Add contact form", "Optimize SEO").
 - Extract the following ticket information:
   - Ticket ID/Number
   - Title
@@ -29,7 +29,10 @@ Ensure you:
 - Branch from the latest `main` or `develop` branch
 - Pull the latest changes before creating the branch
 - Set up tracking for the remote branch
- - After branching, run a quick dependency install in the app folder (e.g., `cd web && npm install` or `yarn`) to ensure dependencies are synced.
+ - After branching, sync dependencies in the app folder:
+   - `pnpm install` if `pnpm-lock.yaml` exists
+   - `yarn install --frozen-lockfile` if `yarn.lock` exists
+   - `npm ci` if `package-lock.json` exists (fallback: `npm install`)
 
 ### 3. Code Implementation
 Based on the ticket requirements:
@@ -76,7 +79,9 @@ Before committing:
 - Execute the new Playwright tests
 - Perform linting and formatting
 - Review code for best practices
- - Include basic accessibility checks where relevant (e.g., `await page.accessibility.snapshot()`), and optionally capture performance metrics (e.g., navigation timing) when meaningful.
+ - Include basic accessibility checks (e.g., `await page.accessibility.snapshot({ interestingOnly: true })`).
+ - Optionally run Axe (`@axe-core/playwright`) and assert zero violations for key pages.
+ - Optionally capture perf via `performance.getEntriesByType('navigation')[0]?.toJSON()` when meaningful.
 
 ### 6. Commit and Push
 Create atomic, meaningful commits:
