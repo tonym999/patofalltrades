@@ -14,8 +14,9 @@ export default function MobileCtaBar() {
     const contactSection = document.getElementById("contact") || document.getElementById("quote");
     if (contactSection) {
       e.preventDefault();
+      const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
       try {
-        contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        contactSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
       } catch {
         contactSection.scrollIntoView();
       }
@@ -79,7 +80,7 @@ export default function MobileCtaBar() {
             href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat,")}`}
             rel="noopener noreferrer"
             target="_blank"
-            aria-label="WhatsApp"
+            aria-label="WhatsApp chat with Pat"
             className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-green-600 text-white font-semibold shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
           >
             WhatsApp

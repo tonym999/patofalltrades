@@ -21,6 +21,7 @@ test.describe('Smoke @smoke - Top hamburger opens bottom-sheet menu', () => {
     const overlay = page.getByTestId('menu-overlay')
     await overlay.click({ position: { x: 5, y: 5 } })
     await expect(dialog).toBeHidden()
+    await expect(hamburger).toBeFocused()
   })
 })
 

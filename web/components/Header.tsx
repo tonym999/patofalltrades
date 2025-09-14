@@ -3,10 +3,14 @@ import Image from "next/image";
 import { Menu as MenuIcon } from "lucide-react";
 
 export default function Header() {
-  const openMobileMenu = () => {
+  const openMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
-      // Signal MobileTabsNav to open its bottom-sheet menu
-      window.dispatchEvent(new Event("open-mobile-menu"));
+      // Signal MobileTabsNav to open its bottom-sheet menu with opener context
+      window.dispatchEvent(
+        new CustomEvent("open-mobile-menu", {
+          detail: { trigger: e.currentTarget as HTMLElement, source: "header" },
+        })
+      );
     } catch {}
   };
 
@@ -23,6 +27,7 @@ export default function Header() {
             <button
               type="button"
               aria-label="Open menu"
+              aria-controls="mobile-menu-panel"
               className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-slate-800 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               onClick={openMobileMenu}
               data-testid="header-hamburger"

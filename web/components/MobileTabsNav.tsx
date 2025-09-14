@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Hammer, Briefcase, Star, MoreHorizontal, X as XIcon } from "lucide-react";
+import { Hammer, Briefcase, Star, X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
 
 type TabItem = {
@@ -28,14 +28,15 @@ export default function MobileTabsNav() {
   const [activeId, setActiveId] = useState<string>(TABS[0].id);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const openButtonRef = useRef<HTMLButtonElement | null>(null);
+  // Ref to the element that opened the menu (for focus return)
+  const openerRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const openMenu = useCallback(() => {
+  const openMenu = useCallback((source: "tabs_nav" | "header" = "tabs_nav") => {
     setIsMenuOpen(true);
     try {
-      track("menu_open", { surface: "mobile_bottom_sheet", source: "tabs_nav" });
+      track("menu_open", { surface: "mobile_bottom_sheet", source });
     } catch {}
   }, []);
 
@@ -45,7 +46,9 @@ export default function MobileTabsNav() {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
     } catch {}
     if (trigger !== "item_click") {
-      openButtonRef.current?.focus();
+      // Prefer last opener; fallback to header hamburger if available
+      (openerRef.current ??
+        (document.querySelector('[data-testid="header-hamburger"]') as HTMLElement | null))?.focus();
     }
   }, []);
 
@@ -124,9 +127,13 @@ export default function MobileTabsNav() {
 
   const items = TABS;
 
-  // Listen to header hamburger trigger
+  // Listen to header hamburger trigger, capture opener
   useEffect(() => {
-    const onOpen = () => openMenu();
+    const onOpen = (evt: Event) => {
+      const detail = (evt as CustomEvent<{ trigger?: HTMLElement; source?: "header" | "tabs_nav" }>).detail;
+      openerRef.current = detail?.trigger ?? (document.activeElement as HTMLElement | null);
+      openMenu(detail?.source ?? "header");
+    };
     window.addEventListener("open-mobile-menu", onOpen as EventListener);
     return () => window.removeEventListener("open-mobile-menu", onOpen as EventListener);
   }, [openMenu]);
