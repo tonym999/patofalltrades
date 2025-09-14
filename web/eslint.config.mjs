@@ -13,7 +13,7 @@ const playwrightOverrides = compat
   .extends("plugin:playwright/recommended")
   .map((conf) => ({
     ...conf,
-    files: ["tests/e2e/**", "web/tests/e2e/**"],
+    files: ["tests/e2e/**", "tests/e2e/functional/**"],
   }));
 
 const eslintConfig = [
@@ -24,6 +24,11 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      ".turbo/**",
+      ".vercel/**",
+      "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
