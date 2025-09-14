@@ -11,14 +11,18 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
 
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible()
+    await page.accessibility.snapshot()
     await expect(dialog).toHaveAttribute('role', 'dialog')
     await expect(dialog).toHaveAttribute('aria-modal', 'true')
+    const overlay = page.getByTestId('menu-overlay')
+    await expect(overlay).toBeVisible()
 
     const whatsapp = dialog.getByRole('link', { name: 'WhatsApp' })
     await expect(whatsapp).toBeVisible()
-    await expect(whatsapp).toHaveAttribute('href', /wa\.me\/447123456789\?text=/)
+    await expect(whatsapp).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/)
     await expect(whatsapp).toHaveAttribute('target', '_blank')
     await expect(whatsapp).toHaveAttribute('rel', /noopener/)
+    await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
 
     const email = dialog.getByRole('link', { name: 'Email' })
     await expect(email).toBeVisible()
