@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
 test.describe('Smoke @smoke - Contact links in menu drawer', () => {
   test('WhatsApp and Email links are present with correct hrefs', async ({ page }) => {
@@ -11,7 +12,8 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
 
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible()
-    await page.accessibility.snapshot()
+    const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
+    expect(axe.violations).toEqual([])
     await expect(dialog).toHaveAttribute('role', 'dialog')
     await expect(dialog).toHaveAttribute('aria-modal', 'true')
     const overlay = page.getByTestId('menu-overlay')
