@@ -6,27 +6,13 @@
  * variable for layout padding, supports focus trapping, scroll lock, and
  * emits analytics events for open/close/item clicks.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
 import Link from "next/link";
-import { Hammer, Briefcase, Star, X as XIcon } from "lucide-react";
+import { X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
 
-type TabItem = {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  id: string; // section id without '#'
-};
-
-const TABS: readonly TabItem[] = [
-  { href: "#services", label: "Services", icon: Hammer, id: "services" },
-  { href: "#portfolio", label: "Work", icon: Briefcase, id: "portfolio" },
-  { href: "#testimonials", label: "Reviews", icon: Star, id: "testimonials" },
-] as const;
-
 export default function MobileTabsNav() {
-  const [activeId, setActiveId] = useState<string>(TABS[0].id);
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   // Ref to the element that opened the menu (for focus return)
   const openerRef = useRef<HTMLElement | null>(null);
@@ -59,73 +45,7 @@ export default function MobileTabsNav() {
     closeMenu("item_click");
   }, [closeMenu]);
 
-  // Observe section visibility to set active tab (retry until sections mount)
-  useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    let cancelled = false;
-    let io: IntersectionObserver | null = null;
-    const setup = () => {
-      if (cancelled) return;
-      const sections = TABS.map(t => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
-      if (sections.length === 0) {
-        requestAnimationFrame(setup);
-        return;
-      }
-      io = new IntersectionObserver(
-        entries => {
-          let topCandidate: { id: string; ratio: number; top: number } | null = null;
-          for (const e of entries) {
-            if (!e.isIntersecting) continue;
-            const rect = e.target.getBoundingClientRect();
-            const ratio = e.intersectionRatio + Math.max(0, 1 - Math.abs(rect.top) / window.innerHeight);
-            const id = (e.target as HTMLElement).id;
-            if (!topCandidate || ratio > topCandidate.ratio) {
-              topCandidate = { id, ratio, top: rect.top };
-            }
-          }
-          if (topCandidate) setActiveId(topCandidate.id);
-        },
-        { rootMargin: "0px 0px -50% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
-      );
-      sections.forEach(s => io!.observe(s));
-      observerRef.current = io;
-    };
-    setup();
-    return () => {
-      cancelled = true;
-      io?.disconnect();
-    };
-  }, []);
-
-  // Expose height to CSS var for layout padding calculations
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const update = () => {
-      const h = el.offsetHeight;
-      document.documentElement.style.setProperty("--tabs-height", `${h}px`);
-    };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    window.addEventListener("orientationchange", update);
-    window.addEventListener("resize", update);
-    window.addEventListener("load", update);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("orientationchange", update);
-      window.removeEventListener("resize", update);
-      window.removeEventListener("load", update);
-      document.documentElement.style.setProperty("--tabs-height", "0px");
-    };
-  }, []);
-
-  const items = TABS;
+  // Bottom tabs nav removed; only bottom-sheet menu remains
 
   // Listen to header hamburger trigger, capture opener
   useEffect(() => {
@@ -163,7 +83,7 @@ export default function MobileTabsNav() {
     };
   }, [isMenuOpen, closeMenu]);
 
-  const handleTrapTab = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleTrapTab = useCallback((e: ReactKeyboardEvent<HTMLDivElement>) => {
     if (e.key !== "Tab" || !panelRef.current) return;
     const focusable = Array.from(
       panelRef.current.querySelectorAll<HTMLElement>(
@@ -171,8 +91,8 @@ export default function MobileTabsNav() {
       )
     ).filter(el => el.offsetParent !== null);
     if (focusable.length === 0) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
+    const first = focusable[0] as HTMLElement;
+    const last = focusable[focusable.length - 1] as HTMLElement;
     const active = document.activeElement as HTMLElement | null;
     if (e.shiftKey) {
       if (active === first || !panelRef.current.contains(active)) {
@@ -187,7 +107,7 @@ export default function MobileTabsNav() {
     }
   }, []);
 
-  const handleGetInTouchClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleGetInTouchClick = useCallback((e: ReactMouseEvent<HTMLAnchorElement>) => {
     // Respect modifier/middle clicks
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
     const contactSection = document.getElementById("contact") || document.getElementById("quote");
@@ -216,35 +136,6 @@ export default function MobileTabsNav() {
 
   return (
     <>
-      <nav
-        aria-label="Site navigation"
-        className="md:hidden fixed inset-x-0 z-[55] bg-slate-900/95 backdrop-blur border-t border-slate-700/60"
-        style={{ bottom: "var(--cta-height, 0px)" }}
-        ref={containerRef}
-      >
-        <ul className="flex items-stretch justify-around px-2 pt-1 pb-[max(env(safe-area-inset-bottom),8px)]">
-          {items.map(item => {
-            const Icon = item.icon;
-            const isActive = activeId === item.id;
-            return (
-              <li key={item.id} className="flex-1">
-                <Link
-                  href={item.href}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`flex flex-col items-center justify-center gap-1 h-12 min-h-[44px] rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${
-                    isActive ? "text-amber-400" : "text-gray-300 hover:text-white"
-                  }`}
-                >
-                  <Icon size={18} aria-hidden="true" />
-                  <span className="text-[11px] leading-none">{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-          {/* Menu trigger moved to top header hamburger for #25 */}
-        </ul>
-      </nav>
-
       {isMenuOpen && (
         <>
           <div
