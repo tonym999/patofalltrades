@@ -124,6 +124,13 @@ export default function MobileTabsNav() {
 
   const items = TABS;
 
+  // Listen to header hamburger trigger
+  useEffect(() => {
+    const onOpen = () => openMenu();
+    window.addEventListener("open-mobile-menu", onOpen as EventListener);
+    return () => window.removeEventListener("open-mobile-menu", onOpen as EventListener);
+  }, [openMenu]);
+
   // Close on Escape and lock scroll when open
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -227,21 +234,7 @@ export default function MobileTabsNav() {
               </li>
             );
           })}
-          <li className="flex-1">
-            <button
-              ref={openButtonRef}
-              type="button"
-              onClick={openMenu}
-              aria-haspopup="dialog"
-              aria-expanded={isMenuOpen}
-              aria-controls="mobile-menu-panel"
-              data-testid="menu-open-button"
-              className="w-full flex flex-col items-center justify-center gap-1 h-12 min-h-[44px] rounded-md text-gray-300 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-            >
-              <MoreHorizontal size={18} aria-hidden="true" />
-              <span className="text-[11px] leading-none">Menu</span>
-            </button>
-          </li>
+          {/* Menu trigger moved to top header hamburger for #25 */}
         </ul>
       </nav>
 

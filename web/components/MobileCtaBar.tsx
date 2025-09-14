@@ -67,17 +67,27 @@ export default function MobileCtaBar() {
         className="px-4 pt-2 pb-2 pb-[max(env(safe-area-inset-bottom),12px)]"
         data-testid="mobile-cta-padding"
       >
-        <div className="max-w-screen-md mx-auto flex items-center gap-3">
+        <div className="max-w-screen-md mx-auto grid grid-cols-3 gap-3">
           <a
             href={`tel:${CONTACT_INFO.phoneE164}`}
-            className="flex-1 inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-blue-700 text-white font-semibold shadow-sm hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+            aria-label={`Call ${CONTACT_INFO.phoneE164}`}
+            className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-blue-700 text-white font-semibold shadow-sm hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
           >
             Call
+          </a>
+          <a
+            href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat,")}`}
+            rel="noopener noreferrer"
+            target="_blank"
+            aria-label="WhatsApp"
+            className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-green-600 text-white font-semibold shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+          >
+            WhatsApp
           </a>
           <Link
             href="/#contact"
             onClick={handleGetQuote}
-            className="flex-1 inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-amber-500 text-slate-900 font-semibold shadow-sm hover:bg-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+            className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-amber-500 text-slate-900 font-semibold shadow-sm hover:bg-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
           >
             Get Quote
           </Link>
