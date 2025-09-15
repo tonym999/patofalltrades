@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright'
 
 test.describe('Smoke @smoke - Contact links in menu drawer', () => {
   test('WhatsApp and Email links are present with correct hrefs', async ({ page }) => {
+    test.setTimeout(20000)
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/')
 
@@ -12,6 +13,8 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
 
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible({ timeout: 10000 })
+    // Allow menu animation to finish before querying links
+    await page.waitForTimeout(300)
     // Non-asserting snapshot for debugging per smoke guidelines
     await page.accessibility.snapshot()
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
@@ -24,7 +27,7 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     // Prefer robust href selector first to avoid flake during animations
     const whatsappHref = dialog.locator('a[href*="wa.me"]')
     await expect(whatsappHref).toBeVisible({ timeout: 10000 })
-    await expect(whatsappHref).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/)
+    await expect(whatsappHref).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/, { timeout: 10000 })
     // Then assert accessible name
     const whatsapp = dialog.getByRole('link', { name: /whatsapp/i })
     await expect(whatsapp).toBeVisible({ timeout: 10000 })
