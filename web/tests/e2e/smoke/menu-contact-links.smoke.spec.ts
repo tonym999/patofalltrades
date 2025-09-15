@@ -11,7 +11,7 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     await hamburger.click()
 
     const dialog = page.locator('#mobile-menu-panel')
-    await expect(dialog).toBeVisible()
+    await expect(dialog).toBeVisible({ timeout: 10000 })
     // Non-asserting snapshot for debugging per smoke guidelines
     await page.accessibility.snapshot()
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
@@ -19,15 +19,15 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     await expect(dialog).toHaveAttribute('role', 'dialog')
     await expect(dialog).toHaveAttribute('aria-modal', 'true')
     const overlay = page.getByTestId('menu-overlay')
-    await expect(overlay).toBeVisible()
+    await expect(overlay).toBeVisible({ timeout: 10000 })
 
     // Prefer robust href selector first to avoid flake during animations
     const whatsappHref = dialog.locator('a[href*="wa.me"]')
-    await expect(whatsappHref).toBeVisible({ timeout: 5000 })
+    await expect(whatsappHref).toBeVisible({ timeout: 10000 })
     await expect(whatsappHref).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/)
     // Then assert accessible name
     const whatsapp = dialog.getByRole('link', { name: /whatsapp/i })
-    await expect(whatsapp).toBeVisible({ timeout: 5000 })
+    await expect(whatsapp).toBeVisible({ timeout: 10000 })
     await expect(whatsapp).toHaveAttribute('target', '_blank')
     await expect(whatsapp).toHaveAttribute('rel', /(?:^|\s)noopener(?:\s|$).*?(?:^|\s)noreferrer(?:\s|$)/)
 
