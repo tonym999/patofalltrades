@@ -12,6 +12,8 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
 
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible()
+    // Non-asserting snapshot for debugging per smoke guidelines
+    await page.accessibility.snapshot()
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
     expect(axe.violations).toEqual([])
     await expect(dialog).toHaveAttribute('role', 'dialog')
@@ -23,8 +25,7 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     await expect(whatsapp).toBeVisible()
     await expect(whatsapp).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/)
     await expect(whatsapp).toHaveAttribute('target', '_blank')
-    await expect(whatsapp).toHaveAttribute('rel', /noopener/)
-    await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
+    await expect(whatsapp).toHaveAttribute('rel', /(?:^|\s)noopener(?:\s|$).*?(?:^|\s)noreferrer(?:\s|$)/)
 
     const email = dialog.getByRole('link', { name: 'Email' })
     await expect(email).toBeVisible()

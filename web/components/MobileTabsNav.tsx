@@ -24,6 +24,8 @@ export default function MobileTabsNav() {
   const openerRef = useRef<HTMLElement | null>(null);
   // Guard to avoid double-handling close (overlay + internal)
   const closingRef = useRef<boolean>(false);
+  // Track last close reason to control focus restore behavior
+  const lastCloseReasonRef = useRef<"backdrop" | "close_button" | "escape" | "item_click" | "gesture" | null>(null);
 
   const openMenu = useCallback((source: "tabs_nav" | "header" = "header") => {
     setIsMenuOpen(true);
@@ -35,6 +37,7 @@ export default function MobileTabsNav() {
   const closeMenu = useCallback((trigger: "backdrop" | "close_button" | "escape" | "item_click") => {
     if (closingRef.current) return;
     closingRef.current = true;
+    lastCloseReasonRef.current = trigger;
     setIsMenuOpen(false);
     try {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
@@ -44,20 +47,22 @@ export default function MobileTabsNav() {
       (openerRef.current ??
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
     }
-    // Reset guard on next tick so subsequent opens work
-    setTimeout(() => {
+    // Reset guard on next microtask so subsequent opens work
+    queueMicrotask(() => {
       closingRef.current = false;
-    }, 0);
+    });
   }, []);
 
   // Restore focus when the drawer closes via Vaul interactions (e.g., drag-to-close)
   const prevOpenRef = useRef<boolean>(false);
   useEffect(() => {
-    if (!isMenuOpen && prevOpenRef.current) {
+    if (!isMenuOpen && prevOpenRef.current && lastCloseReasonRef.current !== "item_click") {
       (openerRef.current ??
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
     }
     prevOpenRef.current = isMenuOpen;
+    // Reset last close reason after handling
+    if (!isMenuOpen) lastCloseReasonRef.current = null;
   }, [isMenuOpen]);
 
   // Centralize menu state event dispatch for header aria-expanded sync
@@ -139,6 +144,7 @@ export default function MobileTabsNav() {
         onOpenChange={(open) => {
           setIsMenuOpen(open);
           if (!open && !closingRef.current) {
+            lastCloseReasonRef.current = "gesture";
             try { track("menu_close", { surface: "mobile_bottom_sheet", trigger: "gesture" }); } catch {}
           }
         }}
