@@ -21,9 +21,13 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     const overlay = page.getByTestId('menu-overlay')
     await expect(overlay).toBeVisible()
 
-    const whatsapp = dialog.getByRole('link', { name: 'WhatsApp' })
-    await expect(whatsapp).toBeVisible()
-    await expect(whatsapp).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/)
+    // Prefer robust href selector first to avoid flake during animations
+    const whatsappHref = dialog.locator('a[href*="wa.me"]')
+    await expect(whatsappHref).toBeVisible({ timeout: 5000 })
+    await expect(whatsappHref).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/)
+    // Then assert accessible name
+    const whatsapp = dialog.getByRole('link', { name: /whatsapp/i })
+    await expect(whatsapp).toBeVisible({ timeout: 5000 })
     await expect(whatsapp).toHaveAttribute('target', '_blank')
     await expect(whatsapp).toHaveAttribute('rel', /(?:^|\s)noopener(?:\s|$).*?(?:^|\s)noreferrer(?:\s|$)/)
 
