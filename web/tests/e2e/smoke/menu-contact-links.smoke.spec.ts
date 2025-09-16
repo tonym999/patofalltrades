@@ -28,11 +28,10 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     const whatsappHref = dialog.locator('a[href*="wa.me"]')
     await expect(whatsappHref).toBeVisible({ timeout: 10000 })
     await expect(whatsappHref).toHaveAttribute('href', /^https?:\/\/wa\.me\/447\d{9}(?:\?.*)?$/, { timeout: 10000 })
-    // Then assert accessible name
-    const whatsapp = dialog.getByRole('link', { name: /whatsapp/i })
-    await expect(whatsapp).toBeVisible({ timeout: 10000 })
-    await expect(whatsapp).toHaveAttribute('target', '_blank')
-    await expect(whatsapp).toHaveAttribute('rel', /(?:^|\s)noopener(?:\s|$).*?(?:^|\s)noreferrer(?:\s|$)/)
+    // Also assert accessible name via aria-label for stability
+    await expect(whatsappHref).toHaveAttribute('aria-label', /whatsapp/i)
+    await expect(whatsappHref).toHaveAttribute('target', '_blank')
+    await expect(whatsappHref).toHaveAttribute('rel', /(?:^|\s)noopener(?:\s|$).*?(?:^|\s)noreferrer(?:\s|$)/)
 
     const email = dialog.getByRole('link', { name: 'Email' })
     await expect(email).toBeVisible()
