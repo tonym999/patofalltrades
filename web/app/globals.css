@@ -63,6 +63,7 @@ body {
 
 /* Sticky Nav Styling */
 .sticky-nav {
+    will-change: transform;
     transition: transform 0.4s ease-in-out, background 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
@@ -76,6 +77,7 @@ body {
 /* Hide header when scrolling down */
 .sticky-nav--hidden {
   transform: translateY(-100%);
+  pointer-events: none;
 }
 
 /* Bottom CTA shadow on scroll */
@@ -87,6 +89,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .sticky-nav {
     transition: none !important;
+  }
+  html, :root {
+    scroll-behavior: auto !important;
   }
 }
 

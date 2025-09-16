@@ -33,21 +33,35 @@ export default function Header() {
     } catch {}
   };
 
-  // Hide on scroll down, show on scroll up (100ms debounce)
+  // Hide on scroll down, show on scroll up (100ms debounce) with small delta
   useEffect(() => {
+    const DELTA = 4;
     const onScroll = () => {
-      const y = window.scrollY || 0;
+      const yRaw = window.scrollY || 0;
+      const y = yRaw < 0 ? 0 : yRaw;
+
       const last = lastScrollYRef.current;
       lastScrollYRef.current = y;
 
-      const isScrollingDown = y > last;
+      const isScrollingDown = y > last + DELTA;
+      const isScrollingUp = y < last - DELTA;
+
+      if (y <= 2) {
+        if (showTimeoutRef.current) {
+          window.clearTimeout(showTimeoutRef.current);
+          showTimeoutRef.current = null;
+        }
+        setIsHidden(false);
+        return;
+      }
+
       if (isScrollingDown) {
         if (showTimeoutRef.current) {
           window.clearTimeout(showTimeoutRef.current);
           showTimeoutRef.current = null;
         }
         setIsHidden(true);
-      } else {
+      } else if (isScrollingUp) {
         if (showTimeoutRef.current) {
           window.clearTimeout(showTimeoutRef.current);
         }
@@ -58,12 +72,12 @@ export default function Header() {
     };
 
     // Initialize state on mount
-    lastScrollYRef.current = window.scrollY || 0;
+    lastScrollYRef.current = Math.max(0, window.scrollY || 0);
     setIsHidden(false);
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", onScroll as EventListener);
+      window.removeEventListener("scroll", onScroll);
       if (showTimeoutRef.current) window.clearTimeout(showTimeoutRef.current);
     };
   }, []);
