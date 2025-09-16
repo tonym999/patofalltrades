@@ -144,7 +144,8 @@ export default function MobileTabsNav() {
         open={isMenuOpen}
         onOpenChange={(open) => {
           setIsMenuOpen(open);
-          if (!open && !closingRef.current) {
+          // Only attribute gesture close if no explicit reason was set
+          if (!open && !closingRef.current && !lastCloseReasonRef.current) {
             lastCloseReasonRef.current = "gesture";
             try { track("menu_close", { surface: "mobile_bottom_sheet", trigger: "gesture" }); } catch {}
           }
