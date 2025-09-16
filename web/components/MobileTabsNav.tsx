@@ -56,7 +56,8 @@ export default function MobileTabsNav() {
   // Restore focus when the drawer closes via Vaul interactions (e.g., drag-to-close)
   const prevOpenRef = useRef<boolean>(false);
   useEffect(() => {
-    if (!isMenuOpen && prevOpenRef.current && lastCloseReasonRef.current !== "item_click") {
+    // Only restore focus here for Vaul gesture closes.
+    if (!isMenuOpen && prevOpenRef.current && lastCloseReasonRef.current === "gesture") {
       (openerRef.current ??
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
     }
