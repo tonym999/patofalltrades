@@ -63,7 +63,7 @@ body {
 
 /* Sticky Nav Styling */
 .sticky-nav {
-    transition: all 0.4s ease-in-out;
+    transition: transform 0.4s ease-in-out, background 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
 .sticky-nav.scrolled {
@@ -71,6 +71,23 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+/* Hide header when scrolling down */
+.sticky-nav--hidden {
+  transform: translateY(-100%);
+}
+
+/* Bottom CTA shadow on scroll */
+.bottom-cta--shadow {
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .sticky-nav {
+    transition: none !important;
+  }
 }
 
 /* Parallax Effect */
