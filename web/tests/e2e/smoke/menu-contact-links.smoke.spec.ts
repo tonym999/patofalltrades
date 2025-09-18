@@ -31,11 +31,8 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     // Also assert accessible name via aria-label for stability
     await expect(whatsappHref).toHaveAttribute('aria-label', /whatsapp/i)
     await expect(whatsappHref).toHaveAttribute('target', '_blank')
-    const relValue = await whatsappHref.getAttribute('rel')
-    expect(relValue).toBeTruthy()
-    const relParts = (relValue ?? '').trim().split(/\s+/)
-    expect(relParts).toContain('noopener')
-    expect(relParts).toContain('noreferrer')
+    await expect(whatsappHref).toHaveAttribute('rel', /(^|\s)noopener(\s|$)/)
+    await expect(whatsappHref).toHaveAttribute('rel', /(^|\s)noreferrer(\s|$)/)
 
     const email = dialog.getByRole('link', { name: 'Email' })
     await expect(email).toBeVisible()

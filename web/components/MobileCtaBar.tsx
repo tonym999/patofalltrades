@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CONTACT_INFO } from "@/config/contact";
 
 export default function MobileCtaBar() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   const handleGetQuote = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     // Respect modifier/middle clicks and let browser handle them
@@ -58,10 +59,24 @@ export default function MobileCtaBar() {
     };
   }, []);
 
+  // Add subtle shadow when the page is scrolled
+  useEffect(() => {
+    const onScroll = () => {
+      const y = Math.max(0, window.scrollY || 0);
+      setScrolled((prev) => {
+        const next = y > 0;
+        return prev === next ? prev : next;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <nav
       aria-label="Primary actions"
-      className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-700/60"
+      className={`md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-700/60 ${scrolled ? "bottom-cta--shadow" : ""}`}
       ref={containerRef}
     >
       <div

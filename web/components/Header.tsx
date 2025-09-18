@@ -1,11 +1,16 @@
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
+  const [isHidden, setIsHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const showTimeoutRef = useRef<number | null>(null);
+
+  // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {
     const btn = document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLButtonElement | null;
     if (!btn) return;
@@ -16,6 +21,7 @@ export default function Header() {
     window.addEventListener(MOBILE_MENU_STATE, onState);
     return () => window.removeEventListener(MOBILE_MENU_STATE, onState);
   }, []);
+
   const openMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       // Signal MobileTabsNav to open its bottom-sheet menu with opener context
@@ -27,10 +33,59 @@ export default function Header() {
     } catch {}
   };
 
+  // Hide on scroll down, show on scroll up (100ms debounce) with small delta
+  useEffect(() => {
+    const DELTA = 4;
+    const onScroll = () => {
+      const yRaw = window.scrollY || 0;
+      const y = yRaw < 0 ? 0 : yRaw;
+
+      const last = lastScrollYRef.current;
+      lastScrollYRef.current = y;
+
+      const isScrollingDown = y > last + DELTA;
+      const isScrollingUp = y < last - DELTA;
+
+      if (y <= 2) {
+        if (showTimeoutRef.current) {
+          window.clearTimeout(showTimeoutRef.current);
+          showTimeoutRef.current = null;
+        }
+        setIsHidden(false);
+        return;
+      }
+
+      if (isScrollingDown) {
+        if (showTimeoutRef.current) {
+          window.clearTimeout(showTimeoutRef.current);
+          showTimeoutRef.current = null;
+        }
+        setIsHidden(true);
+      } else if (isScrollingUp) {
+        if (showTimeoutRef.current) {
+          window.clearTimeout(showTimeoutRef.current);
+        }
+        showTimeoutRef.current = window.setTimeout(() => {
+          setIsHidden(false);
+        }, 100);
+      }
+    };
+
+    // Initialize state on mount
+    lastScrollYRef.current = Math.max(0, window.scrollY || 0);
+    setIsHidden(false);
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (showTimeoutRef.current) window.clearTimeout(showTimeoutRef.current);
+    };
+  }, []);
+
   return (
     <header
       id="navbar"
-      className="sticky-nav fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200/60"
+      className={`sticky-nav fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200/60 ${isHidden ? "sticky-nav--hidden" : ""}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
