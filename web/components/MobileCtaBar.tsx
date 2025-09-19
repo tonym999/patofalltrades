@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { ClipboardList, MessageCircle, Phone } from "lucide-react";
 import { CONTACT_INFO } from "@/config/contact";
 
 export default function MobileCtaBar() {
@@ -76,41 +77,42 @@ export default function MobileCtaBar() {
   return (
     <nav
       aria-label="Primary actions"
-      className={`md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-700/60 ${scrolled ? "bottom-cta--shadow" : ""}`}
+      className={`md:hidden fixed bottom-0 inset-x-0 z-50 backdrop-blur-xl bg-white/70 border-t border-white/60 shadow-lg ${scrolled ? "bottom-cta--shadow" : ""}`}
       ref={containerRef}
     >
       <div
-        className="px-4 pt-2 pb-[max(env(safe-area-inset-bottom),12px)]"
+        className="px-4 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]"
         data-testid="mobile-cta-padding"
       >
-        <div className="max-w-screen-md mx-auto grid grid-cols-3 gap-3">
+        <div className="max-w-screen-md mx-auto grid grid-cols-3 gap-2">
           <a
             href={`tel:${CONTACT_INFO.phoneE164}`}
             aria-label={`Call ${CONTACT_INFO.phoneE164}`}
-            className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-blue-700 text-white font-semibold shadow-sm hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-white/5 px-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
-            Call
+            <Phone size={18} aria-hidden="true" className="text-slate-800 transition-transform group-hover:-translate-y-0.5" />
+            <span>Call</span>
           </a>
           <a
-            href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat,")}`}
+            href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat, ")}`}
             rel="noopener noreferrer"
             target="_blank"
             aria-label="WhatsApp chat with Pat"
-            className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-green-600 text-white font-semibold shadow-sm hover:bg-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-emerald-300/80 bg-transparent px-3 text-sm font-semibold text-emerald-900 transition-colors hover:bg-emerald-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
-            WhatsApp
+            <MessageCircle size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
+            <span>WhatsApp</span>
           </a>
           <Link
             href="/#contact"
             onClick={handleGetQuote}
-            className="inline-flex items-center justify-center h-12 min-h-[44px] rounded-lg bg-amber-500 text-slate-900 font-semibold shadow-sm hover:bg-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 transition-colors"
+            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-amber-300/80 bg-transparent px-3 text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
-            Get Quote
+            <ClipboardList size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
+            <span>Get Quote</span>
           </Link>
         </div>
       </div>
     </nav>
   );
 }
-
-

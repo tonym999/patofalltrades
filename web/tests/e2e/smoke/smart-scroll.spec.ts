@@ -14,10 +14,12 @@ test.describe('Smart Scroll Behavior @smoke', () => {
 
     // Scroll down to trigger hide
     await page.evaluate(() => window.scrollTo({ top: 800, behavior: 'auto' }))
+    await page.waitForTimeout(200)
     await expect(header).toHaveClass(/sticky-nav--hidden/, { timeout: 15000 })
 
     // Scroll up to trigger show (with 100ms debounce)
     await page.evaluate(() => window.scrollTo({ top: 100, behavior: 'auto' }))
+    await page.waitForTimeout(200)
     await expect(header).not.toHaveClass(/sticky-nav--hidden/, { timeout: 15000 })
 
     // Bottom CTA bar shadow when scrolled
@@ -35,4 +37,3 @@ test.describe('Smart Scroll Behavior @smoke', () => {
   })
 })
  
-

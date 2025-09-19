@@ -26,6 +26,7 @@ test.describe('Mobile CTA Bar', () => {
 
 	test('Get Quote scrolls to #contact and focuses first field', async ({ page }) => {
 		const getQuote = page.getByRole('link', { name: 'Get Quote' })
+		await expect(getQuote).toBeVisible()
 		await getQuote.click()
 		// Wait a tick for focus to move
 		const nameInput = page.locator('#name')
@@ -43,11 +44,24 @@ test.describe('Mobile CTA Bar', () => {
 		expect(box2?.height || 0).toBeGreaterThanOrEqual(44)
 	})
 
+	test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
+		const whatsapp = page.getByRole('link', { name: 'WhatsApp' })
+		await expect(whatsapp).toHaveAttribute('target', '_blank')
+		await expect(whatsapp).toHaveAttribute('rel', /noopener|noreferrer/)
+		await expect(whatsapp).toHaveAttribute(
+			'href',
+			`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent('Hi Pat, ')}`
+		)
+	})
+
 	test('visible focus rings on keyboard focus', async ({ page }) => {
-		// Move focus into document then tab to CTA links
+		// Move focus into document then tab through CTA links
 		await page.focus('body')
 		const call = page.getByRole('link', { name: 'Call' })
 		await call.focus()
+		await page.keyboard.press('Tab')
+		const whatsapp = page.getByRole('link', { name: 'WhatsApp' })
+		await expect(whatsapp).toBeFocused()
 		await page.keyboard.press('Tab')
 		const getQuote = page.getByRole('link', { name: 'Get Quote' })
 		await expect(getQuote).toBeFocused()

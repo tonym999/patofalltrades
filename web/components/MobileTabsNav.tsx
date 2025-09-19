@@ -34,6 +34,13 @@ export default function MobileTabsNav() {
     } catch {}
   }, []);
 
+  const restoreFocus = useCallback(() => {
+    window.setTimeout(() => {
+      (openerRef.current ??
+        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus({ preventScroll: true });
+    }, 0);
+  }, []);
+
   const closeMenu = useCallback((trigger: "backdrop" | "close_button" | "escape" | "item_click") => {
     if (closingRef.current) return;
     closingRef.current = true;
@@ -43,28 +50,27 @@ export default function MobileTabsNav() {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
     } catch {}
     if (trigger !== "item_click") {
-      // Prefer last opener; fallback to header hamburger if available
-      (openerRef.current ??
-        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
+      restoreFocus();
     }
     // Reset guard on next microtask so subsequent opens work
     queueMicrotask(() => {
       closingRef.current = false;
     });
-  }, []);
+  }, [restoreFocus]);
 
-  // Restore focus when the drawer closes via Vaul interactions (e.g., drag-to-close)
+  // Restore focus when the drawer closes (manual close or Vaul gesture)
   const prevOpenRef = useRef<boolean>(false);
   useEffect(() => {
-    // Only restore focus here for Vaul gesture closes.
-    if (!isMenuOpen && prevOpenRef.current && lastCloseReasonRef.current === "gesture") {
-      (openerRef.current ??
-        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
+    if (!isMenuOpen && prevOpenRef.current) {
+      const reason = lastCloseReasonRef.current;
+      if (reason && reason !== "item_click") {
+        restoreFocus();
+      }
     }
     prevOpenRef.current = isMenuOpen;
     // Reset last close reason after handling
     if (!isMenuOpen) lastCloseReasonRef.current = null;
-  }, [isMenuOpen]);
+  }, [isMenuOpen, restoreFocus]);
 
   // Centralize menu state event dispatch for header aria-expanded sync
   useEffect(() => {
@@ -229,5 +235,3 @@ export default function MobileTabsNav() {
     </>
   );
 }
-
-
