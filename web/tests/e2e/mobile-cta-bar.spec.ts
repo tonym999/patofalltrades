@@ -1,6 +1,6 @@
 import { test, expect, devices, Page } from '@playwright/test'
 import { ensureMobile } from './utils/ensureMobile'
-import { CONTACT_INFO, WHATSAPP_PRESET } from '../../config/contact'
+import { CONTACT_INFO, whatsappHref } from '../../config/contact'
 
 test.use({ ...devices['iPhone 12'] })
 
@@ -49,10 +49,7 @@ test.describe('Mobile CTA Bar', () => {
 		await expect(whatsapp).toHaveAttribute('target', '_blank')
 		await expect(whatsapp).toHaveAttribute('rel', /noopener/)
 		await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
-		await expect(whatsapp).toHaveAttribute(
-			'href',
-			`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(WHATSAPP_PRESET)}`
-		)
+		await expect(whatsapp).toHaveAttribute('href', whatsappHref())
 	})
 
 	test('visible focus rings on keyboard focus', async ({ page }) => {

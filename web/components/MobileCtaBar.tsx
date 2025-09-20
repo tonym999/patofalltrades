@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, MessageCircle, Phone } from "lucide-react";
-import { CONTACT_INFO, WHATSAPP_PRESET } from "@/config/contact";
+import { CONTACT_INFO, whatsappHref } from "@/config/contact";
 
 export default function MobileCtaBar() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -46,13 +46,14 @@ export default function MobileCtaBar() {
       document.documentElement.style.setProperty("--cta-height", `${h}px`);
     };
     update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
+    const ResizeObserverCtor = typeof window !== "undefined" ? (window as typeof window & { ResizeObserver?: typeof ResizeObserver }).ResizeObserver : undefined;
+    const ro = typeof ResizeObserverCtor === "function" ? new ResizeObserverCtor(update) : null;
+    ro?.observe?.(el);
     window.addEventListener("orientationchange", update);
     window.addEventListener("resize", update);
     window.addEventListener("load", update);
     return () => {
-      ro.disconnect();
+      ro?.disconnect?.();
       window.removeEventListener("orientationchange", update);
       window.removeEventListener("resize", update);
       window.removeEventListener("load", update);
@@ -94,7 +95,7 @@ export default function MobileCtaBar() {
             <span>Call</span>
           </a>
           <a
-            href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(WHATSAPP_PRESET)}`}
+            href={whatsappHref()}
             rel="noopener noreferrer"
             target="_blank"
             aria-label="WhatsApp chat with Pat"

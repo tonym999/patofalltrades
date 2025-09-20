@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Drawer } from "vaul";
 import { Mail as MailIcon, MessageCircle as WhatsAppIcon, X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
-import { CONTACT_INFO, WHATSAPP_PRESET } from "@/config/contact";
+import { CONTACT_INFO, whatsappHref } from "@/config/contact";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 import type { OpenMobileMenuDetail } from "@/lib/mobileMenuEvents";
 
@@ -210,7 +210,7 @@ export default function MobileTabsNav() {
               <h4 className="sr-only">Contact</h4>
               <div className="grid grid-cols-1 gap-2">
                 <a
-                  href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(WHATSAPP_PRESET)}`}
+                  href={whatsappHref()}
                   rel="noopener noreferrer"
                   target="_blank"
                   className="py-3 min-h-[44px] inline-flex items-center gap-2 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
