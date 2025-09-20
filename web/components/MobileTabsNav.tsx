@@ -39,13 +39,13 @@ export default function MobileTabsNav() {
       (openerRef.current ??
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus({ preventScroll: true });
     };
-    if (typeof queueMicrotask === "function") {
-      queueMicrotask(() => {
-        focusOpener();
-        window.setTimeout(focusOpener, 0);
-      });
-    } else {
+    const schedule = () => {
       window.setTimeout(focusOpener, 0);
+    };
+    if (typeof queueMicrotask === "function") {
+      queueMicrotask(schedule);
+    } else {
+      schedule();
     }
   }, []);
 
