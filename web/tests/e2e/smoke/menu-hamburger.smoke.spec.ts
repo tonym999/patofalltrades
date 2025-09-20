@@ -13,8 +13,8 @@ test.describe('Smoke @smoke - Top hamburger opens bottom-sheet menu', () => {
     await hamburger.click()
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible()
-    // Non-asserting snapshot for debugging per smoke guidelines
-    await page.accessibility.snapshot()
+    const ax = await page.accessibility.snapshot()
+    expect(ax).toBeTruthy()
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
     expect(axe.violations).toEqual([])
 
@@ -26,5 +26,4 @@ test.describe('Smoke @smoke - Top hamburger opens bottom-sheet menu', () => {
     await expect(hamburger).toBeFocused()
   })
 })
-
 

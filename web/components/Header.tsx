@@ -85,7 +85,7 @@ export default function Header() {
   return (
     <header
       id="navbar"
-      className={`sticky-nav fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200/60 ${isHidden ? "sticky-nav--hidden" : ""}`}
+      className={`sticky-nav fixed top-0 left-0 right-0 z-[120] bg-white/80 backdrop-blur border-b border-slate-200/60 ${isHidden ? "sticky-nav--hidden" : ""}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
@@ -125,5 +125,4 @@ export default function Header() {
     </header>
   );
 }
-
 

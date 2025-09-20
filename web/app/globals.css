@@ -10,6 +10,10 @@
   --bg-900: #0f172a; /* Dark navy */
   --surface: rgba(255, 255, 255, 0.06);
 
+  /* Layering */
+  --z-modal-overlay: 200;
+  --z-modal-content: 210;
+
   /* Deprecated (kept for compatibility with existing class names) */
   --gold: var(--accent);
   --dark-navy: var(--bg-900);

@@ -19,13 +19,7 @@ export default function Hero() {
         </p>
 
         {/* CTAs with mobile-first sizing */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-          <Link
-            href="/contact"
-            className="cta-btn text-slate-900 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg"
-          >
-            Get a Quote
-          </Link>
+        <div className="flex justify-center">
           <Link
             href="#portfolio"
             className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-slate-900 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-colors"
@@ -37,4 +31,3 @@ export default function Hero() {
     </EnhancedHero>
   )
 }
-
