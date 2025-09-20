@@ -79,6 +79,7 @@ export default function MobileCtaBar() {
     <nav
       aria-label="Primary actions"
       className={`md:hidden fixed bottom-0 inset-x-0 z-50 backdrop-blur-xl bg-white/70 border-t border-white/60 shadow-lg ${scrolled ? "bottom-cta--shadow" : ""}`}
+      data-shadowed={scrolled ? "true" : "false"}
       ref={containerRef}
     >
       <div
@@ -90,6 +91,8 @@ export default function MobileCtaBar() {
             href={`tel:${CONTACT_INFO.phoneE164}`}
             aria-label={`Call ${CONTACT_INFO.phoneE164}`}
             className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-white/5 px-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            data-testid="mobile-cta-link"
+            data-action="call"
           >
             <Phone size={18} aria-hidden="true" className="text-slate-800 transition-transform group-hover:-translate-y-0.5" />
             <span>Call</span>
@@ -100,6 +103,8 @@ export default function MobileCtaBar() {
             target="_blank"
             aria-label="WhatsApp chat with Pat"
             className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-emerald-300/80 bg-transparent px-3 text-sm font-semibold text-emerald-900 transition-colors hover:bg-emerald-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            data-testid="mobile-cta-link"
+            data-action="whatsapp"
           >
             <MessageCircle size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
             <span>WhatsApp</span>
@@ -108,6 +113,8 @@ export default function MobileCtaBar() {
             href="/#contact"
             onClick={handleGetQuote}
             className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-amber-300/80 bg-transparent px-3 text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            data-testid="mobile-cta-link"
+            data-action="get-quote"
           >
             <ClipboardList size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
             <span>Get Quote</span>

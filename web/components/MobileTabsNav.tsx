@@ -35,10 +35,18 @@ export default function MobileTabsNav() {
   }, []);
 
   const restoreFocus = useCallback(() => {
-    window.setTimeout(() => {
+    const focusOpener = () => {
       (openerRef.current ??
         (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus({ preventScroll: true });
-    }, 0);
+    };
+    if (typeof queueMicrotask === "function") {
+      queueMicrotask(() => {
+        focusOpener();
+        window.setTimeout(focusOpener, 0);
+      });
+    } else {
+      window.setTimeout(focusOpener, 0);
+    }
   }, []);
 
   const closeMenu = useCallback((trigger: "backdrop" | "close_button" | "escape" | "item_click") => {
@@ -49,14 +57,11 @@ export default function MobileTabsNav() {
     try {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
     } catch {}
-    if (trigger !== "item_click") {
-      restoreFocus();
-    }
     // Reset guard on next microtask so subsequent opens work
     queueMicrotask(() => {
       closingRef.current = false;
     });
-  }, [restoreFocus]);
+  }, []);
 
   // Restore focus when the drawer closes (manual close or Vaul gesture)
   const prevOpenRef = useRef<boolean>(false);
@@ -159,7 +164,7 @@ export default function MobileTabsNav() {
         modal
       >
         <Drawer.Overlay
-          className="fixed inset-0 bg-black/50 z-[200] md:hidden"
+          className="fixed inset-0 bg-black/50 z-[var(--z-modal-overlay)] md:hidden"
           data-testid="menu-overlay"
           onClick={() => closeMenu("backdrop")}
         />
@@ -168,7 +173,7 @@ export default function MobileTabsNav() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-menu-title"
-          className="fixed inset-x-0 bottom-0 z-[210] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
+          className="fixed inset-x-0 bottom-0 z-[var(--z-modal-content)] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
           style={{ paddingBottom: "max(env(safe-area-inset-bottom), 12px)" }}
         >
           <div className="max-w-screen-md mx-auto px-4 pt-2 pb-2">

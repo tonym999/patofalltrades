@@ -15,8 +15,8 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     await expect(dialog).toBeVisible({ timeout: 10000 })
     // Allow menu animation to finish before querying links
     await page.waitForTimeout(300)
-    // Non-asserting snapshot for debugging per smoke guidelines
-    await page.accessibility.snapshot()
+    const ax = await page.accessibility.snapshot()
+    expect(ax).toBeTruthy()
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
     expect(axe.violations).toEqual([])
     await expect(dialog).toHaveAttribute('role', 'dialog')
@@ -39,5 +39,4 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     await expect(email).toHaveAttribute('href', 'mailto:pat@patofalltrades.co.uk')
   })
 })
-
 
