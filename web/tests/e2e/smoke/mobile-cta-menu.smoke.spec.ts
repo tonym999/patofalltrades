@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 const MOBILE_VIEWPORT = { width: 390, height: 844 }
 
 test.describe('Smoke @smoke - Mobile CTA bar coexists with menu', () => {
-  test('CTA bar stays visible while menu opens and closes', async ({ page }) => {
+  test('CTA bar visible before open and after close', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT)
     await page.goto('/')
 
@@ -26,5 +26,8 @@ test.describe('Smoke @smoke - Mobile CTA bar coexists with menu', () => {
     // Scroll a bit after closing to ensure sticky CTA remains in view
     await page.evaluate(() => window.scrollTo(0, 400))
     await expect(ctaNav).toBeVisible()
+
+    const ax = await page.accessibility.snapshot()
+    expect(ax).toBeTruthy()
   })
 })

@@ -1,6 +1,6 @@
 import { test, expect, devices, Page } from '@playwright/test'
 import { ensureMobile } from './utils/ensureMobile'
-import { CONTACT_INFO } from '../../config/contact'
+import { CONTACT_INFO, WHATSAPP_PRESET } from '../../config/contact'
 
 test.use({ ...devices['iPhone 12'] })
 
@@ -47,10 +47,11 @@ test.describe('Mobile CTA Bar', () => {
 	test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
 		const whatsapp = page.getByRole('link', { name: 'WhatsApp' })
 		await expect(whatsapp).toHaveAttribute('target', '_blank')
-		await expect(whatsapp).toHaveAttribute('rel', /noopener|noreferrer/)
+		await expect(whatsapp).toHaveAttribute('rel', /noopener/)
+		await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
 		await expect(whatsapp).toHaveAttribute(
 			'href',
-			`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent('Hi Pat, ')}`
+			`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(WHATSAPP_PRESET)}`
 		)
 	})
 

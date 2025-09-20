@@ -12,7 +12,10 @@ test.describe('Smoke @smoke - Desktop hero CTA regression', () => {
     const heroGetQuote = hero.getByRole('link', { name: 'Get a Quote' })
     await expect(heroGetQuote).toHaveCount(0)
 
-    const headerQuote = page.getByRole('link', { name: 'Get a Quote' })
+    const headerQuote = page.locator('header').getByRole('link', { name: 'Get a Quote' })
     await expect(headerQuote.first()).toBeVisible()
+
+    const ax = await page.accessibility.snapshot()
+    expect(ax).toBeTruthy()
   })
 })

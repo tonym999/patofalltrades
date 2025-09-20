@@ -7,3 +7,6 @@ export const CONTACT_INFO = {
 } as const;
 
 
+export const WHATSAPP_PRESET = "Hi Pat, ";
+
+

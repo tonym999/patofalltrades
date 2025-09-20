@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Drawer } from "vaul";
 import { Mail as MailIcon, MessageCircle as WhatsAppIcon, X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
-import { CONTACT_INFO } from "@/config/contact";
+import { CONTACT_INFO, WHATSAPP_PRESET } from "@/config/contact";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 import type { OpenMobileMenuDetail } from "@/lib/mobileMenuEvents";
 
@@ -159,7 +159,7 @@ export default function MobileTabsNav() {
         modal
       >
         <Drawer.Overlay
-          className="fixed inset-0 bg-black/50 z-[70] md:hidden"
+          className="fixed inset-0 bg-black/50 z-[200] md:hidden"
           data-testid="menu-overlay"
           onClick={() => closeMenu("backdrop")}
         />
@@ -168,7 +168,7 @@ export default function MobileTabsNav() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-menu-title"
-          className="fixed inset-x-0 bottom-0 z-[80] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
+          className="fixed inset-x-0 bottom-0 z-[210] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
           style={{ paddingBottom: "max(env(safe-area-inset-bottom), 12px)" }}
         >
           <div className="max-w-screen-md mx-auto px-4 pt-2 pb-2">
@@ -210,7 +210,7 @@ export default function MobileTabsNav() {
               <h4 className="sr-only">Contact</h4>
               <div className="grid grid-cols-1 gap-2">
                 <a
-                  href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat,")}`}
+                  href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(WHATSAPP_PRESET)}`}
                   rel="noopener noreferrer"
                   target="_blank"
                   className="py-3 min-h-[44px] inline-flex items-center gap-2 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"

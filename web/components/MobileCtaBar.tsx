@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, MessageCircle, Phone } from "lucide-react";
-import { CONTACT_INFO } from "@/config/contact";
+import { CONTACT_INFO, WHATSAPP_PRESET } from "@/config/contact";
 
 export default function MobileCtaBar() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -94,7 +94,7 @@ export default function MobileCtaBar() {
             <span>Call</span>
           </a>
           <a
-            href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat, ")}`}
+            href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(WHATSAPP_PRESET)}`}
             rel="noopener noreferrer"
             target="_blank"
             aria-label="WhatsApp chat with Pat"
