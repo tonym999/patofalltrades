@@ -125,7 +125,7 @@ export default function Header() {
             </div>
           </div>
 
-          <nav className="hidden md:flex space-x-8 items-center">
+          <nav className="hidden md:flex space-x-8 items-center" aria-label="Primary">
             <a href="#services" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Services</a>
             <a href="#portfolio" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Portfolio</a>
             <a href="#about" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">About</a>

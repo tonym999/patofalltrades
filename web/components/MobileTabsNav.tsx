@@ -162,7 +162,6 @@ export default function MobileTabsNav() {
           }
         }}
         modal
-        autoFocus
       >
         <Drawer.Overlay
           className="fixed inset-0 bg-black/50 z-[var(--z-modal-overlay)] md:hidden"

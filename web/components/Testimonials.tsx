@@ -12,6 +12,8 @@ export default function Testimonials() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const autoplayIntervalRef = useRef<number | null>(null);
   const resumeTimeoutRef = useRef<number | null>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const shouldFocusActiveTabRef = useRef(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPointerOver, setIsPointerOver] = useState(false);
   const [isFocusWithin, setIsFocusWithin] = useState(false);
@@ -71,22 +73,45 @@ export default function Testimonials() {
     };
   }, []);
 
-  const goTo = (index: number, pauseForMs = 10000) => {
+  type GoToOptions = {
+    pauseForMs?: number;
+    focus?: boolean;
+  };
+
+  const goTo = (index: number, options: GoToOptions = {}) => {
+    const { pauseForMs = 10000, focus = false } = options;
     setCurrentIndex(index);
     setIsUserPaused(true);
     if (resumeTimeoutRef.current) window.clearTimeout(resumeTimeoutRef.current);
     resumeTimeoutRef.current = window.setTimeout(() => setIsUserPaused(false), pauseForMs);
+    if (focus) shouldFocusActiveTabRef.current = true;
   };
 
-  const goRelative = (delta: number) => goTo((currentIndex + delta + total) % total);
+  const goRelative = (delta: number, options?: GoToOptions) => {
+    const nextIndex = (currentIndex + delta + total) % total;
+    goTo(nextIndex, options);
+  };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key === "ArrowRight") {
+  useEffect(() => {
+    if (!shouldFocusActiveTabRef.current) return;
+    shouldFocusActiveTabRef.current = false;
+    const target = tabRefs.current[currentIndex];
+    if (!target) return;
+    const focus = () => target.focus({ preventScroll: true });
+    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(focus);
+    } else {
+      focus();
+    }
+  }, [currentIndex]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
       event.preventDefault();
-      goRelative(1);
-    } else if (event.key === "ArrowLeft") {
+      goRelative(1, { focus: true });
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
       event.preventDefault();
-      goRelative(-1);
+      goRelative(-1, { focus: true });
     }
   };
 
@@ -101,7 +126,6 @@ export default function Testimonials() {
       onMouseLeave={() => setIsPointerOver(false)}
       onFocus={() => setIsFocusWithin(true)}
       onBlur={() => setIsFocusWithin(false)}
-      onKeyDown={handleKeyDown}
       aria-roledescription="carousel"
       aria-label="Client testimonials"
     >
@@ -144,7 +168,7 @@ export default function Testimonials() {
           </AnimatePresence>
         </div>
 
-        <div className="flex justify-center gap-3 mb-8" role="tablist" aria-label="Testimonials navigation">
+        <div className="flex justify-center gap-3 mb-8" role="tablist" aria-label="Testimonials navigation" onKeyDown={handleKeyDown}>
           {testimonials.map((t, index) => (
             <button
               key={index}
@@ -154,11 +178,13 @@ export default function Testimonials() {
                 index === currentIndex ? "bg-amber-400 scale-110" : "bg-gray-600 hover:bg-gray-500"
               }`}
               aria-label={`Show testimonial ${index + 1}: ${t.name} from ${t.area}`}
-              aria-current={index === currentIndex}
               aria-selected={index === currentIndex}
               tabIndex={index === currentIndex ? 0 : -1}
               data-testid={`testimonial-dot-${index}`}
               role="tab"
+              ref={(node) => {
+                tabRefs.current[index] = node;
+              }}
             />
           ))}
         </div>

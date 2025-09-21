@@ -30,8 +30,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
     outerClassName = "",
     hoverScale = true,
     delay = 0,
-    tabIndex = 0,
-    role,
+    tabIndex = -1,
     ...rest
   }: GlassmorphismCardProps,
   ref
@@ -58,7 +57,6 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
             }
           : {}
       }
-      role={role ?? (tabIndex >= 0 ? "group" : undefined)}
       className={`group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl ${outerClassName}`}
       tabIndex={tabIndex}
       {...rest}

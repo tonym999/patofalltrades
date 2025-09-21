@@ -64,7 +64,7 @@ export default function Services() {
         viewport: { once: true as const },
       };
   return (
-    <section id="services" className="py-24 md:py-40 relative">
+    <section id="services" className="py-24 md:py-40 relative" aria-labelledby="services-heading">
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(245,158,11,0.08),transparent_50%)]" />
       </div>
@@ -74,7 +74,7 @@ export default function Services() {
           {...headingMotionProps}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white">Our Services</h2>
+          <h2 id="services-heading" className="text-4xl md:text-5xl font-bold text-white">Our Services</h2>
           <p className="text-lg md:text-xl text-gray-300/90 mt-4 max-w-3xl mx-auto">
             Comprehensive handyman services delivered with precision, professionalism, and pride. No job too big or small.
           </p>
@@ -138,4 +138,3 @@ export default function Services() {
     </section>
   );
 }
-
