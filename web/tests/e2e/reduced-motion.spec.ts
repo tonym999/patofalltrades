@@ -5,16 +5,51 @@ test.describe('Reduced motion preference', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
+    await page.evaluate(() => {
+      document.body.style.minHeight = '300vh'
+      document.documentElement.scrollTop = 0
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    })
 
     const progress = page.locator('[data-testid="scroll-progress"]')
+    await expect(progress).toBeAttached()
     await expect(progress).toBeVisible()
-    await progress.waitFor()
-    const styles = await progress.evaluate((el) => getComputedStyle(el))
-    expect(styles.transform === 'none' || styles.transform === 'matrix(1, 0, 0, 1, 0, 0)').toBeTruthy()
-    expect(styles.willChange).toBe('auto')
-    expect(Number.parseFloat(styles.opacity)).toBeLessThanOrEqual(0.36)
 
-    await page.locator('#about').scrollIntoViewIfNeeded()
+    const readWidth = async () => {
+      return await progress.evaluate((el) => el.getBoundingClientRect().width)
+    }
+    const waitForAnimationFrames = async () => {
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+          )
+      )
+    }
+
+    const initialWidth = await readWidth()
+
+    await page.evaluate(() => {
+      const doc = document.documentElement
+      window.scrollTo({ top: doc.scrollHeight / 2, behavior: 'auto' })
+    })
+    await waitForAnimationFrames()
+
+    const midWidth = await readWidth()
+    expect(Math.abs(midWidth - initialWidth)).toBeLessThanOrEqual(0.5)
+
+    await page.evaluate(() => {
+      const doc = document.documentElement
+      window.scrollTo({ top: doc.scrollHeight, behavior: 'auto' })
+    })
+    await waitForAnimationFrames()
+
+    const endWidth = await readWidth()
+    expect(Math.abs(endWidth - initialWidth)).toBeLessThanOrEqual(0.5)
+
+    const scrollY = await page.evaluate(() => window.scrollY)
+    expect(scrollY).toBeGreaterThan(0)
+
     const counters = page.locator('.counter')
     await expect(counters.nth(0)).toHaveText('10')
     await expect(counters.nth(1)).toHaveText('2500')

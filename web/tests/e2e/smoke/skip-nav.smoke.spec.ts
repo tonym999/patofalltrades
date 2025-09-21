@@ -15,6 +15,7 @@ test.describe('Smoke @smoke - Skip navigation', () => {
 
     const main = page.locator('main#main-content')
     await expect(main).toBeFocused()
+    await expect(page).toHaveURL(/#main-content$/)
 
     const ax = await page.accessibility.snapshot()
     expect(ax).toBeTruthy()

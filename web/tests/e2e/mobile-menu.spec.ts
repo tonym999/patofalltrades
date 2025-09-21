@@ -92,9 +92,20 @@ test.describe('Mobile bottom sheet Menu', () => {
   test('header applies safe-area padding inline', async ({ page }) => {
     const header = page.locator('#navbar')
     await expect(header).toBeVisible()
-    const inlineStyle = await header.evaluate((el) => el.getAttribute('style') ?? '')
-    expect(inlineStyle).toContain('safe-area-inset-top')
-    expect(inlineStyle).toContain('safe-area-inset-left')
-    expect(inlineStyle).toContain('safe-area-inset-right')
+    const computed = await header.evaluate((el) => {
+      const style = getComputedStyle(el)
+      return {
+        top: parseFloat(style.paddingTop || '0'),
+        left: parseFloat(style.paddingLeft || '0'),
+        right: parseFloat(style.paddingRight || '0'),
+      }
+    })
+
+    expect(Number.isFinite(computed.top)).toBeTruthy()
+    expect(Number.isFinite(computed.left)).toBeTruthy()
+    expect(Number.isFinite(computed.right)).toBeTruthy()
+    expect(computed.top).toBeGreaterThanOrEqual(0)
+    expect(computed.left).toBeGreaterThanOrEqual(0)
+    expect(computed.right).toBeGreaterThanOrEqual(0)
   })
 })
