@@ -60,6 +60,33 @@ test.describe('Mobile bottom sheet Menu', () => {
     await expect(nameInput).toBeFocused()
     await expect(page).toHaveURL(/#contact$/)
   })
-})
 
+  test('drawer respects safe-area padding', async ({ page }) => {
+    const menuBtn = page.getByTestId('header-hamburger')
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
+
+    const panel = page.locator('#mobile-menu-panel')
+    await expect(panel).toBeVisible()
+
+    const paddingBottom = await panel.evaluate((el) => {
+      const pb = getComputedStyle(el).paddingBottom || '0px'
+      return Number.parseFloat(pb.toString())
+    })
+    expect(paddingBottom).toBeGreaterThanOrEqual(12)
+
+    const inner = page.getByTestId('mobile-menu-content')
+    const paddingLeft = await inner.evaluate((el) => {
+      const pl = getComputedStyle(el).paddingLeft || '0px'
+      return Number.parseFloat(pl.toString())
+    })
+    const paddingRight = await inner.evaluate((el) => {
+      const pr = getComputedStyle(el).paddingRight || '0px'
+      return Number.parseFloat(pr.toString())
+    })
+
+    expect(paddingLeft).toBeGreaterThanOrEqual(16)
+    expect(paddingRight).toBeGreaterThanOrEqual(16)
+  })
+})
 

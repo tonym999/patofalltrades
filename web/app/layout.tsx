@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import dynamic from "next/dynamic";
 import ClientOnly from "../components/ClientOnly";
+import SkipNavLink from "../components/SkipNavLink";
 const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"));
 const MobileTabsNav = dynamic(() => import("../components/MobileTabsNav"));
 import "./globals.css";
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} antialiased`}>
+        <SkipNavLink />
         <ScrollProgress />
         {children}
         {/* Primary actions nav first in DOM for focus order */}
