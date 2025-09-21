@@ -35,7 +35,7 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
   return (
     <section ref={heroRef} className="relative min-h-screen supports-[height:100dvh]:min-h-[100dvh] overflow-hidden">
       {/* Background with parallax */}
-      <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
+      <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0 pointer-events-none">
         {/* Single responsive image with sizes; lets the browser pick the right src from Next.js-generated srcset */}
         <div className="absolute inset-0">
           <Image
