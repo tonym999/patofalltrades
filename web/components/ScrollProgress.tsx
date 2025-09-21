@@ -35,7 +35,7 @@ export function ScrollProgress() {
       data-testid="scroll-progress"
       aria-hidden="true"
       style={{
-        top: "env(safe-area-inset-top, 0px)",
+        top: "max(env(safe-area-inset-top), 0px)",
         willChange: prefersReducedMotion ? "auto" : "transform",
         transform: prefersReducedMotion ? "none" : undefined,
         backgroundSize: prefersReducedMotion ? reducedBackgroundSize : "100% 100%",

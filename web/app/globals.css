@@ -42,7 +42,10 @@ body {
   background-position: left top;
 }
 
-@supports (padding: max(env(safe-area-inset-left), 0px)) {
+@supports (
+    (padding-left: max(env(safe-area-inset-left), 0px)) and
+    (padding-right: max(env(safe-area-inset-right), 0px))
+) {
   body {
     padding-left: max(env(safe-area-inset-left), 0px);
     padding-right: max(env(safe-area-inset-right), 0px);
