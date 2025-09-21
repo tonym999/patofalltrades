@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import gsap from 'gsap';
 import type { ScrollTrigger as ScrollTriggerType } from 'gsap/ScrollTrigger';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { TextPlugin } from 'gsap/TextPlugin';
 import SplitType from 'split-type';
 
 export default function Scripts() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
     const activeAnimations: gsap.core.Animation[] = [];
     const activeTriggers: ScrollTriggerType[] = [];
@@ -26,7 +27,6 @@ export default function Scripts() {
       }
       heroSplit?.revert();
       heroSplit = null;
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
 
     const counters = Array.from(document.querySelectorAll<HTMLElement>('.counter'));
@@ -36,7 +36,7 @@ export default function Scripts() {
         const targetAttr = counter.getAttribute('data-target');
         const target = targetAttr ? Number.parseFloat(targetAttr) : NaN;
         if (!Number.isFinite(target)) return;
-        counter.innerText = `${target}`;
+        counter.textContent = `${target}`;
       });
     };
 
@@ -114,17 +114,23 @@ export default function Scripts() {
         const attr = counter.getAttribute('data-target');
         const target = attr ? Number.parseFloat(attr) : NaN;
         if (!Number.isFinite(target)) return;
-        counter.innerText = '0';
+        counter.textContent = '0';
         const trigger = ScrollTrigger.create({
           trigger: counter,
           start: 'top 85%',
           onEnter: () => {
             const tween = gsap.to(counter, {
               duration: 2,
-              innerText: target,
-              roundProps: 'innerText',
+              textContent: target,
               ease: 'power2.out',
               overwrite: true,
+              modifiers: {
+                textContent: (value) => {
+                  const numericValue = Number.parseFloat(value);
+                  if (!Number.isFinite(numericValue)) return '0';
+                  return Math.round(numericValue).toString();
+                },
+              },
             });
             activeAnimations.push(tween);
           },
@@ -142,23 +148,10 @@ export default function Scripts() {
       const afterImage = slider.querySelector<HTMLElement>('.after-image');
       const handle = slider.querySelector<HTMLElement>('.slider-handle');
       let isDragging = false;
+      let activePointerId: number | null = null;
 
-      const startDrag = () => {
-        isDragging = true;
-      };
-      const stopDrag = () => {
-        isDragging = false;
-      };
-
-      const onDrag = (event: MouseEvent | TouchEvent) => {
-        if (!isDragging) return;
-        let clientX: number;
-        if (event instanceof TouchEvent) {
-          if (event.touches.length === 0) return;
-          clientX = event.touches[0].clientX;
-        } else {
-          clientX = event.clientX;
-        }
+      const updateFromClientX = (clientX: number | null) => {
+        if (clientX === null) return;
         const rect = slider.getBoundingClientRect();
         let x = clientX - rect.left;
         x = Math.max(0, Math.min(x, rect.width));
@@ -168,30 +161,116 @@ export default function Scripts() {
         if (handle) handle.style.left = `${widthPercentage}%`;
       };
 
-      const onMouseMove = (e: MouseEvent) => onDrag(e);
-      const onTouchMove = (e: TouchEvent) => onDrag(e);
+      const supportsPointerEvents = typeof window !== 'undefined' && 'PointerEvent' in window;
+      const supportsTouch =
+        typeof window !== 'undefined' &&
+        ('ontouchstart' in window || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
 
-      slider.addEventListener('mousedown', startDrag);
-      slider.addEventListener('touchstart', startDrag);
-      window.addEventListener('mouseup', stopDrag);
-      window.addEventListener('touchend', stopDrag);
-      window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('touchmove', onTouchMove);
+      const stopPointerDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        if (activePointerId !== null) {
+          slider.releasePointerCapture?.(activePointerId);
+          activePointerId = null;
+        }
+        window.removeEventListener('pointermove', onPointerMove);
+        window.removeEventListener('pointerup', stopPointerDrag);
+        window.removeEventListener('pointercancel', stopPointerDrag);
+      };
+
+      const onPointerMove = (event: PointerEvent) => {
+        if (!isDragging) return;
+        if (activePointerId !== null && event.pointerId !== activePointerId) return;
+        updateFromClientX(event.clientX);
+      };
+
+      const startPointerDrag = (event: PointerEvent) => {
+        event.preventDefault();
+        if (isDragging) stopPointerDrag();
+        isDragging = true;
+        activePointerId = event.pointerId;
+        slider.setPointerCapture?.(event.pointerId);
+        updateFromClientX(event.clientX);
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', stopPointerDrag);
+        window.addEventListener('pointercancel', stopPointerDrag);
+      };
+
+      const stopMouseDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', stopMouseDrag);
+      };
+
+      const onMouseMove = (event: MouseEvent) => {
+        if (!isDragging) return;
+        updateFromClientX(event.clientX);
+      };
+
+      const startMouseDrag = (event: MouseEvent) => {
+        event.preventDefault();
+        if (isDragging) stopMouseDrag();
+        isDragging = true;
+        updateFromClientX(event.clientX);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', stopMouseDrag);
+      };
+
+      const stopTouchDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', stopTouchDrag);
+        window.removeEventListener('touchcancel', stopTouchDrag);
+      };
+
+      const onTouchMove = (event: TouchEvent) => {
+        if (!isDragging || event.touches.length === 0) return;
+        event.preventDefault();
+        updateFromClientX(event.touches[0].clientX);
+      };
+
+      const startTouchDrag = (event: TouchEvent) => {
+        if (event.touches.length === 0) return;
+        if (isDragging) stopTouchDrag();
+        isDragging = true;
+        event.preventDefault();
+        updateFromClientX(event.touches[0].clientX);
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', stopTouchDrag);
+        window.addEventListener('touchcancel', stopTouchDrag);
+      };
+
+        if (supportsPointerEvents) {
+          slider.addEventListener('pointerdown', startPointerDrag);
+        } else {
+          slider.addEventListener('mousedown', startMouseDrag);
+          if (supportsTouch) {
+            slider.addEventListener('touchstart', startTouchDrag, { passive: false });
+          }
+        }
 
       return () => {
-        slider.removeEventListener('mousedown', startDrag);
-        slider.removeEventListener('touchstart', startDrag);
-        window.removeEventListener('mouseup', stopDrag);
-        window.removeEventListener('touchend', stopDrag);
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('touchmove', onTouchMove);
+        isDragging = false;
+        if (supportsPointerEvents) {
+          stopPointerDrag();
+          slider.removeEventListener('pointerdown', startPointerDrag);
+        } else {
+          stopMouseDrag();
+          slider.removeEventListener('mousedown', startMouseDrag);
+          if (supportsTouch) {
+            stopTouchDrag();
+            slider.removeEventListener('touchstart', startTouchDrag);
+          }
+        }
       };
     };
 
     const sliderCleanup = setupSlider();
 
-    const nav = document.getElementById('navbar');
     const handleScroll = () => {
+      const nav = document.getElementById('navbar');
       if (!nav) return;
       if (window.scrollY > 50) nav.classList.add('scrolled');
       else nav.classList.remove('scrolled');
