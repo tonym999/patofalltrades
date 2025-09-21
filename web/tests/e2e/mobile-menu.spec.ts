@@ -88,5 +88,13 @@ test.describe('Mobile bottom sheet Menu', () => {
     expect(paddingLeft).toBeGreaterThanOrEqual(16)
     expect(paddingRight).toBeGreaterThanOrEqual(16)
   })
-})
 
+  test('header applies safe-area padding inline', async ({ page }) => {
+    const header = page.locator('#navbar')
+    await expect(header).toBeVisible()
+    const inlineStyle = await header.evaluate((el) => el.getAttribute('style') ?? '')
+    expect(inlineStyle).toContain('safe-area-inset-top')
+    expect(inlineStyle).toContain('safe-area-inset-left')
+    expect(inlineStyle).toContain('safe-area-inset-right')
+  })
+})
