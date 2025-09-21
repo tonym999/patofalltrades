@@ -1,8 +1,9 @@
 "use client"
 
 import type React from "react"
-import { motion, useReducedMotion, cubicBezier } from "framer-motion"
+import { motion, cubicBezier } from "framer-motion"
 import { Hammer, Wrench, Paintbrush, Zap } from "lucide-react"
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion"
 
 /**
  * Renders a set of animated tool icons floating within an absolutely positioned container.
@@ -19,7 +20,7 @@ export function FloatingTools() {
     path: { x: number[]; y: number[] }
   }
 
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   const tools: ToolConfig[] = [
     {

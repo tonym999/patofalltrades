@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
 import { GlassmorphismCard } from "./GlassmorphismCard";
 import type { LucideIcon } from "lucide-react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 type Service = {
   icon: LucideIcon;
@@ -52,7 +53,7 @@ const toSlug = (s: string): string =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 export default function Services() {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = usePrefersReducedMotion();
 
   const headingMotionProps = shouldReduceMotion
     ? { initial: false as const }
@@ -137,5 +138,4 @@ export default function Services() {
     </section>
   );
 }
-
 

@@ -3,14 +3,14 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
-import { useReducedMotion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
   const [isHidden, setIsHidden] = useState(false);
   const lastScrollYRef = useRef(0);
   const showTimeoutRef = useRef<number | null>(null);
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {

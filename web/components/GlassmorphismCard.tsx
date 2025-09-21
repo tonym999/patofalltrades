@@ -2,7 +2,8 @@
 
 import type React from "react";
 import { forwardRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 type MotionDivProps = React.ComponentProps<typeof motion.div>;
 
 interface GlassmorphismCardProps extends Omit<
@@ -35,7 +36,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
   }: GlassmorphismCardProps,
   ref
 ) {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldReduceMotion = usePrefersReducedMotion();
   const entranceMotionProps: Partial<MotionDivProps> = shouldReduceMotion
     ? { initial: false }
     : {

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { GlassmorphismCard } from "@/components/GlassmorphismCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
 import { testimonials as testimonialsData } from "@/config/testimonials";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 export default function Testimonials() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
   const sectionRef = useRef<HTMLElement | null>(null);
   const autoplayIntervalRef = useRef<number | null>(null);
   const resumeTimeoutRef = useRef<number | null>(null);
@@ -166,4 +167,3 @@ export default function Testimonials() {
     </section>
   );
 }
-
