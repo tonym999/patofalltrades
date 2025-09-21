@@ -15,20 +15,20 @@ export function usePrefersReducedMotion(): boolean {
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
     const mediaQuery = window.matchMedia(QUERY);
-    const update = () => setPrefers(mediaQuery.matches);
-    update();
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", update);
-    } else {
-      mediaQuery.addListener(update);
-    }
-    return () => {
-      if (typeof mediaQuery.removeEventListener === "function") {
-        mediaQuery.removeEventListener("change", update);
-      } else {
-        mediaQuery.removeListener(update);
-      }
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefers(event.matches);
     };
+
+    setPrefers(mediaQuery.matches);
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
   }, []);
 
   return prefers;
