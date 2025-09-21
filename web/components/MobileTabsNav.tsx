@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Drawer } from "vaul";
 import { Mail as MailIcon, MessageCircle as WhatsAppIcon, X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
-import { CONTACT_INFO } from "@/config/contact";
+import { CONTACT_INFO, whatsappHref } from "@/config/contact";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 import type { OpenMobileMenuDetail } from "@/lib/mobileMenuEvents";
 
@@ -34,6 +34,21 @@ export default function MobileTabsNav() {
     } catch {}
   }, []);
 
+  const restoreFocus = useCallback(() => {
+    const focusOpener = () => {
+      (openerRef.current ??
+        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus({ preventScroll: true });
+    };
+    const schedule = () => {
+      window.setTimeout(focusOpener, 0);
+    };
+    if (typeof queueMicrotask === "function") {
+      queueMicrotask(schedule);
+    } else {
+      schedule();
+    }
+  }, []);
+
   const closeMenu = useCallback((trigger: "backdrop" | "close_button" | "escape" | "item_click") => {
     if (closingRef.current) return;
     closingRef.current = true;
@@ -42,29 +57,25 @@ export default function MobileTabsNav() {
     try {
       track("menu_close", { surface: "mobile_bottom_sheet", trigger });
     } catch {}
-    if (trigger !== "item_click") {
-      // Prefer last opener; fallback to header hamburger if available
-      (openerRef.current ??
-        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
-    }
     // Reset guard on next microtask so subsequent opens work
     queueMicrotask(() => {
       closingRef.current = false;
     });
   }, []);
 
-  // Restore focus when the drawer closes via Vaul interactions (e.g., drag-to-close)
+  // Restore focus when the drawer closes (manual close or Vaul gesture)
   const prevOpenRef = useRef<boolean>(false);
   useEffect(() => {
-    // Only restore focus here for Vaul gesture closes.
-    if (!isMenuOpen && prevOpenRef.current && lastCloseReasonRef.current === "gesture") {
-      (openerRef.current ??
-        (document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLElement | null))?.focus();
+    if (!isMenuOpen && prevOpenRef.current) {
+      const reason = lastCloseReasonRef.current;
+      if (reason && reason !== "item_click") {
+        restoreFocus();
+      }
     }
     prevOpenRef.current = isMenuOpen;
     // Reset last close reason after handling
     if (!isMenuOpen) lastCloseReasonRef.current = null;
-  }, [isMenuOpen]);
+  }, [isMenuOpen, restoreFocus]);
 
   // Centralize menu state event dispatch for header aria-expanded sync
   useEffect(() => {
@@ -153,7 +164,7 @@ export default function MobileTabsNav() {
         modal
       >
         <Drawer.Overlay
-          className="fixed inset-0 bg-black/50 z-[70] md:hidden"
+          className="fixed inset-0 bg-black/50 z-[var(--z-modal-overlay)] md:hidden"
           data-testid="menu-overlay"
           onClick={() => closeMenu("backdrop")}
         />
@@ -162,7 +173,7 @@ export default function MobileTabsNav() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-menu-title"
-          className="fixed inset-x-0 bottom-0 z-[80] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
+          className="fixed inset-x-0 bottom-0 z-[var(--z-modal-content)] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
           style={{ paddingBottom: "max(env(safe-area-inset-bottom), 12px)" }}
         >
           <div className="max-w-screen-md mx-auto px-4 pt-2 pb-2">
@@ -204,7 +215,7 @@ export default function MobileTabsNav() {
               <h4 className="sr-only">Contact</h4>
               <div className="grid grid-cols-1 gap-2">
                 <a
-                  href={`https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent("Hi Pat,")}`}
+                  href={whatsappHref()}
                   rel="noopener noreferrer"
                   target="_blank"
                   className="py-3 min-h-[44px] inline-flex items-center gap-2 text-gray-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 rounded"
@@ -229,5 +240,3 @@ export default function MobileTabsNav() {
     </>
   );
 }
-
-

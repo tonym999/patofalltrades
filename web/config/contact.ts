@@ -6,4 +6,9 @@ export const CONTACT_INFO = {
   email: "pat@patofalltrades.co.uk",
 } as const;
 
+export const WHATSAPP_PRESET = "Hi Pat, ";
+
+export const whatsappHref = (preset: string = WHATSAPP_PRESET): string =>
+  `https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(preset)}`;
+
 

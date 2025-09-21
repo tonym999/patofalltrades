@@ -1,6 +1,6 @@
 import { test, expect, devices, Page } from '@playwright/test'
 import { ensureMobile } from './utils/ensureMobile'
-import { CONTACT_INFO } from '../../config/contact'
+import { CONTACT_INFO, WHATSAPP_PRESET, whatsappHref } from '../../config/contact'
 
 test.use({ ...devices['iPhone 12'] })
 
@@ -15,17 +15,18 @@ test.describe('Mobile CTA Bar', () => {
 	test('renders on mobile view and shows buttons @smoke', async ({ page }) => {
 		const bar = page.getByRole('link', { name: 'Get Quote' })
 		await expect(bar).toBeVisible()
-		const call = page.getByRole('link', { name: 'Call' })
+		const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
 		await expect(call).toBeVisible()
 	})
 
 	test('tel link opens dialer scheme', async ({ page }) => {
-		const call = page.getByRole('link', { name: 'Call' })
+		const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
 		await expect(call).toHaveAttribute('href', `tel:${CONTACT_INFO.phoneE164}`)
 	})
 
 	test('Get Quote scrolls to #contact and focuses first field', async ({ page }) => {
-		const getQuote = page.getByRole('link', { name: 'Get Quote' })
+		const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
+		await expect(getQuote).toBeVisible()
 		await getQuote.click()
 		// Wait a tick for focus to move
 		const nameInput = page.locator('#name')
@@ -35,21 +36,37 @@ test.describe('Mobile CTA Bar', () => {
 	})
 
 	test('buttons are at least 44px tall', async ({ page }) => {
-		const getQuote = page.getByRole('link', { name: 'Get Quote' })
+		const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
 		const box = await getQuote.boundingBox()
 		expect(box?.height || 0).toBeGreaterThanOrEqual(44)
-		const call = page.getByRole('link', { name: 'Call' })
+		const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
 		const box2 = await call.boundingBox()
 		expect(box2?.height || 0).toBeGreaterThanOrEqual(44)
 	})
 
+	test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
+		const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
+		await expect(whatsapp).toHaveAttribute('target', '_blank')
+		await expect(whatsapp).toHaveAttribute('rel', /noopener/)
+		await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
+		await expect(whatsapp).toHaveAttribute('href', whatsappHref())
+		const rawHref = await whatsapp.getAttribute('href')
+		expect(rawHref).toBeTruthy()
+		const params = new URL(rawHref ?? '').searchParams
+		expect(params.get('text')).toBe(WHATSAPP_PRESET)
+	})
+
 	test('visible focus rings on keyboard focus', async ({ page }) => {
-		// Move focus into document then tab to CTA links
+		// Move focus into document then tab through CTA links
 		await page.focus('body')
-		const call = page.getByRole('link', { name: 'Call' })
+		const ctaLinks = page.getByTestId('mobile-cta-link')
+		const call = ctaLinks.nth(0)
 		await call.focus()
 		await page.keyboard.press('Tab')
-		const getQuote = page.getByRole('link', { name: 'Get Quote' })
+		const whatsapp = ctaLinks.nth(1)
+		await expect(whatsapp).toBeFocused()
+		await page.keyboard.press('Tab')
+		const getQuote = ctaLinks.nth(2)
 		await expect(getQuote).toBeFocused()
 		// Tailwind ring utilities apply via box-shadow when :focus-visible
 		const styles = await getQuote.evaluate(el => {
