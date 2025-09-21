@@ -1,4 +1,4 @@
-import { test, expect, devices, Page } from '@playwright/test'
+import { test, expect, devices } from '@playwright/test'
 import { ensureMobile } from './utils/ensureMobile'
 import { CONTACT_INFO, WHATSAPP_PRESET, whatsappHref } from '../../config/contact'
 
@@ -35,26 +35,27 @@ test.describe('Mobile CTA Bar', () => {
 		await expect(page).toHaveURL(/#contact$/)
 	})
 
-	test('buttons are at least 44px tall', async ({ page }) => {
-		const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
-		const box = await getQuote.boundingBox()
-		expect(box?.height || 0).toBeGreaterThanOrEqual(44)
-		const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
-		const box2 = await call.boundingBox()
-		expect(box2?.height || 0).toBeGreaterThanOrEqual(44)
-	})
+		test('buttons are at least 44px tall', async ({ page }) => {
+			const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
+			const quoteBox = await getQuote.boundingBox()
+			expect(quoteBox).not.toBeNull()
+			expect(quoteBox!.height).toBeGreaterThanOrEqual(44)
+			const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
+			const callBox = await call.boundingBox()
+			expect(callBox).not.toBeNull()
+			expect(callBox!.height).toBeGreaterThanOrEqual(44)
+		})
 
-	test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
-		const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
-		await expect(whatsapp).toHaveAttribute('target', '_blank')
-		await expect(whatsapp).toHaveAttribute('rel', /noopener/)
-		await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
-		await expect(whatsapp).toHaveAttribute('href', whatsappHref())
-		const rawHref = await whatsapp.getAttribute('href')
-		expect(rawHref).toBeTruthy()
-		const params = new URL(rawHref ?? '').searchParams
-		expect(params.get('text')).toBe(WHATSAPP_PRESET)
-	})
+		test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
+			const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
+			await expect(whatsapp).toHaveAttribute('target', '_blank')
+			await expect(whatsapp).toHaveAttribute('rel', /noopener/)
+			await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
+			const expectedHref = whatsappHref()
+			await expect(whatsapp).toHaveAttribute('href', expectedHref)
+			const params = new URL(expectedHref).searchParams
+			expect(params.get('text')).toBe(WHATSAPP_PRESET)
+		})
 
 	test('visible focus rings on keyboard focus', async ({ page }) => {
 		// Move focus into document then tab through CTA links
@@ -69,14 +70,16 @@ test.describe('Mobile CTA Bar', () => {
 		const getQuote = ctaLinks.nth(2)
 		await expect(getQuote).toBeFocused()
 		// Tailwind ring utilities apply via box-shadow when :focus-visible
-		const styles = await getQuote.evaluate(el => {
-			const cs = getComputedStyle(el)
-			return { outlineWidth: cs.outlineWidth, boxShadow: cs.boxShadow }
+			const focusSignal = await getQuote.evaluate(el => {
+				const cs = getComputedStyle(el)
+				const outlineWidth = Number.parseFloat(cs.outlineWidth || '0')
+				if (Number.isFinite(outlineWidth) && outlineWidth > 0) return 'outline'
+				const boxShadow = (cs.boxShadow || '').trim().toLowerCase()
+				if (boxShadow && boxShadow !== 'none') return 'shadow'
+				return 'none'
+			})
+			expect(focusSignal).not.toBe('none')
 		})
-		const outline = parseFloat((styles.outlineWidth || '0').toString())
-		const hasShadow = !!styles.boxShadow && styles.boxShadow !== 'none'
-		expect(outline > 0 || hasShadow).toBeTruthy()
-	})
 
 	test('respects safe-area bottom padding', async ({ page }) => {
 		// Check arbitrary property is applied on the padding container via test id

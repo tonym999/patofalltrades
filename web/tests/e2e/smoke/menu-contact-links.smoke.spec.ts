@@ -13,8 +13,6 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
 
     const dialog = page.locator('#mobile-menu-panel')
     await expect(dialog).toBeVisible({ timeout: 10000 })
-    // Allow menu animation to finish before querying links
-    await page.waitForTimeout(300)
     const ax = await page.accessibility.snapshot()
     expect(ax).toBeTruthy()
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
@@ -39,4 +37,3 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     await expect(email).toHaveAttribute('href', 'mailto:pat@patofalltrades.co.uk')
   })
 })
-

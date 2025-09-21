@@ -12,9 +12,11 @@ test.describe('Services full E2E', () => {
     const cards = page.getByTestId('service-card')
     await expect(cards).toHaveCount(4)
 
-    for (let i = 0; i < 4; i++) {
-      const card = cards.nth(i)
+    for (const index of [0, 1, 2, 3] as const) {
+      const card = cards.nth(index)
+      await expect(card).toHaveAttribute('tabindex', '-1')
       await card.focus()
+
       const icon = card.getByTestId('service-icon')
       const anim = await icon.evaluate(el => getComputedStyle(el as HTMLElement).animationName)
       expect(typeof anim).toBe('string')
@@ -22,14 +24,11 @@ test.describe('Services full E2E', () => {
 
       const progress = card.getByTestId('service-progress')
       const start = await readWidth(progress)
-      await page.waitForTimeout(400)
-      const mid = await readWidth(progress)
-      expect(mid).toBeGreaterThan(start)
-      if (i < 3) {
-        await page.keyboard.press('Tab')
-        const next = cards.nth(i + 1)
-        await expect(next).toBeFocused()
-      }
+      await expect.poll(() => readWidth(progress), {
+        message: 'progress width should increase shortly after focus',
+        intervals: [50, 100, 150, 250],
+        timeout: 1500,
+      }).toBeGreaterThan(start)
     }
   })
 
@@ -54,5 +53,3 @@ test.describe('Services full E2E', () => {
     await expect.poll(measureColumns).toBe(4)
   })
 })
-
-

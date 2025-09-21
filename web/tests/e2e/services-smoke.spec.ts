@@ -21,17 +21,24 @@ test.describe('Services @smoke', () => {
     expect(animationName).not.toBe('none')
 
     const progress = first.getByTestId('service-progress')
-    const container = await progress.evaluateHandle(el => el.parentElement as HTMLElement)
+    const containerWidth = await progress.evaluate(el => el.parentElement?.clientWidth ?? 0)
+    expect(containerWidth).toBeGreaterThan(0)
 
     const start = await readWidth(progress)
-    await page.waitForTimeout(400)
-    const mid = await readWidth(progress)
-    expect(mid).toBeGreaterThan(start)
+    await expect.poll(() => readWidth(progress), {
+      message: 'progress width should increase while focused',
+      intervals: [50, 100, 150, 250],
+      timeout: 1500,
+    }).toBeGreaterThan(start)
 
-    await page.waitForTimeout(1600)
-    const finalWidth = await readWidth(progress)
-    const containerWidth = await container.evaluate(el => el.clientWidth)
-    expect(finalWidth / containerWidth).toBeGreaterThan(0.9)
+    await expect.poll(async () => {
+      const current = await readWidth(progress)
+      return current / containerWidth
+    }, {
+      message: 'progress bar should fill near 100% while focused',
+      intervals: [100, 150, 200, 250],
+      timeout: 2000,
+    }).toBeGreaterThan(0.9)
 
     // Move focus to next card to leave focus-within scope and wait for reset
     await cards.nth(1).focus()
@@ -42,5 +49,3 @@ test.describe('Services @smoke', () => {
     }).toBeLessThanOrEqual(0.2)
   })
 })
-
-

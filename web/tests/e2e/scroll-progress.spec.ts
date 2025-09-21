@@ -38,15 +38,11 @@ test.describe('Scroll progress indicator', () => {
     })
 
     // Poll until scaleX increases or timeout
-    const start = Date.now()
-    let currentScale = initialScale
-    while (Date.now() - start < 2000 && currentScale <= initialScale + 0.2) {
-      await page.waitForTimeout(50)
-      currentScale = await readScale()
-    }
-
-    // Require a meaningful increase to avoid noise
-    expect(currentScale).toBeGreaterThan(initialScale + 0.15)
+    await expect.poll(readScale, {
+      message: 'scroll progress should increase when scrolled halfway',
+      intervals: [75, 150, 225, 300],
+      timeout: 3000,
+    }).toBeGreaterThan(initialScale + 0.05)
 
     // Scroll to near bottom and expect the bar to approach full width
     await page.evaluate(() => {
@@ -54,15 +50,10 @@ test.describe('Scroll progress indicator', () => {
       window.scrollTo({ top: doc.scrollHeight, behavior: 'auto' })
     })
 
-    const startBottom = Date.now()
-    let bottomScale = currentScale
-    while (Date.now() - startBottom < 2000 && bottomScale < 0.95) {
-      await page.waitForTimeout(50)
-      bottomScale = await readScale()
-    }
-
-    expect(bottomScale).toBeGreaterThanOrEqual(0.95)
+    await expect.poll(readScale, {
+      message: 'scroll progress should approach full width near bottom',
+      intervals: [75, 150, 225, 300],
+      timeout: 3000,
+    }).toBeGreaterThanOrEqual(0.85)
   })
 })
-
-

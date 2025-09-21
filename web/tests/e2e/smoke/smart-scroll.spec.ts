@@ -6,7 +6,7 @@ test.describe('Smart Scroll Behavior @smoke', () => {
   test('header hides on scroll down, shows on scroll up; bottom CTA shadow toggles', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     await page.evaluate(() => {
       window.scrollTo({ top: 0, behavior: 'auto' })
     })
