@@ -32,8 +32,8 @@ body {
   background-image: linear-gradient(180deg, var(--bg-900), var(--bg-950));
   color: #f0f0f0;
   overflow-x: hidden;
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 [data-testid="scroll-progress"] {
@@ -42,13 +42,11 @@ body {
   background-position: left top;
 }
 
-@supports (
-    (padding-left: max(env(safe-area-inset-left), 0px)) and
-    (padding-right: max(env(safe-area-inset-right), 0px))
-) {
+@supports (padding-left: max(env(safe-area-inset-left, 0px), 0px)) and
+  (padding-right: max(env(safe-area-inset-right, 0px), 0px)) {
   body {
-    padding-left: max(env(safe-area-inset-left), 0px);
-    padding-right: max(env(safe-area-inset-right), 0px);
+    padding-left: max(env(safe-area-inset-left, 0px), 0px);
+    padding-right: max(env(safe-area-inset-right, 0px), 0px);
   }
 }
 
@@ -80,7 +78,10 @@ body {
 /* Ensure content is not obscured by fixed bottom bars on small screens */
 @media (max-width: 767px) {
   main {
-    padding-bottom: max(calc(var(--cta-height) + var(--tabs-height) + 12px), env(safe-area-inset-bottom));
+    padding-bottom: max(
+      calc(var(--cta-height) + var(--tabs-height) + 12px),
+      env(safe-area-inset-bottom, 0px)
+    );
   }
 }
 
@@ -138,26 +139,25 @@ body {
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .sticky-nav {
+  .motion-enabled .sticky-nav {
     transition: none !important;
   }
-  html,
-  :root {
+  :is(html, :root).motion-enabled {
     scroll-behavior: auto !important;
   }
-  *,
-  *::before,
-  *::after {
+  .motion-enabled *,
+  .motion-enabled *::before,
+  .motion-enabled *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  [data-vaul-drawer],
-  [data-vaul-overlay] {
+  .motion-enabled [data-vaul-drawer],
+  .motion-enabled [data-vaul-overlay] {
     transition: none !important;
     animation: none !important;
   }
-  [data-testid="scroll-progress"] {
+  .motion-enabled [data-testid="scroll-progress"] {
     transform: none !important;
     will-change: auto !important;
     opacity: 0.35 !important;

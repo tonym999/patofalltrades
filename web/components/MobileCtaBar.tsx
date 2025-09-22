@@ -81,14 +81,12 @@ export default function MobileCtaBar() {
       className={`md:hidden fixed bottom-0 inset-x-0 z-50 backdrop-blur-xl bg-white/70 border-t border-white/60 shadow-lg ${scrolled ? "bottom-cta--shadow" : ""}`}
       data-shadowed={scrolled ? "true" : "false"}
       ref={containerRef}
-      style={{
-        paddingLeft: "env(safe-area-inset-left, 0px)",
-        paddingRight: "env(safe-area-inset-right, 0px)",
-      }}
     >
       <div
         className="px-4 pt-3"
         style={{
+          paddingLeft: "env(safe-area-inset-left, 0px)",
+          paddingRight: "env(safe-area-inset-right, 0px)",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
         }}
         data-testid="mobile-cta-padding"

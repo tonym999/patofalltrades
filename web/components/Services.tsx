@@ -91,7 +91,7 @@ export default function Services() {
             >
               <div
                 data-testid="service-icon"
-                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg motion-safe:group-focus-within:animate-[spin_1800ms_linear] motion-safe:group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none`}
+                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg ${shouldReduceMotion ? "motion-reduce:animate-none" : "group-focus-within:animate-[spin_1800ms_linear] group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none"}`}
               >
                 <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
               </div>
@@ -106,7 +106,11 @@ export default function Services() {
               <div className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`} aria-hidden="true">
                 <div
                   data-testid="service-progress"
-                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full transition-[width] duration-[1800ms] ease-in-out motion-reduce:transition-none motion-reduce:duration-0`}
+                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full ${
+                    shouldReduceMotion
+                      ? "transition-none duration-0"
+                      : "transition-[width] duration-[1800ms] ease-in-out"
+                  } motion-reduce:transition-none motion-reduce:duration-0`}
                 />
               </div>
 
