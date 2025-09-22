@@ -19,18 +19,34 @@ test.describe('Scroll progress indicator', () => {
     await expect(bar).toBeAttached()
     // Don't assert visibility; at scaleX=0 the element may be effectively hidden.
 
-    const readScale = async () => {
+    const readProgress = async () => {
       return await bar.evaluate(el => {
-        const t = getComputedStyle(el).transform
-        if (!t || t === 'none') return 0
-        const m = t.match(/matrix\(([^,]+)/)
-        if (!m) return 0
-        const a = parseFloat(m[1]!)
-        return isNaN(a) ? 0 : a
+        const style = getComputedStyle(el)
+        const transform = style.transform
+        if (transform && transform !== 'none') {
+          const match = transform.match(/matrix\(([^,]+)/)
+          if (match) {
+            const value = parseFloat(match[1]!)
+            if (!Number.isNaN(value)) {
+              return { mode: 'transform', value }
+            }
+          }
+        }
+
+        const backgroundSize = style.backgroundSize
+        const backgroundMatch = backgroundSize.match(/^([0-9.]+)%/)
+        if (backgroundMatch) {
+          const pct = parseFloat(backgroundMatch[1]!)
+          if (!Number.isNaN(pct)) {
+            return { mode: 'background', value: Math.max(0, Math.min(pct / 100, 1)) }
+          }
+        }
+
+        return { mode: 'none', value: 0 }
       })
     }
 
-    const initialScale = await readScale()
+    const { value: initialValue } = await readProgress()
 
     await page.evaluate(() => {
       const doc = document.documentElement
@@ -38,11 +54,11 @@ test.describe('Scroll progress indicator', () => {
     })
 
     // Poll until scaleX increases or timeout
-    await expect.poll(readScale, {
+    await expect.poll(async () => (await readProgress()).value, {
       message: 'scroll progress should increase when scrolled halfway',
       intervals: [75, 150, 225, 300],
       timeout: 3000,
-    }).toBeGreaterThan(initialScale + 0.05)
+    }).toBeGreaterThan(initialValue + 0.05)
 
     // Scroll to near bottom and expect the bar to approach full width
     await page.evaluate(() => {
@@ -50,7 +66,7 @@ test.describe('Scroll progress indicator', () => {
       window.scrollTo({ top: doc.scrollHeight, behavior: 'auto' })
     })
 
-    await expect.poll(readScale, {
+    await expect.poll(async () => (await readProgress()).value, {
       message: 'scroll progress should approach full width near bottom',
       intervals: [75, 150, 225, 300],
       timeout: 3000,
