@@ -35,8 +35,11 @@ test.describe('Reduced motion preference', () => {
     })
     await waitForAnimationFrames()
 
-    const midWidth = await readWidth()
-    expect(Math.abs(midWidth - initialWidth)).toBeLessThanOrEqual(0.5)
+    await expect.poll(async () => Math.abs((await readWidth()) - initialWidth), {
+      message: 'scroll progress width should remain stable at mid scroll when motion is reduced',
+      intervals: [75, 150, 225, 300],
+      timeout: 2000,
+    }).toBeLessThanOrEqual(0.5)
 
     await page.evaluate(() => {
       const doc = document.documentElement
@@ -44,8 +47,11 @@ test.describe('Reduced motion preference', () => {
     })
     await waitForAnimationFrames()
 
-    const endWidth = await readWidth()
-    expect(Math.abs(endWidth - initialWidth)).toBeLessThanOrEqual(0.5)
+    await expect.poll(async () => Math.abs((await readWidth()) - initialWidth), {
+      message: 'scroll progress width should remain stable near bottom when motion is reduced',
+      intervals: [75, 150, 225, 300],
+      timeout: 2000,
+    }).toBeLessThanOrEqual(0.5)
 
     const scrollY = await page.evaluate(() => window.scrollY)
     expect(scrollY).toBeGreaterThan(0)

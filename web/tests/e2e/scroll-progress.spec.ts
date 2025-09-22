@@ -23,14 +23,35 @@ test.describe('Scroll progress indicator', () => {
       return await bar.evaluate(el => {
         const style = getComputedStyle(el)
         const transform = style.transform
-        if (transform && transform !== 'none') {
-          const match = transform.match(/matrix\(([^,]+)/)
-          if (match) {
-            const value = parseFloat(match[1]!)
-            if (!Number.isNaN(value)) {
-              return { mode: 'transform', value }
-            }
+        const parseScaleX = (input: string | null): number | null => {
+          if (!input || input === 'none') return null
+          const normalized = input.trim()
+          if (normalized.startsWith('matrix3d(')) {
+            const parts = normalized
+              .slice('matrix3d('.length, -1)
+              .split(',')
+              .map(v => Number.parseFloat(v.trim()))
+            const scale = parts[0]
+            return Number.isFinite(scale) ? scale : null
           }
+          if (normalized.startsWith('matrix(')) {
+            const parts = normalized
+              .slice('matrix('.length, -1)
+              .split(',')
+              .map(v => Number.parseFloat(v.trim()))
+            const scale = parts[0]
+            return Number.isFinite(scale) ? scale : null
+          }
+          if (normalized.startsWith('scaleX(')) {
+            const value = Number.parseFloat(normalized.slice('scaleX('.length, -1))
+            return Number.isFinite(value) ? value : null
+          }
+          return null
+        }
+
+        const parsed = parseScaleX(transform)
+        if (parsed !== null) {
+          return { mode: 'transform', value: parsed }
         }
 
         const backgroundSize = style.backgroundSize

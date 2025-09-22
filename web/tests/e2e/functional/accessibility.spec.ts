@@ -15,7 +15,8 @@ test.describe('Accessibility focus management', () => {
     await expect(focused).toHaveAttribute('href', '#main-content')
 
     await page.keyboard.press('Enter')
-    await expect(page.locator('main#main-content:focus')).toHaveCount(1)
+    await expect(focused).toHaveAttribute('id', 'main-content')
+    await expect(focused).toHaveJSProperty('tagName', 'MAIN')
     await expect(page).toHaveURL(/#main-content$/)
 
     await test.step('axe sweep', async () => {
@@ -62,6 +63,15 @@ test.describe('Accessibility focus management', () => {
       await expect(focused).toHaveAttribute('href', step.href)
       await expect(focused).toHaveText(step.textPattern)
     }
+
+    await test.step('primary nav axe sweep', async () => {
+      const results = await new AxeBuilder({ page })
+        .include('header')
+        .withTags(['wcag2a', 'wcag2aa'])
+        .analyze()
+
+      expect(results.violations).toEqual([])
+    })
   })
 })
 

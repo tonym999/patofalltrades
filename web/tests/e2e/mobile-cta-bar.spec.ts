@@ -87,6 +87,9 @@ test.describe('Mobile CTA Bar', () => {
 		const paddingBottom = await barContainer.evaluate(el => getComputedStyle(el).paddingBottom)
 		const pb = Number.parseFloat((paddingBottom || '0px').toString())
 		expect(pb).toBeGreaterThanOrEqual(12)
+
+		const inlineStyle = await barContainer.evaluate(el => el.getAttribute('style') || '')
+		expect(inlineStyle).toContain('env(safe-area-inset-bottom, 0px)')
 	})
 
 	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {

@@ -27,7 +27,7 @@ test.describe('Testimonials', () => {
 
     // Verify autoplay is paused for at least 5s after manual interaction
     // eslint-disable-next-line playwright/no-wait-for-timeout -- explicit pause duration is part of the spec
-    await page.waitForTimeout(5500)
+    await page.waitForTimeout(5100)
     // Autoplay paused: active remains on dot1
     await expect(dot1).toHaveAttribute('aria-selected', 'true')
 

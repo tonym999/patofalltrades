@@ -88,6 +88,7 @@ export default function Services() {
               contentClassName="p-6 sm:p-8 h-full"
               data-testid="service-card"
               data-service={toSlug(service.title)}
+              tabIndex={0}
             >
               <div
                 data-testid="service-icon"

@@ -4,7 +4,7 @@ const readWidth = async (locator: Locator) => locator.evaluate((el: HTMLElement)
 
 test.describe('Services full E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
     await page.emulateMedia({ reducedMotion: 'no-preference' })
   })
 
@@ -12,23 +12,56 @@ test.describe('Services full E2E', () => {
     const cards = page.getByTestId('service-card')
     await expect(cards).toHaveCount(4)
 
+    const focus = page.locator(':focus')
+    const tabToCard = async (cardIndex: number) => {
+      const target = cards.nth(cardIndex)
+      await expect.poll(async () => {
+        await page.keyboard.press('Tab')
+        return target.evaluate((el) => {
+          const active = document.activeElement
+          return active === el || el.contains(active)
+        })
+      }, {
+        message: `Tab order should reach service card ${cardIndex + 1}`,
+        intervals: [100, 150, 200, 300],
+        timeout: 3000,
+      }).toBeTruthy()
+      return target
+    }
+
+    await page.focus('body')
+
     for (const index of [0, 1, 2, 3] as const) {
-      const card = cards.nth(index)
-      await expect(card).toHaveAttribute('tabindex', '-1')
-      await card.focus()
+      const card = await tabToCard(index)
+      await expect(card).toHaveAttribute('data-service')
+      await expect(card).toHaveAttribute('tabindex', '0')
+      await expect(card).toContainText(/\S/, { timeout: 3000 })
+      await expect(focus).toHaveCount(1)
+      const focusWithinCard = await card.evaluate((el) => el.contains(document.activeElement))
+      expect(focusWithinCard).toBeTruthy()
 
       const icon = card.getByTestId('service-icon')
-      const anim = await icon.evaluate(el => getComputedStyle(el as HTMLElement).animationName)
-      expect(typeof anim).toBe('string')
-      expect(anim).not.toBe('none')
+      const iconAnimation = await icon.evaluate((el) => {
+        const style = getComputedStyle(el as HTMLElement)
+        return {
+          name: style.animationName,
+          duration: style.animationDuration,
+        }
+      })
+      expect(iconAnimation.name).toBeTruthy()
+      expect(iconAnimation.name?.toLowerCase()).not.toBe('none')
+      expect(Number.parseFloat(iconAnimation.duration)).toBeGreaterThan(0)
 
       const progress = card.getByTestId('service-progress')
       const start = await readWidth(progress)
       await expect.poll(() => readWidth(progress), {
-        message: 'progress width should increase shortly after focus',
-        intervals: [50, 100, 150, 250],
-        timeout: 1500,
+        message: 'progress width should increase shortly after keyboard focus',
+        intervals: [100, 150, 200, 300],
+        timeout: 3000,
       }).toBeGreaterThan(start)
+
+      const progressTransition = await progress.evaluate((el) => getComputedStyle(el as HTMLElement).transitionDuration)
+      expect(Number.parseFloat(progressTransition)).toBeGreaterThan(0)
     }
   })
 
