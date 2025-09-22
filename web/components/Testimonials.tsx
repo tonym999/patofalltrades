@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassmorphismCard } from "@/components/GlassmorphismCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
@@ -23,6 +23,9 @@ export default function Testimonials() {
 
   const testimonials = useMemo(() => testimonialsData, []);
   const total = testimonials.length;
+  const idPrefix = useId();
+  const tabPanelId = `${idPrefix}-tabpanel`;
+  const getTabId = (index: number) => `${idPrefix}-tab-${index}`;
 
   useEffect(() => {
     const observeTarget = sectionRef.current;
@@ -106,12 +109,27 @@ export default function Testimonials() {
   }, [currentIndex]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      event.preventDefault();
-      goRelative(1, { focus: true });
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      event.preventDefault();
-      goRelative(-1, { focus: true });
+    switch (event.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        event.preventDefault();
+        goRelative(1, { focus: true });
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        event.preventDefault();
+        goRelative(-1, { focus: true });
+        break;
+      case "Home":
+        event.preventDefault();
+        goTo(0, { focus: true });
+        break;
+      case "End":
+        event.preventDefault();
+        goTo(total - 1, { focus: true });
+        break;
+      default:
+        break;
     }
   };
 
@@ -142,37 +160,51 @@ export default function Testimonials() {
         </motion.div>
 
         <div className="max-w-[72ch] mx-auto mb-10 md:mb-12">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
-              animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-              exit={reduceMotion ? undefined : { opacity: 0, y: -20 }}
-              transition={reduceMotion ? undefined : { duration: 0.4 }}
-            >
-              <GlassmorphismCard
-                outerClassName="rounded-2xl"
-                contentClassName="p-0 rounded-2xl min-h-[280px] md:min-h-[240px]"
+          <div
+            id={tabPanelId}
+            role="tabpanel"
+            aria-labelledby={getTabId(currentIndex)}
+            tabIndex={0}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={reduceMotion ? undefined : { opacity: 0, y: 20 }}
+                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -20 }}
+                transition={reduceMotion ? undefined : { duration: 0.4 }}
               >
-                <TestimonialCard
-                  quote={testimonials[currentIndex].text}
-                  rating={testimonials[currentIndex].rating}
-                  name={testimonials[currentIndex].name}
-                  projectType={testimonials[currentIndex].service}
-                  location={testimonials[currentIndex].area}
-                  className="bg-transparent border-0 shadow-none"
-                  readMore={false}
-                />
-              </GlassmorphismCard>
-            </motion.div>
-          </AnimatePresence>
+                <GlassmorphismCard
+                  outerClassName="rounded-2xl"
+                  contentClassName="p-0 rounded-2xl min-h-[280px] md:min-h-[240px]"
+                >
+                  <TestimonialCard
+                    quote={testimonials[currentIndex].text}
+                    rating={testimonials[currentIndex].rating}
+                    name={testimonials[currentIndex].name}
+                    projectType={testimonials[currentIndex].service}
+                    location={testimonials[currentIndex].area}
+                    className="bg-transparent border-0 shadow-none"
+                    readMore={false}
+                  />
+                </GlassmorphismCard>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        <div className="flex justify-center gap-3 mb-8" role="tablist" aria-label="Testimonials navigation" onKeyDown={handleKeyDown}>
+        <div
+          className="flex justify-center gap-3 mb-8"
+          role="tablist"
+          aria-label="Testimonials navigation"
+          aria-orientation="horizontal"
+          onKeyDown={handleKeyDown}
+        >
           {testimonials.map((t, index) => (
             <button
               key={index}
               type="button"
+              id={getTabId(index)}
               onClick={() => goTo(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 cursor-pointer ${
                 index === currentIndex ? "bg-amber-400 scale-110" : "bg-gray-600 hover:bg-gray-500"
@@ -182,6 +214,7 @@ export default function Testimonials() {
               tabIndex={index === currentIndex ? 0 : -1}
               data-testid={`testimonial-dot-${index}`}
               role="tab"
+              aria-controls={tabPanelId}
               ref={(node) => {
                 tabRefs.current[index] = node;
               }}

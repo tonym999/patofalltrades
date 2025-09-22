@@ -147,19 +147,97 @@ export default function Scripts() {
       if (!slider) return () => undefined;
       const afterImage = slider.querySelector<HTMLElement>('.after-image');
       const handle = slider.querySelector<HTMLElement>('.slider-handle');
+      if (!handle) return () => undefined;
+
       let isDragging = false;
       let activePointerId: number | null = null;
+      const KEYBOARD_STEP = 5;
+      let currentPercentage = 50;
+
+      handle.setAttribute('role', 'slider');
+      handle.tabIndex = 0;
+      handle.setAttribute('aria-valuemin', '0');
+      handle.setAttribute('aria-valuemax', '100');
+      if (!handle.getAttribute('aria-label')) {
+        handle.setAttribute('aria-label', 'Reveal after photo width');
+      }
+
+      const setSliderPercentage = (value: number) => {
+        const clamped = Math.max(0, Math.min(100, value));
+        currentPercentage = clamped;
+        if (afterImage) afterImage.style.width = `${clamped}%`;
+        handle.style.left = `${clamped}%`;
+        handle.setAttribute('aria-valuenow', String(Math.round(clamped)));
+      };
 
       const updateFromClientX = (clientX: number | null) => {
         if (clientX === null) return;
         const rect = slider.getBoundingClientRect();
+        if (!rect || rect.width === 0) return;
         let x = clientX - rect.left;
         x = Math.max(0, Math.min(x, rect.width));
 
         const widthPercentage = (x / rect.width) * 100;
-        if (afterImage) afterImage.style.width = `${widthPercentage}%`;
-        if (handle) handle.style.left = `${widthPercentage}%`;
+        setSliderPercentage(widthPercentage);
       };
+
+      const initializeFromLayout = () => {
+        const rect = slider.getBoundingClientRect();
+        if (!rect || rect.width === 0) {
+          setSliderPercentage(currentPercentage);
+          return;
+        }
+        const handleRect = handle.getBoundingClientRect();
+        if (handleRect.width > 0) {
+          const center = handleRect.left + handleRect.width / 2 - rect.left;
+          const percentage = (center / rect.width) * 100;
+          if (Number.isFinite(percentage)) {
+            setSliderPercentage(percentage);
+            return;
+          }
+        }
+        if (afterImage) {
+          const afterRect = afterImage.getBoundingClientRect();
+          const percentage = (afterRect.width / rect.width) * 100;
+          if (Number.isFinite(percentage)) {
+            setSliderPercentage(percentage);
+            return;
+          }
+        }
+        setSliderPercentage(currentPercentage);
+      };
+
+      const adjustFromKeyboard = (delta: number) => {
+        setSliderPercentage(currentPercentage + delta);
+      };
+
+      const onHandleKeyDown = (event: KeyboardEvent) => {
+        switch (event.key) {
+          case 'ArrowRight':
+          case 'ArrowUp':
+            event.preventDefault();
+            adjustFromKeyboard(KEYBOARD_STEP);
+            break;
+          case 'ArrowLeft':
+          case 'ArrowDown':
+            event.preventDefault();
+            adjustFromKeyboard(-KEYBOARD_STEP);
+            break;
+          case 'Home':
+            event.preventDefault();
+            setSliderPercentage(0);
+            break;
+          case 'End':
+            event.preventDefault();
+            setSliderPercentage(100);
+            break;
+          default:
+            break;
+        }
+      };
+
+      initializeFromLayout();
+      handle.addEventListener('keydown', onHandleKeyDown);
 
       const supportsPointerEvents = typeof window !== 'undefined' && 'PointerEvent' in window;
       const supportsTouch =
@@ -264,6 +342,7 @@ export default function Scripts() {
             slider.removeEventListener('touchstart', startTouchDrag);
           }
         }
+        handle.removeEventListener('keydown', onHandleKeyDown);
       };
     };
 
