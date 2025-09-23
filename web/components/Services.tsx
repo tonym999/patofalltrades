@@ -73,7 +73,7 @@ function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
     setIsKeyboardFocusWithin(false);
   };
 
-  const progressStyle = isKeyboardFocusWithin ? { width: "100%" } : undefined;
+  const staticFocusWidthStyle = shouldReduceMotion && isKeyboardFocusWithin ? { width: "100%" } : undefined;
   const iconKeyboardAnimation = !shouldReduceMotion && isKeyboardFocusWithin ? "animate-[spin_1800ms_linear]" : "";
   const progressVisibilityClass = isKeyboardFocusWithin ? "opacity-100" : "";
   const iconAnimationClasses = shouldReduceMotion
@@ -114,7 +114,7 @@ function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
         <div
           data-testid="service-progress"
           className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full ${progressTransitionClasses} motion-reduce:transition-none motion-reduce:duration-0`}
-          style={progressStyle}
+          style={staticFocusWidthStyle}
         />
       </div>
 
@@ -138,7 +138,7 @@ function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
       <div
         aria-hidden="true"
         className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0`}
-        style={progressStyle}
+        style={staticFocusWidthStyle}
       />
     </GlassmorphismCard>
   );

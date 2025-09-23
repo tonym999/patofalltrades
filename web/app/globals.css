@@ -139,28 +139,36 @@ body {
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .motion-enabled .sticky-nav {
-    transition: none !important;
+    transition: none;
   }
-  :is(html, :root).motion-enabled {
-    scroll-behavior: auto !important;
-  }
+
   .motion-enabled *,
   .motion-enabled *::before,
   .motion-enabled *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
   }
+
   .motion-enabled [data-vaul-drawer],
   .motion-enabled [data-vaul-overlay] {
-    transition: none !important;
-    animation: none !important;
+    transition: none;
+    animation: none;
   }
-  .motion-enabled [data-testid="scroll-progress"] {
-    transform: none !important;
-    will-change: auto !important;
-    opacity: 0.35 !important;
+
+  .motion-enabled .parallax-bg {
+    background-attachment: scroll;
+  }
+
+  .motion-enabled .whatsapp-widget {
+    animation: none;
+    transform: none;
+    box-shadow: none;
   }
 }
 

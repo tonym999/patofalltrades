@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import type { MotionStyle } from "framer-motion";
 import { motion, useMotionValue, useTransform, useScroll } from "framer-motion";
 
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { usePrefersReducedMotionSync } from "@/hooks/usePrefersReducedMotion";
 
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotionSync();
   const reducedProgress = useMotionValue(0);
   const reducedBackgroundSize = useTransform(reducedProgress, (value) => {
     const clamped = Math.min(Math.max(value, 0), 1);
@@ -29,18 +30,28 @@ export function ScrollProgress() {
     };
   }, [prefersReducedMotion, reducedProgress, scrollYProgress]);
 
+  const style: MotionStyle = prefersReducedMotion
+    ? {
+        top: "max(env(safe-area-inset-top), 0px)",
+        backgroundSize: reducedBackgroundSize,
+        willChange: "auto",
+        transform: "none",
+        opacity: 0.35,
+        transition: "none",
+      }
+    : {
+        top: "max(env(safe-area-inset-top), 0px)",
+        backgroundSize: "100% 100%",
+        willChange: "transform",
+        scaleX: scrollYProgress,
+      };
+
   return (
     <motion.div
       className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 z-50 origin-left pointer-events-none"
       data-testid="scroll-progress"
       aria-hidden="true"
-      style={{
-        top: "max(env(safe-area-inset-top), 0px)",
-        willChange: prefersReducedMotion ? "auto" : "transform",
-        transform: prefersReducedMotion ? "none" : undefined,
-        backgroundSize: prefersReducedMotion ? reducedBackgroundSize : "100% 100%",
-        scaleX: prefersReducedMotion ? undefined : scrollYProgress,
-      }}
+      style={style}
     />
   );
 }
