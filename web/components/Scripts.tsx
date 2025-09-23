@@ -69,49 +69,33 @@ export default function Scripts() {
         toggleActions: 'play none none none' as const,
       };
 
-      return (target: Element | string, vars?: gsap.TweenVars) => {
-        const tweenVars = { ...(vars ?? {}) } as gsap.TweenVars;
-        delete (tweenVars as { scrollTrigger?: unknown }).scrollTrigger;
-
-        if (typeof target === 'string') {
-          const elements = gsap.utils.toArray(target) as Element[];
-          if (!elements.length) return;
-
-          const triggers = ScrollTrigger.batch(elements, {
+      const animateElement = (element: Element, elementVars: gsap.TweenVars) => {
+        const tween = gsap.from(element, {
+          ...baseTweenVars,
+          ...elementVars,
+          scrollTrigger: {
+            trigger: element,
             ...baseScrollTrigger,
             once: true,
-            onEnter: (batchElements) => {
-              const tween = gsap.from(batchElements, {
-                ...baseTweenVars,
-                ...tweenVars,
-              });
-              activeAnimations.push(tween);
-            },
-          });
-
-          if (Array.isArray(triggers)) {
-            triggers.forEach((trigger) => {
-              if (trigger) activeTriggers.push(trigger);
-            });
-          } else if (triggers) {
-            activeTriggers.push(triggers);
-          }
-
-          return;
-        }
-
-        const tween = gsap.from(target, {
-          ...baseTweenVars,
-          ...tweenVars,
-          scrollTrigger: {
-            trigger: target,
-            ...baseScrollTrigger,
           },
         });
         activeAnimations.push(tween);
         if (tween.scrollTrigger) {
           activeTriggers.push(tween.scrollTrigger);
         }
+      };
+
+      return (target: Element | string, vars?: gsap.TweenVars) => {
+        const tweenVars = { ...(vars ?? {}) } as gsap.TweenVars;
+        delete (tweenVars as { scrollTrigger?: unknown }).scrollTrigger;
+
+        if (typeof target === 'string') {
+          const elements = gsap.utils.toArray(target) as Element[];
+          elements.forEach((element) => animateElement(element, tweenVars));
+          return;
+        }
+
+        animateElement(target, tweenVars);
       };
     };
 
@@ -182,13 +166,7 @@ export default function Scripts() {
               textContent: target,
               ease: 'power2.out',
               overwrite: true,
-              modifiers: {
-                textContent: (value) => {
-                  const numericValue = Number.parseFloat(value);
-                  if (!Number.isFinite(numericValue)) return '0';
-                  return Math.round(numericValue).toString();
-                },
-              },
+              snap: { textContent: 1 },
               onComplete: () => {
                 setCounterAccessibleValue(counter, target);
               },
@@ -210,8 +188,6 @@ export default function Scripts() {
       const handle = slider.querySelector<HTMLElement>('.slider-handle');
       if (!handle) return () => undefined;
 
-      let isDragging = false;
-      let activePointerId: number | null = null;
       const KEYBOARD_STEP = 5;
       let currentPercentage = 50;
 
@@ -303,135 +279,192 @@ export default function Scripts() {
 
       const hasWindow = typeof window !== 'undefined';
       const supportsPointerEvents = hasWindow && 'PointerEvent' in window;
-      const supportsTouchEventsConstructor = typeof TouchEvent !== 'undefined';
+      const touchEventConstructor =
+        hasWindow && 'TouchEvent' in window
+          ? (window as unknown as { TouchEvent: typeof TouchEvent }).TouchEvent
+          : undefined;
       const supportsTouch =
         hasWindow &&
-        supportsTouchEventsConstructor &&
-        ('ontouchstart' in window || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
+        ('ontouchstart' in window ||
+          Boolean(touchEventConstructor) ||
+          (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
 
-      let pointerListenersAttached = false;
+      type DragMode = 'pointer' | 'mouse' | 'touch';
+
+      let isDragging = false;
+      let dragMode: DragMode | null = null;
+      let activePointerId: number | null = null;
+      let activeTouchId: number | null = null;
+      let activeMoveListenerMode: DragMode | null = null;
+
+      const isTouchEvent = (event: Event): event is TouchEvent => {
+        if (touchEventConstructor && event instanceof touchEventConstructor) return true;
+        return 'touches' in event;
+      };
+
+      const touchListenerOptions: AddEventListenerOptions = { passive: false };
+
       const onPointerMove = (event: PointerEvent) => {
-        if (!isDragging) return;
+        if (!isDragging || dragMode !== 'pointer') return;
         if (activePointerId !== null && event.pointerId !== activePointerId) return;
         updateFromClientX(event.clientX);
       };
-      const addPointerListeners = () => {
-        if (pointerListenersAttached) return;
-        pointerListenersAttached = true;
-        window.addEventListener('pointermove', onPointerMove);
-        window.addEventListener('pointerup', stopPointerDrag);
-        window.addEventListener('pointercancel', stopPointerDrag);
-      };
-      const removePointerListeners = () => {
-        if (!pointerListenersAttached) return;
-        pointerListenersAttached = false;
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerup', stopPointerDrag);
-        window.removeEventListener('pointercancel', stopPointerDrag);
-      };
-      const stopPointerDrag = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        if (activePointerId !== null) {
-          slider.releasePointerCapture?.(activePointerId);
-          activePointerId = null;
-        }
-        removePointerListeners();
-      };
-      const startPointerDrag = (event: PointerEvent) => {
-        event.preventDefault();
-        if (isDragging) stopPointerDrag();
-        isDragging = true;
-        activePointerId = event.pointerId;
-        slider.setPointerCapture?.(event.pointerId);
-        updateFromClientX(event.clientX);
-        addPointerListeners();
+
+      const onPointerUpOrCancel = (event: PointerEvent) => {
+        if (!isDragging || dragMode !== 'pointer') return;
+        if (activePointerId !== null && event.pointerId !== activePointerId) return;
+        stopDrag();
       };
 
-      let mouseListenersAttached = false;
       const onMouseMove = (event: MouseEvent) => {
-        if (!isDragging) return;
+        if (!isDragging || dragMode !== 'mouse') return;
         updateFromClientX(event.clientX);
-      };
-      const addMouseListeners = () => {
-        if (mouseListenersAttached) return;
-        mouseListenersAttached = true;
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', stopMouseDrag);
-      };
-      const removeMouseListeners = () => {
-        if (!mouseListenersAttached) return;
-        mouseListenersAttached = false;
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', stopMouseDrag);
-      };
-      const stopMouseDrag = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        removeMouseListeners();
-      };
-      const startMouseDrag = (event: MouseEvent) => {
-        event.preventDefault();
-        if (isDragging) stopMouseDrag();
-        isDragging = true;
-        updateFromClientX(event.clientX);
-        addMouseListeners();
       };
 
-      let touchListenersAttached = false;
+      const onMouseUp = () => {
+        if (!isDragging || dragMode !== 'mouse') return;
+        stopDrag();
+      };
+
+      const readActiveTouch = (touches: TouchList): Touch | null => {
+        if (touches.length === 0) return null;
+        if (activeTouchId === null) return touches.item(0);
+        for (let i = 0; i < touches.length; i += 1) {
+          const touch = touches.item(i);
+          if (touch && touch.identifier === activeTouchId) return touch;
+        }
+        return touches.item(0);
+      };
+
       const onTouchMove = (event: TouchEvent) => {
-        if (!isDragging || event.touches.length === 0) return;
-        event.preventDefault();
-        updateFromClientX(event.touches[0].clientX);
+        if (!isDragging || dragMode !== 'touch') return;
+        const touch = readActiveTouch(event.touches);
+        if (!touch) {
+          stopDrag();
+          return;
+        }
+        if (event.cancelable) event.preventDefault();
+        updateFromClientX(touch.clientX);
       };
-      const addTouchListeners = () => {
-        if (touchListenersAttached) return;
-        touchListenersAttached = true;
-        window.addEventListener('touchmove', onTouchMove, { passive: false });
-        window.addEventListener('touchend', stopTouchDrag);
-        window.addEventListener('touchcancel', stopTouchDrag);
+
+      const onTouchEndOrCancel = (event: TouchEvent) => {
+        if (!isDragging || dragMode !== 'touch') return;
+        const touchStillActive = (() => {
+          for (let i = 0; i < event.touches.length; i += 1) {
+            const touch = event.touches.item(i);
+            if (touch && touch.identifier === activeTouchId) return true;
+          }
+          return false;
+        })();
+        if (!touchStillActive) {
+          stopDrag();
+        }
       };
-      const removeTouchListeners = () => {
-        if (!touchListenersAttached) return;
-        touchListenersAttached = false;
-        window.removeEventListener('touchmove', onTouchMove);
-        window.removeEventListener('touchend', stopTouchDrag);
-        window.removeEventListener('touchcancel', stopTouchDrag);
+
+      const removeGlobalListeners = () => {
+        if (!activeMoveListenerMode) return;
+        if (activeMoveListenerMode === 'pointer') {
+          window.removeEventListener('pointermove', onPointerMove);
+          window.removeEventListener('pointerup', onPointerUpOrCancel);
+          window.removeEventListener('pointercancel', onPointerUpOrCancel);
+        } else if (activeMoveListenerMode === 'mouse') {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        } else if (activeMoveListenerMode === 'touch') {
+          window.removeEventListener('touchmove', onTouchMove);
+          window.removeEventListener('touchend', onTouchEndOrCancel);
+          window.removeEventListener('touchcancel', onTouchEndOrCancel);
+        }
+        activeMoveListenerMode = null;
       };
-      const stopTouchDrag = () => {
+
+      const addGlobalListeners = (mode: DragMode) => {
+        if (activeMoveListenerMode === mode) return;
+        removeGlobalListeners();
+        activeMoveListenerMode = mode;
+        if (mode === 'pointer') {
+          window.addEventListener('pointermove', onPointerMove);
+          window.addEventListener('pointerup', onPointerUpOrCancel);
+          window.addEventListener('pointercancel', onPointerUpOrCancel);
+        } else if (mode === 'mouse') {
+          window.addEventListener('mousemove', onMouseMove);
+          window.addEventListener('mouseup', onMouseUp);
+        } else if (mode === 'touch') {
+          window.addEventListener('touchmove', onTouchMove, touchListenerOptions);
+          window.addEventListener('touchend', onTouchEndOrCancel);
+          window.addEventListener('touchcancel', onTouchEndOrCancel);
+        }
+      };
+
+      const stopDrag = () => {
         if (!isDragging) return;
         isDragging = false;
-        removeTouchListeners();
+        if (dragMode === 'pointer' && activePointerId !== null) {
+          const pointerId = activePointerId;
+          if (typeof slider.hasPointerCapture === 'function') {
+            if (slider.hasPointerCapture(pointerId)) {
+              slider.releasePointerCapture(pointerId);
+            }
+          } else {
+            slider.releasePointerCapture?.(pointerId);
+          }
+        }
+        dragMode = null;
+        activePointerId = null;
+        activeTouchId = null;
+        removeGlobalListeners();
       };
-      const startTouchDrag = (event: TouchEvent) => {
-        if (event.touches.length === 0) return;
-        if (isDragging) stopTouchDrag();
+
+      const startDrag = (mode: DragMode, event: PointerEvent | MouseEvent | TouchEvent) => {
+        if (event.cancelable) event.preventDefault();
+        if (isDragging) stopDrag();
         isDragging = true;
-        event.preventDefault();
-        updateFromClientX(event.touches[0].clientX);
-        addTouchListeners();
+        dragMode = mode;
+
+        if (mode === 'pointer' && 'pointerId' in event) {
+          const pointerEvent = event as PointerEvent;
+          activePointerId = pointerEvent.pointerId;
+          slider.setPointerCapture?.(pointerEvent.pointerId);
+          updateFromClientX(pointerEvent.clientX);
+        } else if (mode === 'mouse' && 'clientX' in event) {
+          updateFromClientX((event as MouseEvent).clientX);
+        } else if (mode === 'touch' && isTouchEvent(event)) {
+          const primaryTouch = event.touches.item(0) ?? event.changedTouches.item(0);
+          if (!primaryTouch) {
+            stopDrag();
+            return;
+          }
+          activeTouchId = primaryTouch.identifier;
+          updateFromClientX(primaryTouch.clientX);
+        } else {
+          stopDrag();
+          return;
+        }
+
+        addGlobalListeners(mode);
       };
+
+      const onPointerDown = (event: PointerEvent) => startDrag('pointer', event);
+      const onMouseDown = (event: MouseEvent) => startDrag('mouse', event);
+      const onTouchStart = (event: TouchEvent) => startDrag('touch', event);
 
       if (supportsPointerEvents) {
-        slider.addEventListener('pointerdown', startPointerDrag);
+        slider.addEventListener('pointerdown', onPointerDown);
       } else {
-        slider.addEventListener('mousedown', startMouseDrag);
+        slider.addEventListener('mousedown', onMouseDown);
         if (supportsTouch) {
-          slider.addEventListener('touchstart', startTouchDrag, { passive: false });
+          slider.addEventListener('touchstart', onTouchStart, touchListenerOptions);
         }
       }
 
       return () => {
-        isDragging = false;
+        stopDrag();
         if (supportsPointerEvents) {
-          stopPointerDrag();
-          slider.removeEventListener('pointerdown', startPointerDrag);
+          slider.removeEventListener('pointerdown', onPointerDown);
         } else {
-          stopMouseDrag();
-          slider.removeEventListener('mousedown', startMouseDrag);
+          slider.removeEventListener('mousedown', onMouseDown);
           if (supportsTouch) {
-            stopTouchDrag();
-            slider.removeEventListener('touchstart', startTouchDrag);
+            slider.removeEventListener('touchstart', onTouchStart);
           }
         }
         handle.removeEventListener('keydown', onHandleKeyDown);
