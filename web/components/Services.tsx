@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import type React from "react";
 import { motion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
 import { GlassmorphismCard } from "./GlassmorphismCard";
@@ -52,6 +54,96 @@ const services = [
 const toSlug = (s: string): string =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
+interface ServiceCardProps {
+  service: Service;
+  index: number;
+  shouldReduceMotion: boolean;
+}
+
+function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
+  const [isKeyboardFocusWithin, setIsKeyboardFocusWithin] = useState(false);
+
+  const handleFocus = () => {
+    setIsKeyboardFocusWithin(true);
+  };
+
+  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    const nextTarget = event.relatedTarget as Node | null;
+    if (nextTarget && event.currentTarget.contains(nextTarget)) return;
+    setIsKeyboardFocusWithin(false);
+  };
+
+  const progressStyle = isKeyboardFocusWithin ? { width: "100%" } : undefined;
+  const iconKeyboardAnimation = !shouldReduceMotion && isKeyboardFocusWithin ? "animate-[spin_1800ms_linear]" : "";
+  const progressVisibilityClass = isKeyboardFocusWithin ? "opacity-100" : "";
+  const iconAnimationClasses = shouldReduceMotion
+    ? "motion-reduce:animate-none"
+    : "group-focus-within:animate-[spin_1800ms_linear] group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none";
+  const progressTransitionClasses = shouldReduceMotion
+    ? "transition-none duration-0"
+    : "transition-[width] duration-[1800ms] ease-in-out";
+
+  return (
+    <GlassmorphismCard
+      delay={index * 0.1}
+      contentClassName="p-6 sm:p-8 h-full"
+      data-testid="service-card"
+      data-service={toSlug(service.title)}
+      tabIndex={0}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+    >
+      <div
+        data-testid="service-icon"
+        className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg ${iconAnimationClasses} ${iconKeyboardAnimation}`}
+      >
+        <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
+      </div>
+
+      <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200">
+        {service.title}
+      </h3>
+
+      <p className="text-gray-300 mb-4 leading-relaxed group-hover:text-gray-200 group-focus-within:text-gray-200 transition-colors duration-200">{service.description}</p>
+
+      {/* Focus/hover progress bar directly under description */}
+      <div
+        className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 ${progressVisibilityClass}`}
+        aria-hidden="true"
+      >
+        <div
+          data-testid="service-progress"
+          className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full ${progressTransitionClasses} motion-reduce:transition-none motion-reduce:duration-0`}
+          style={progressStyle}
+        />
+      </div>
+
+      <ul className="space-y-2 mb-6">
+        {service.features.map((feature, featureIndex) => (
+          <motion.li
+            key={feature}
+            initial={shouldReduceMotion ? undefined : { opacity: 0, x: -20 }}
+            whileInView={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
+            transition={shouldReduceMotion ? undefined : { delay: 0.2 + featureIndex * 0.1 }}
+            viewport={{ once: true }}
+            className="flex items-center text-sm text-gray-400"
+          >
+            <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3" />
+            {feature}
+          </motion.li>
+        ))}
+      </ul>
+
+      {/* Hover underline accent (CSS-driven for group hover/focus) */}
+      <div
+        aria-hidden="true"
+        className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0`}
+        style={progressStyle}
+      />
+    </GlassmorphismCard>
+  );
+}
+
 export default function Services() {
   const shouldReduceMotion = usePrefersReducedMotion();
 
@@ -82,61 +174,12 @@ export default function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <GlassmorphismCard
+            <ServiceCard
               key={service.title}
-              delay={index * 0.1}
-              contentClassName="p-6 sm:p-8 h-full"
-              data-testid="service-card"
-              data-service={toSlug(service.title)}
-              tabIndex={0}
-            >
-              <div
-                data-testid="service-icon"
-                className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg ${shouldReduceMotion ? "motion-reduce:animate-none" : "group-focus-within:animate-[spin_1800ms_linear] group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none"}`}
-              >
-                <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
-              </div>
-
-              <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200">
-                {service.title}
-              </h3>
-
-              <p className="text-gray-300 mb-4 leading-relaxed group-hover:text-gray-200 group-focus-within:text-gray-200 transition-colors duration-200">{service.description}</p>
-
-              {/* Focus/hover progress bar directly under description */}
-              <div className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`} aria-hidden="true">
-                <div
-                  data-testid="service-progress"
-                  className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full ${
-                    shouldReduceMotion
-                      ? "transition-none duration-0"
-                      : "transition-[width] duration-[1800ms] ease-in-out"
-                  } motion-reduce:transition-none motion-reduce:duration-0`}
-                />
-              </div>
-
-              <ul className="space-y-2 mb-6">
-                {service.features.map((feature, featureIndex) => (
-                  <motion.li
-                    key={feature}
-                    initial={shouldReduceMotion ? undefined : { opacity: 0, x: -20 }}
-                    whileInView={shouldReduceMotion ? undefined : { opacity: 1, x: 0 }}
-                    transition={shouldReduceMotion ? undefined : { delay: 0.2 + featureIndex * 0.1 }}
-                    viewport={{ once: true }}
-                    className="flex items-center text-sm text-gray-400"
-                  >
-                    <div className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-3" />
-                    {feature}
-                  </motion.li>
-                ))}
-              </ul>
-
-              {/* Hover underline accent (CSS-driven for group hover/focus) */}
-              <div
-                aria-hidden="true"
-                className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0`}
-              />
-            </GlassmorphismCard>
+              service={service}
+              index={index}
+              shouldReduceMotion={shouldReduceMotion}
+            />
           ))}
         </div>
       </div>

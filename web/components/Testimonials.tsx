@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import type React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassmorphismCard } from "@/components/GlassmorphismCard";
 import { TestimonialCard } from "@/components/TestimonialCard";
@@ -133,6 +134,16 @@ export default function Testimonials() {
     }
   };
 
+  const handleSectionFocus = () => {
+    setIsFocusWithin(true);
+  };
+
+  const handleSectionBlur = (event: React.FocusEvent<HTMLElement>) => {
+    const nextTarget = event.relatedTarget as Node | null;
+    if (nextTarget && event.currentTarget.contains(nextTarget)) return;
+    setIsFocusWithin(false);
+  };
+
   return (
     <section
       id="testimonials"
@@ -142,8 +153,8 @@ export default function Testimonials() {
       tabIndex={-1}
       onMouseEnter={() => setIsPointerOver(true)}
       onMouseLeave={() => setIsPointerOver(false)}
-      onFocus={() => setIsFocusWithin(true)}
-      onBlur={() => setIsFocusWithin(false)}
+      onFocus={handleSectionFocus}
+      onBlur={handleSectionBlur}
       aria-roledescription="carousel"
       aria-label="Client testimonials"
     >

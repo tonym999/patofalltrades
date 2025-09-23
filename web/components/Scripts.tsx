@@ -219,6 +219,7 @@ export default function Scripts() {
       handle.tabIndex = 0;
       handle.setAttribute('aria-valuemin', '0');
       handle.setAttribute('aria-valuemax', '100');
+      handle.setAttribute('aria-orientation', 'horizontal');
       if (!handle.getAttribute('aria-label')) {
         handle.setAttribute('aria-label', 'Reveal after photo width');
       }
