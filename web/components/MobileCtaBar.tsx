@@ -85,8 +85,6 @@ export default function MobileCtaBar() {
       <div
         className="px-4 pt-3"
         style={{
-          paddingLeft: "env(safe-area-inset-left, 0px)",
-          paddingRight: "env(safe-area-inset-right, 0px)",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
         }}
         data-testid="mobile-cta-padding"
