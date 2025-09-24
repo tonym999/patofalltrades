@@ -44,7 +44,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
         transition: { duration: 0.6, delay },
         viewport: { once: true },
       };
-  const overlayMotionUtilities = "motion-reduce:transition-none motion-reduce:duration-0";
+  const motionReduceUtilities = "motion-reduce:transition-none motion-reduce:duration-0";
 
   return (
     <motion.div
@@ -59,12 +59,12 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
             }
           : {}
       }
-      className={`group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl ${outerClassName}`}
+      className={`group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl ${motionReduceUtilities} ${outerClassName}`}
       tabIndex={tabIndex}
       {...rest}
     >
       <div
-        className={`pointer-events-none absolute -inset-1 rounded-2xl border-4 border-amber-400/70 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 ${overlayMotionUtilities} shadow-[0_0_34px_rgba(245,158,11,0.45)]`}
+        className={`pointer-events-none absolute -inset-1 rounded-2xl border-4 border-amber-400/70 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 ${motionReduceUtilities} shadow-[0_0_34px_rgba(245,158,11,0.45)]`}
         aria-hidden="true"
       />
 
@@ -72,7 +72,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
         className={`
         relative bg-slate-800/40 backdrop-blur-md border-2 border-slate-700/50 
         group-hover:border-amber-400/70 group-focus-within:border-amber-400/80
-        transition-colors duration-500 ${overlayMotionUtilities} rounded-xl overflow-hidden
+        transition-colors duration-500 ${motionReduceUtilities} rounded-xl overflow-hidden
         ${contentClassName}
       `}
       >

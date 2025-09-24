@@ -151,20 +151,22 @@ body {
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html,
+  html.scroll-smooth {
     scroll-behavior: auto;
   }
 
   .motion-enabled .sticky-nav {
     transition: none;
+    will-change: auto;
   }
 
   .motion-enabled *,
   .motion-enabled *::before,
   .motion-enabled *::after {
-    animation-duration: 0.01ms;
-    animation-iteration-count: 1;
-    transition-duration: 0.01ms;
+    animation: none;
+    transition-duration: 0s;
+    transition-property: none;
   }
 
   .motion-enabled [data-vaul-drawer],
@@ -175,10 +177,12 @@ body {
 
   .motion-enabled .parallax-bg {
     background-attachment: scroll;
+    transform: none;
   }
 
   .motion-enabled .whatsapp-widget {
     animation: none;
+    transition: none;
     transform: none;
     box-shadow: none;
   }
