@@ -95,15 +95,17 @@ body {
 
 /* Glassmorphism Card Effect */
 .glass-card {
-  background: var(--surface);
+  background-color: var(--surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  transition-property: background-color, border-color, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid color-mix(in oklab, var(--accent) 60%, transparent);
   transform: translateY(-5px);
 }
@@ -113,7 +115,9 @@ body {
   position: relative;
   overflow: hidden;
   background: linear-gradient(45deg, var(--accent), var(--accent-strong));
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition-property: box-shadow, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
 }
 
 .cta-btn:hover {
