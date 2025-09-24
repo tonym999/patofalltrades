@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassmorphismCard } from "@/components/GlassmorphismCard";
@@ -21,8 +21,9 @@ export default function Testimonials() {
   const [isInView, setIsInView] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const [isUserPaused, setIsUserPaused] = useState(false);
+  const [liveAnnouncement, setLiveAnnouncement] = useState("");
 
-  const testimonials = useMemo(() => testimonialsData, []);
+  const testimonials = testimonialsData;
   const total = testimonials.length;
   const idPrefix = useId();
   const tabPanelId = `${idPrefix}-tabpanel`;
@@ -76,6 +77,11 @@ export default function Testimonials() {
       if (autoplayIntervalRef.current) window.clearInterval(autoplayIntervalRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!total) return;
+    setLiveAnnouncement(`Slide ${currentIndex + 1} of ${total}`);
+  }, [currentIndex, total]);
 
   type GoToOptions = {
     pauseForMs?: number;
@@ -159,6 +165,9 @@ export default function Testimonials() {
       aria-label="Client testimonials"
     >
       <div className="container mx-auto px-6">
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
+          {liveAnnouncement}
+        </div>
         <motion.div
           initial={reduceMotion ? undefined : { opacity: 0, y: 30 }}
           whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
