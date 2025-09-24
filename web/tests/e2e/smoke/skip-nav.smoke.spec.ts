@@ -1,4 +1,14 @@
 import { test, expect } from '@playwright/test'
+import type { AXNode } from '@playwright/test'
+
+const hasMainRegion = (node?: AXNode | null): boolean => {
+  if (!node) return false
+  if (node.role === 'main') {
+    const name = (node.name ?? '').toLowerCase()
+    if (!name || name.includes('main')) return true
+  }
+  return (node.children ?? []).some((child) => hasMainRegion(child))
+}
 
 test.describe('Smoke @smoke - Skip navigation', () => {
   test('activating skip link focuses main and captures a11y snapshot @smoke', async ({ page }) => {
@@ -15,9 +25,15 @@ test.describe('Smoke @smoke - Skip navigation', () => {
 
     const main = page.locator('main#main-content')
     await expect(main).toBeFocused()
-    await expect(page).toHaveURL(/#main-content$/)
+    const currentUrl = new URL(page.url())
+    expect(currentUrl.hash).toBe('#main-content')
+    expect(currentUrl.pathname).toBe('/')
+    expect(currentUrl.search).toBe('')
 
-    const ax = await page.accessibility.snapshot()
-    expect(ax).toBeTruthy()
+    await test.step('capture a11y tree', async () => {
+      const ax = await page.accessibility.snapshot()
+      expect(ax).toBeTruthy()
+      expect(hasMainRegion(ax)).toBeTruthy()
+    })
   })
 })

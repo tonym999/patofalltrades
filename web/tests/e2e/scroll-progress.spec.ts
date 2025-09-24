@@ -21,6 +21,7 @@ test.describe('Scroll progress indicator', () => {
 
     const readProgress = async () => {
       return await bar.evaluate(el => {
+        const clamp = (value: number) => Math.min(Math.max(value, 0), 1)
         const style = getComputedStyle(el)
         const transform = style.transform
         const parseScaleX = (input: string | null): number | null => {
@@ -32,7 +33,7 @@ test.describe('Scroll progress indicator', () => {
               .split(',')
               .map(v => Number.parseFloat(v.trim()))
             const scale = parts[0]
-            return Number.isFinite(scale) ? scale : null
+            return Number.isFinite(scale) ? clamp(scale) : null
           }
           if (normalized.startsWith('matrix(')) {
             const parts = normalized
@@ -40,11 +41,11 @@ test.describe('Scroll progress indicator', () => {
               .split(',')
               .map(v => Number.parseFloat(v.trim()))
             const scale = parts[0]
-            return Number.isFinite(scale) ? scale : null
+            return Number.isFinite(scale) ? clamp(scale) : null
           }
           if (normalized.startsWith('scaleX(')) {
             const value = Number.parseFloat(normalized.slice('scaleX('.length, -1))
-            return Number.isFinite(value) ? value : null
+            return Number.isFinite(value) ? clamp(value) : null
           }
           return null
         }
@@ -59,7 +60,7 @@ test.describe('Scroll progress indicator', () => {
         if (backgroundMatch) {
           const pct = parseFloat(backgroundMatch[1]!)
           if (!Number.isNaN(pct)) {
-            return { mode: 'background', value: Math.max(0, Math.min(pct / 100, 1)) }
+            return { mode: 'background', value: clamp(pct / 100) }
           }
         }
 

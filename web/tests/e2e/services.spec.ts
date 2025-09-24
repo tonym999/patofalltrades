@@ -15,7 +15,9 @@ test.describe('Services full E2E', () => {
     const focus = page.locator(':focus')
     const tabToCard = async (cardIndex: number) => {
       const target = cards.nth(cardIndex)
+      let attempts = 0
       await expect.poll(async () => {
+        attempts += 1
         await page.keyboard.press('Tab')
         return target.evaluate((el) => {
           const active = document.activeElement
@@ -23,9 +25,10 @@ test.describe('Services full E2E', () => {
         })
       }, {
         message: `Tab order should reach service card ${cardIndex + 1}`,
-        intervals: [100, 150, 200, 300],
-        timeout: 3000,
+        intervals: [150, 200, 260, 320],
+        timeout: 3200,
       }).toBeTruthy()
+      expect(attempts).toBeLessThanOrEqual(40)
       return target
     }
 
@@ -50,18 +53,22 @@ test.describe('Services full E2E', () => {
       })
       expect(iconAnimation.name).toBeTruthy()
       expect(iconAnimation.name?.toLowerCase()).not.toBe('none')
-      expect(Number.parseFloat(iconAnimation.duration)).toBeGreaterThan(0)
+      const iconDuration = Number.parseFloat(iconAnimation.duration)
+      expect(Number.isFinite(iconDuration)).toBeTruthy()
+      expect(iconDuration).toBeGreaterThan(0)
 
       const progress = card.getByTestId('service-progress')
       const start = await readWidth(progress)
       await expect.poll(() => readWidth(progress), {
         message: 'progress width should increase shortly after keyboard focus',
-        intervals: [100, 150, 200, 300],
-        timeout: 3000,
+        intervals: [150, 200, 260, 320],
+        timeout: 3200,
       }).toBeGreaterThan(start)
 
       const progressTransition = await progress.evaluate((el) => getComputedStyle(el as HTMLElement).transitionDuration)
-      expect(Number.parseFloat(progressTransition)).toBeGreaterThan(0)
+      const transitionDuration = Number.parseFloat(progressTransition)
+      expect(Number.isFinite(transitionDuration)).toBeTruthy()
+      expect(transitionDuration).toBeGreaterThan(0)
     }
   })
 

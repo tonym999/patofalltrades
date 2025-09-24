@@ -89,23 +89,35 @@ test.describe('Mobile bottom sheet Menu', () => {
     expect(paddingRight).toBeGreaterThanOrEqual(16)
   })
 
-  test('header applies safe-area padding inline', async ({ page }) => {
-    const header = page.locator('#navbar')
+  test('header safe-area padding resolves via computed style', async ({ page }) => {
+    const header = page.getByRole('banner')
     await expect(header).toBeVisible()
     const computed = await header.evaluate((el) => {
       const style = getComputedStyle(el)
       return {
-        top: parseFloat(style.paddingTop || '0'),
-        left: parseFloat(style.paddingLeft || '0'),
-        right: parseFloat(style.paddingRight || '0'),
+        top: {
+          raw: style.getPropertyValue('padding-top'),
+          value: parseFloat(style.paddingTop || '0'),
+        },
+        left: {
+          raw: style.getPropertyValue('padding-left'),
+          value: parseFloat(style.paddingLeft || '0'),
+        },
+        right: {
+          raw: style.getPropertyValue('padding-right'),
+          value: parseFloat(style.paddingRight || '0'),
+        },
       }
     })
 
-    expect(Number.isFinite(computed.top)).toBeTruthy()
-    expect(Number.isFinite(computed.left)).toBeTruthy()
-    expect(Number.isFinite(computed.right)).toBeTruthy()
-    expect(computed.top).toBeGreaterThanOrEqual(0)
-    expect(computed.left).toBeGreaterThanOrEqual(0)
-    expect(computed.right).toBeGreaterThanOrEqual(0)
+    expect(Number.isFinite(computed.top.value)).toBeTruthy()
+    expect(Number.isFinite(computed.left.value)).toBeTruthy()
+    expect(Number.isFinite(computed.right.value)).toBeTruthy()
+    expect(computed.top.value).toBeGreaterThanOrEqual(0)
+    expect(computed.left.value).toBeGreaterThanOrEqual(0)
+    expect(computed.right.value).toBeGreaterThanOrEqual(0)
+    expect(computed.top.raw.trim()).toMatch(/px$/)
+    expect(computed.left.raw.trim()).toMatch(/px$/)
+    expect(computed.right.raw.trim()).toMatch(/px$/)
   })
 })

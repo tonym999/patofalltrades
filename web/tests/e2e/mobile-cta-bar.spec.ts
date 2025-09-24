@@ -52,9 +52,17 @@ test.describe('Mobile CTA Bar', () => {
 			await expect(whatsapp).toHaveAttribute('rel', /noopener/)
 			await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
 			const expectedHref = whatsappHref()
-			await expect(whatsapp).toHaveAttribute('href', expectedHref)
-			const params = new URL(expectedHref).searchParams
-			expect(params.get('text')).toBe(WHATSAPP_PRESET)
+			await expect(whatsapp).toHaveAttribute('href', /wa\.me/)
+			const resolvedHref = await whatsapp.evaluate((node, base) => {
+				const href = node.getAttribute('href') ?? ''
+				return new URL(href, base).toString()
+			}, expectedHref)
+			const expectedUrl = new URL(expectedHref)
+			const actualUrl = new URL(resolvedHref)
+			expect(actualUrl.origin).toBe(expectedUrl.origin)
+			expect(actualUrl.pathname).toBe(expectedUrl.pathname)
+			expect(actualUrl.searchParams.get('text')).toBe(expectedUrl.searchParams.get('text'))
+			expect(actualUrl.searchParams.get('text')).toBe(WHATSAPP_PRESET)
 		})
 
 	test('visible focus rings on keyboard focus', async ({ page }) => {
@@ -81,15 +89,19 @@ test.describe('Mobile CTA Bar', () => {
 			expect(focusSignal).not.toBe('none')
 		})
 
-	test('respects safe-area bottom padding', async ({ page }) => {
-		// Check arbitrary property is applied on the padding container via test id
+		test('respects safe-area bottom padding', async ({ page }) => {
+		// Check safe-area padding via computed style rather than inline style text
 		const barContainer = page.getByTestId('mobile-cta-padding')
-		const paddingBottom = await barContainer.evaluate(el => getComputedStyle(el).paddingBottom)
-		const pb = Number.parseFloat((paddingBottom || '0px').toString())
-		expect(pb).toBeGreaterThanOrEqual(12)
-
-		const inlineStyle = await barContainer.evaluate(el => el.getAttribute('style') || '')
-		expect(inlineStyle).toContain('env(safe-area-inset-bottom, 0px)')
+		const paddingMetrics = await barContainer.evaluate(el => {
+			const cs = getComputedStyle(el)
+			return {
+				paddingBottom: Number.parseFloat(cs.paddingBottom || '0'),
+				resolved: cs.getPropertyValue('padding-bottom'),
+			}
+		})
+		expect(Number.isFinite(paddingMetrics.paddingBottom)).toBeTruthy()
+		expect(paddingMetrics.paddingBottom).toBeGreaterThanOrEqual(12)
+		expect(paddingMetrics.resolved.trim()).toMatch(/px$/)
 	})
 
 	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {

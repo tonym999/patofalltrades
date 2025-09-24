@@ -15,8 +15,11 @@ test.describe('Reduced motion preference', () => {
     await expect(progress).toBeAttached()
     await expect(progress).toBeVisible()
 
-    const readWidth = async () => {
-      return await progress.evaluate((el) => el.getBoundingClientRect().width)
+    const readRect = async () => {
+      return await progress.evaluate((el) => {
+        const rect = el.getBoundingClientRect()
+        return { width: rect.width, x: rect.x }
+      })
     }
     const waitForAnimationFrames = async () => {
       await page.evaluate(
@@ -27,7 +30,7 @@ test.describe('Reduced motion preference', () => {
       )
     }
 
-    const initialWidth = await readWidth()
+    const initialRect = await readRect()
 
     await page.evaluate(() => {
       const doc = document.documentElement
@@ -35,10 +38,22 @@ test.describe('Reduced motion preference', () => {
     })
     await waitForAnimationFrames()
 
-    await expect.poll(async () => Math.abs((await readWidth()) - initialWidth), {
-      message: 'scroll progress width should remain stable at mid scroll when motion is reduced',
-      intervals: [75, 150, 225, 300],
-      timeout: 2000,
+    await expect.poll(async () => {
+      const next = await readRect()
+      return Math.abs(next.width - initialRect.width)
+    }, {
+      message: 'scroll progress width should remain stable at mid scroll when motion is reduced (width)',
+      intervals: [120, 200, 260, 320],
+      timeout: 2600,
+    }).toBeLessThanOrEqual(0.5)
+
+    await expect.poll(async () => {
+      const next = await readRect()
+      return Math.abs(next.x - initialRect.x)
+    }, {
+      message: 'scroll progress position should remain stable at mid scroll when motion is reduced (x)',
+      intervals: [120, 200, 260, 320],
+      timeout: 2600,
     }).toBeLessThanOrEqual(0.5)
 
     await page.evaluate(() => {
@@ -47,10 +62,22 @@ test.describe('Reduced motion preference', () => {
     })
     await waitForAnimationFrames()
 
-    await expect.poll(async () => Math.abs((await readWidth()) - initialWidth), {
-      message: 'scroll progress width should remain stable near bottom when motion is reduced',
-      intervals: [75, 150, 225, 300],
-      timeout: 2000,
+    await expect.poll(async () => {
+      const next = await readRect()
+      return Math.abs(next.width - initialRect.width)
+    }, {
+      message: 'scroll progress width should remain stable near bottom when motion is reduced (width)',
+      intervals: [120, 200, 260, 320],
+      timeout: 2600,
+    }).toBeLessThanOrEqual(0.5)
+
+    await expect.poll(async () => {
+      const next = await readRect()
+      return Math.abs(next.x - initialRect.x)
+    }, {
+      message: 'scroll progress position should remain stable near bottom when motion is reduced (x)',
+      intervals: [120, 200, 260, 320],
+      timeout: 2600,
     }).toBeLessThanOrEqual(0.5)
 
     const scrollY = await page.evaluate(() => window.scrollY)

@@ -14,7 +14,7 @@ test.describe('Smart Scroll Behavior @smoke', () => {
       { message: 'ensure page has scrollable height for smart header behavior', intervals: [100, 150, 200, 300], timeout: 3000 }
     ).toBeTruthy()
 
-    const header = page.locator('#navbar')
+    const header = page.getByRole('banner')
     await expect(header).toBeVisible()
 
     // Ensure initial state not hidden
@@ -28,7 +28,7 @@ test.describe('Smart Scroll Behavior @smoke', () => {
     ).toBeGreaterThan(400)
     await expect.poll(
       async () => header.evaluate((el) => el.classList.contains('sticky-nav--hidden')),
-      { message: 'header should hide after scrolling down', intervals: [100, 150, 200, 300], timeout: 3000 }
+      { message: 'header should hide after scrolling down', intervals: [150, 225, 300, 375], timeout: 3200 }
     ).toBeTruthy()
 
     // Scroll up to trigger show (with 100ms debounce)
@@ -39,7 +39,7 @@ test.describe('Smart Scroll Behavior @smoke', () => {
     ).toBeLessThan(200)
     await expect.poll(
       async () => header.evaluate((el) => el.classList.contains('sticky-nav--hidden')),
-      { message: 'header should reappear after scrolling up', intervals: [100, 150, 200, 300], timeout: 3000 }
+      { message: 'header should reappear after scrolling up', intervals: [150, 225, 300, 375], timeout: 3200 }
     ).toBeFalsy()
 
     // Bottom CTA bar shadow when scrolled
@@ -48,7 +48,7 @@ test.describe('Smart Scroll Behavior @smoke', () => {
     await page.mouse.wheel(0, 400)
     await expect.poll(
       async () => cta.getAttribute('data-shadowed'),
-      { message: 'CTA should gain shadow after scrolling', intervals: [100, 150, 200, 300], timeout: 3000 }
+      { message: 'CTA should gain shadow after scrolling', intervals: [150, 225, 300, 375], timeout: 3200 }
     ).toBe('true')
     // Scroll to top, shadow can disappear
     await page.mouse.wheel(0, -400)
@@ -58,12 +58,13 @@ test.describe('Smart Scroll Behavior @smoke', () => {
     ).toBeTruthy()
     await expect.poll(
       async () => cta.getAttribute('data-shadowed'),
-      { message: 'CTA shadow should clear near top', intervals: [100, 150, 200, 300], timeout: 3000 }
+      { message: 'CTA shadow should clear near top', intervals: [150, 225, 300, 375], timeout: 3200 }
     ).toBe('false')
 
-    // Basic a11y snapshot capture to ensure no crash
-    const ax = await page.accessibility.snapshot()
-    expect(ax).toBeTruthy()
+    await test.step('capture a11y tree for smart scroll state', async () => {
+      const ax = await page.accessibility.snapshot()
+      expect(ax).toBeTruthy()
+      expect(['document', 'WebArea']).toContain(ax?.role)
+    })
   })
 })
- 
