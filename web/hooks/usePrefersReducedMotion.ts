@@ -4,80 +4,85 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 
-type MediaQueryChangeHandler = (event: MediaQueryListEvent) => void;
-type LegacyMediaQueryListener = (this: MediaQueryList, event: MediaQueryListEvent) => void;
+type MediaQueryLike = MediaQueryList | null;
+type MediaQueryChangeTarget = MediaQueryListEvent | MediaQueryList | null;
 
-const isMatchMediaSupported = () =>
+const isMatchMediaSupported = (): boolean =>
   typeof window !== "undefined" && typeof window.matchMedia === "function";
 
-const getPreference = () => {
-  if (!isMatchMediaSupported()) return false;
-  return window.matchMedia(QUERY).matches;
+let cachedMediaQuery: MediaQueryList | null = null;
+
+const getMediaQuery = (): MediaQueryLike => {
+  if (!isMatchMediaSupported()) return null;
+  if (!cachedMediaQuery) {
+    cachedMediaQuery = window.matchMedia(QUERY);
+  }
+  return cachedMediaQuery;
+};
+
+const readMatches = (): boolean => {
+  const mediaQuery = getMediaQuery();
+  return mediaQuery ? mediaQuery.matches : false;
 };
 
 const addMediaQueryListener = (
   mediaQuery: MediaQueryList,
-  handler: MediaQueryChangeHandler,
-) => {
+  callback: (matches: boolean) => void,
+): (() => void) => {
+  const notify = (target: MediaQueryChangeTarget) => {
+    if (target && "matches" in target) {
+      callback(Boolean(target.matches));
+      return;
+    }
+    callback(mediaQuery.matches);
+  };
+
   if (typeof mediaQuery.addEventListener === "function") {
-    const listener = handler as unknown as EventListener;
+    const listener: EventListener = (event) => notify(event as MediaQueryListEvent);
     mediaQuery.addEventListener("change", listener);
     return () => mediaQuery.removeEventListener("change", listener);
   }
 
-  const legacyListener: LegacyMediaQueryListener = function legacyListener(event) {
-    handler(event);
-  };
+  if (typeof mediaQuery.addListener === "function") {
+    const legacyListener = (event: MediaQueryListEvent) => notify(event);
+    mediaQuery.addListener(legacyListener);
+    return () => mediaQuery.removeListener(legacyListener);
+  }
 
-  mediaQuery.addListener(legacyListener);
-  return () => mediaQuery.removeListener(legacyListener);
+  const fallbackListener = (event: MediaQueryListEvent | null) => notify(event);
+  mediaQuery.onchange = fallbackListener;
+  return () => {
+    if (mediaQuery.onchange === fallbackListener) {
+      mediaQuery.onchange = null;
+    }
+  };
+};
+
+const observePreference = (onMatches: (matches: boolean) => void): (() => void) => {
+  const mediaQuery = getMediaQuery();
+  if (!mediaQuery) return () => {};
+
+  onMatches(mediaQuery.matches);
+  return addMediaQueryListener(mediaQuery, (matches) => onMatches(matches));
 };
 
 export function usePrefersReducedMotion(): boolean {
-  const [prefers, setPrefers] = useState<boolean>(getPreference);
+  const [prefers, setPrefers] = useState<boolean>(readMatches);
 
-  useEffect(() => {
-    if (!isMatchMediaSupported()) return;
-    const mediaQuery = window.matchMedia(QUERY);
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      setPrefers(event.matches);
-    };
-
-    setPrefers(mediaQuery.matches);
-
-    return addMediaQueryListener(mediaQuery, handleChange);
-  }, []);
+  useEffect(() => observePreference(setPrefers), []);
 
   return prefers;
 }
 
-let currentClientSnapshot = false;
+const subscribeToPreference = (onStoreChange: () => void): (() => void) => {
+  const mediaQuery = getMediaQuery();
+  if (!mediaQuery) return () => {};
+
+  return addMediaQueryListener(mediaQuery, () => onStoreChange());
+};
 
 const getServerSnapshot = () => false;
 
-const getClientSnapshot = () => {
-  currentClientSnapshot = getPreference();
-  return currentClientSnapshot;
-};
-
-const subscribeToPreference = (onStoreChange: () => void) => {
-  if (!isMatchMediaSupported()) return () => {};
-  const mediaQuery = window.matchMedia(QUERY);
-  currentClientSnapshot = mediaQuery.matches;
-
-  const handleChange = (event: MediaQueryListEvent) => {
-    currentClientSnapshot = event.matches;
-    onStoreChange();
-  };
-
-  return addMediaQueryListener(mediaQuery, handleChange);
-};
-
 export function usePrefersReducedMotionSync(): boolean {
-  return useSyncExternalStore(
-    subscribeToPreference,
-    getClientSnapshot,
-    getServerSnapshot,
-  );
+  return useSyncExternalStore(subscribeToPreference, readMatches, getServerSnapshot);
 }
