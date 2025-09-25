@@ -75,6 +75,20 @@ export default function MobileCtaBar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (typeof CSS === "undefined" || typeof CSS.supports !== "function") {
+      el.dataset.safeAreaEnv = "unknown";
+      return;
+    }
+    try {
+      el.dataset.safeAreaEnv = CSS.supports("padding-bottom", "env(safe-area-inset-bottom)") ? "supported" : "unsupported";
+    } catch {
+      el.dataset.safeAreaEnv = "error";
+    }
+  }, []);
+
   return (
     <nav
       aria-label="Primary actions"

@@ -37,10 +37,12 @@ test.describe('Mobile CTA Bar', () => {
 
 		test('buttons are at least 44px tall', async ({ page }) => {
 			const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
+			await expect(getQuote).toBeVisible()
 			const quoteBox = await getQuote.boundingBox()
 			expect(quoteBox).not.toBeNull()
 			expect(quoteBox!.height).toBeGreaterThanOrEqual(44)
 			const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
+			await expect(call).toBeVisible()
 			const callBox = await call.boundingBox()
 			expect(callBox).not.toBeNull()
 			expect(callBox!.height).toBeGreaterThanOrEqual(44)
