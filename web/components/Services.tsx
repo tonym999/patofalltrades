@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type React from "react";
 import { motion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
@@ -58,9 +58,19 @@ interface ServiceCardProps {
   service: Service;
   index: number;
   shouldReduceMotion: boolean;
+  totalCards: number;
+  registerCard: (index: number, node: HTMLDivElement | null) => void;
+  focusCardByIndex: (index: number) => void;
 }
 
-function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
+function ServiceCard({
+  service,
+  index,
+  shouldReduceMotion,
+  totalCards,
+  registerCard,
+  focusCardByIndex,
+}: ServiceCardProps) {
   const [isKeyboardFocusWithin, setIsKeyboardFocusWithin] = useState(false);
 
   const handleFocus = () => {
@@ -81,7 +91,33 @@ function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
     : "group-focus-within:animate-[spin_1800ms_linear] group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none";
   const progressTransitionClasses = shouldReduceMotion
     ? "transition-none duration-0"
-    : "transition-[width] duration-[1800ms] ease-in-out";
+    : "transition-[width] duration-[1200ms] ease-in-out";
+
+  const setCardRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      registerCard(index, node);
+    },
+    [index, registerCard]
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key !== "Tab" || event.defaultPrevented || event.target !== event.currentTarget) return;
+
+      const movingBackward = event.shiftKey;
+      const isAtStart = movingBackward && index === 0;
+      const isAtEnd = !movingBackward && index === totalCards - 1;
+      if (isAtStart || isAtEnd) {
+        return; // allow native tab order to move focus outside the grid
+      }
+
+      event.preventDefault();
+      // Keep keyboard roving to the next service card to avoid large tab sequences
+      const nextIndex = index + (movingBackward ? -1 : 1);
+      focusCardByIndex(nextIndex);
+    },
+    [focusCardByIndex, index, totalCards]
+  );
 
   return (
     <GlassmorphismCard
@@ -92,6 +128,8 @@ function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
       tabIndex={0}
       onFocus={handleFocus}
       onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      ref={setCardRef}
     >
       <div
         data-testid="service-icon"
@@ -146,6 +184,21 @@ function ServiceCard({ service, index, shouldReduceMotion }: ServiceCardProps) {
 
 export default function Services() {
   const shouldReduceMotion = usePrefersReducedMotion();
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const registerCard = useCallback((index: number, node: HTMLDivElement | null) => {
+    cardRefs.current[index] = node;
+  }, []);
+
+  const focusCardByIndex = useCallback((index: number) => {
+    const next = cardRefs.current[index];
+    if (!next) return;
+    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(() => next.focus());
+    } else {
+      next.focus();
+    }
+  }, []);
 
   const headingMotionProps = shouldReduceMotion
     ? { initial: false as const }
@@ -179,6 +232,9 @@ export default function Services() {
               service={service}
               index={index}
               shouldReduceMotion={shouldReduceMotion}
+              totalCards={services.length}
+              registerCard={registerCard}
+              focusCardByIndex={focusCardByIndex}
             />
           ))}
         </div>

@@ -177,7 +177,7 @@ export default function MobileTabsNav() {
           style={{ paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))" }}
         >
           <div
-            className="max-w-screen-md mx-auto px-4 pt-2 pb-2"
+            className="max-w-screen-md mx-auto pt-2 pb-2"
             data-testid="mobile-menu-content"
             style={{
               paddingLeft: "calc(1rem + env(safe-area-inset-left, 0px))",
