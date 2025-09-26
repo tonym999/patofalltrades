@@ -181,11 +181,7 @@ export default function Services() {
   const focusCardByIndex = useCallback((index: number) => {
     const next = cardRefs.current[index];
     if (!next) return;
-    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
-      window.requestAnimationFrame(() => next.focus());
-    } else {
-      next.focus();
-    }
+    next.focus({ preventScroll: true });
   }, []);
 
   const headingMotionProps = shouldReduceMotion

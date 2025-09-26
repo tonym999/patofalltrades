@@ -103,9 +103,6 @@ export default function Scripts() {
       const animateOnScroll = createAnimateOnScroll();
 
       document.querySelectorAll('h2, h3').forEach((el) => animateOnScroll(el));
-      (gsap.utils.toArray('.service-card') as Element[]).forEach((card, i) => {
-        animateOnScroll(card, { delay: i * 0.1 });
-      });
       animateOnScroll('.md\\:w-1\\/2 img');
       animateOnScroll('.md\\:w-1\\/2 p');
       animateOnScroll('.grid.grid-cols-2');
