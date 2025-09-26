@@ -13,22 +13,33 @@ test.describe('Services full E2E', () => {
     await expect(cards).toHaveCount(4)
 
     const focus = page.locator(':focus')
+    const main = page.locator('main#main-content')
     // Use the skip link to jump into <main> and reduce the number of Tab presses required
     await page.keyboard.press('Tab')
     await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused()
     await page.keyboard.press('Enter')
+    await expect(main).toBeFocused()
+    const activeTag = await page.evaluate(() => document.activeElement?.tagName)
+    expect(activeTag).toBe('MAIN')
 
     const tabToCard = async (cardIndex: number) => {
       const target = cards.nth(cardIndex)
-      for (let i = 0; i < 120; i++) {
-        const reached = await target.evaluate((el) => el === document.activeElement || el.contains(document.activeElement))
-        if (reached) return target
+      let attempts = 0
+      await expect.poll(async () => {
+        attempts += 1
         await page.keyboard.press('Tab')
-      }
-      throw new Error(`Tab order did not reach service card ${cardIndex + 1}`)
+        return target.evaluate((el) => {
+          const active = document.activeElement
+          return active === el || el.contains(active)
+        })
+      }, {
+        message: `Tab order should reach service card ${cardIndex + 1}`,
+        intervals: [150, 200, 260, 320],
+        timeout: 3200,
+      }).toBeTruthy()
+      expect(attempts).toBeLessThanOrEqual(40)
+      return target
     }
-
-    await page.focus('body')
 
     for (const index of [0, 1, 2, 3] as const) {
       const card = await tabToCard(index)
