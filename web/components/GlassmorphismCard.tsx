@@ -30,7 +30,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
     outerClassName = "",
     hoverScale = true,
     delay = 0,
-    tabIndex = -1,
+    tabIndex = 0,
     ...rest
   }: GlassmorphismCardProps,
   ref

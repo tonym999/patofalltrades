@@ -26,7 +26,10 @@ const resolveWithURL = (pathname: string, search: string): string => {
 };
 
 export const whatsappHref = (preset: string = WHATSAPP_PRESET): string => {
-  const cleanDigits = CONTACT_INFO.whatsappDigits.replace(/^\/+/, "");
+  const cleanDigits = CONTACT_INFO.whatsappDigits.replace(/\D+/g, "");
+  if (!cleanDigits) {
+    throw new Error("Missing WhatsApp digits for wa.me link");
+  }
   const pathname = `/${cleanDigits}`;
   const search = `?text=${encodeURIComponent(preset)}`;
   return resolveWithAnchor(pathname, search) ?? resolveWithURL(pathname, search);

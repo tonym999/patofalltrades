@@ -207,6 +207,7 @@ export default function Testimonials() {
                 <GlassmorphismCard
                   outerClassName="rounded-2xl"
                   contentClassName="p-0 rounded-2xl min-h-[280px] md:min-h-[240px]"
+                  tabIndex={-1}
                 >
                   <TestimonialCard
                     quote={testimonials[currentIndex].text}
