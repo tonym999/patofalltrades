@@ -89,8 +89,10 @@ export default function Testimonials() {
   };
 
   const goTo = (index: number, options: GoToOptions = {}) => {
+    if (!total) return;
     const { pauseForMs = 10000, focus = false } = options;
-    setCurrentIndex(index);
+    const clampedIndex = Math.max(0, Math.min(total - 1, index));
+    setCurrentIndex(clampedIndex);
     setIsUserPaused(true);
     if (resumeTimeoutRef.current) window.clearTimeout(resumeTimeoutRef.current);
     resumeTimeoutRef.current = window.setTimeout(() => setIsUserPaused(false), pauseForMs);
@@ -98,6 +100,7 @@ export default function Testimonials() {
   };
 
   const goRelative = (delta: number, options?: GoToOptions) => {
+    if (!total) return;
     const nextIndex = (currentIndex + delta + total) % total;
     goTo(nextIndex, options);
   };
@@ -135,6 +138,14 @@ export default function Testimonials() {
         event.preventDefault();
         goTo(total - 1, { focus: true });
         break;
+      case "PageDown":
+        event.preventDefault();
+        goRelative(1, { focus: true });
+        break;
+      case "PageUp":
+        event.preventDefault();
+        goRelative(-1, { focus: true });
+        break;
       default:
         break;
     }
@@ -161,7 +172,6 @@ export default function Testimonials() {
       onMouseLeave={() => setIsPointerOver(false)}
       onFocus={handleSectionFocus}
       onBlur={handleSectionBlur}
-      aria-roledescription="carousel"
       aria-label="Client testimonials"
     >
       <div className="container mx-auto px-6">
@@ -184,7 +194,7 @@ export default function Testimonials() {
             id={tabPanelId}
             role="tabpanel"
             aria-labelledby={getTabId(currentIndex)}
-            tabIndex={0}
+            tabIndex={-1}
           >
             <AnimatePresence mode="wait">
               <motion.div
