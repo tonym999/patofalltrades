@@ -22,7 +22,6 @@ export default function Hero() {
         <div className="flex justify-center">
           <Link
             href="#portfolio"
-            tabIndex={-1}
             className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-slate-900 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-colors"
           >
             View Portfolio
