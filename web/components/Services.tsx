@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import type React from "react";
 import { motion } from "framer-motion";
 import { Settings, Paintbrush, Zap, Droplets } from "lucide-react";
@@ -71,21 +71,8 @@ function ServiceCard({
   registerCard,
   focusCardByIndex,
 }: ServiceCardProps) {
-  const [isKeyboardFocusWithin, setIsKeyboardFocusWithin] = useState(false);
+  const headingId = `${toSlug(service.title)}-service-title`;
 
-  const handleFocus = () => {
-    setIsKeyboardFocusWithin(true);
-  };
-
-  const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
-    const nextTarget = event.relatedTarget as Node | null;
-    if (nextTarget && event.currentTarget.contains(nextTarget)) return;
-    setIsKeyboardFocusWithin(false);
-  };
-
-  const staticFocusWidthStyle = shouldReduceMotion && isKeyboardFocusWithin ? { width: "100%" } : undefined;
-  const iconKeyboardAnimation = !shouldReduceMotion && isKeyboardFocusWithin ? "animate-[spin_1800ms_linear]" : "";
-  const progressVisibilityClass = isKeyboardFocusWithin ? "opacity-100" : "";
   const iconAnimationClasses = shouldReduceMotion
     ? "motion-reduce:animate-none"
     : "group-focus-within:animate-[spin_1800ms_linear] group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none";
@@ -126,19 +113,22 @@ function ServiceCard({
       data-testid="service-card"
       data-service={toSlug(service.title)}
       tabIndex={0}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       ref={setCardRef}
+      role="group"
+      aria-labelledby={headingId}
     >
       <div
         data-testid="service-icon"
-        className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg ${iconAnimationClasses} ${iconKeyboardAnimation}`}
+        className={`w-16 h-16 bg-gradient-to-r ${service.gradient} rounded-xl flex items-center justify-center mb-6 shadow-lg ${iconAnimationClasses}`}
       >
         <service.icon aria-hidden="true" className="w-8 h-8 text-white" />
       </div>
 
-      <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200">
+      <h3
+        id={headingId}
+        className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200"
+      >
         {service.title}
       </h3>
 
@@ -146,13 +136,12 @@ function ServiceCard({
 
       {/* Focus/hover progress bar directly under description */}
       <div
-        className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 ${progressVisibilityClass}`}
+        className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`}
         aria-hidden="true"
       >
         <div
           data-testid="service-progress"
           className={`h-full w-0 bg-gradient-to-r ${service.gradient} group-hover:w-full group-focus-within:w-full ${progressTransitionClasses} motion-reduce:transition-none motion-reduce:duration-0`}
-          style={staticFocusWidthStyle}
         />
       </div>
 
@@ -176,7 +165,6 @@ function ServiceCard({
       <div
         aria-hidden="true"
         className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0`}
-        style={staticFocusWidthStyle}
       />
     </GlassmorphismCard>
   );
