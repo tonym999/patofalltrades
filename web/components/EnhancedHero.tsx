@@ -2,10 +2,11 @@
 
 import type React from "react"
 
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
 import Image from "next/image"
 import { FloatingTools } from "@/components/FloatingTools"
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion"
 
 interface EnhancedHeroProps {
   children: React.ReactNode
@@ -21,7 +22,7 @@ interface EnhancedHeroProps {
  */
 export function EnhancedHero({ children }: EnhancedHeroProps) {
   const heroRef = useRef<HTMLElement | null>(null)
-  const prefersReducedMotion = useReducedMotion()
+  const prefersReducedMotion = usePrefersReducedMotion()
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],

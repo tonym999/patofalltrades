@@ -3,12 +3,14 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
   const [isHidden, setIsHidden] = useState(false);
   const lastScrollYRef = useRef(0);
   const showTimeoutRef = useRef<number | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {
@@ -35,6 +37,11 @@ export default function Header() {
 
   // Hide on scroll down, show on scroll up (100ms debounce) with small delta
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setIsHidden(false);
+      lastScrollYRef.current = Math.max(0, window.scrollY || 0);
+      return;
+    }
     const DELTA = 4;
     const onScroll = () => {
       const yRaw = window.scrollY || 0;
@@ -80,12 +87,17 @@ export default function Header() {
       window.removeEventListener("scroll", onScroll);
       if (showTimeoutRef.current) window.clearTimeout(showTimeoutRef.current);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <header
       id="navbar"
       className={`sticky-nav fixed top-0 left-0 right-0 z-[120] bg-white/80 backdrop-blur border-b border-slate-200/60 ${isHidden ? "sticky-nav--hidden" : ""}`}
+      style={{
+        paddingTop: "max(env(safe-area-inset-top), 0px)",
+        paddingLeft: "max(env(safe-area-inset-left), 0px)",
+        paddingRight: "max(env(safe-area-inset-right), 0px)",
+      }}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
@@ -113,7 +125,7 @@ export default function Header() {
             </div>
           </div>
 
-          <nav className="hidden md:flex space-x-8 items-center">
+          <nav className="hidden md:flex space-x-8 items-center" aria-label="Primary">
             <a href="#services" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Services</a>
             <a href="#portfolio" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Portfolio</a>
             <a href="#about" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">About</a>
@@ -125,4 +137,3 @@ export default function Header() {
     </header>
   );
 }
-

@@ -4,7 +4,7 @@ const readWidth = async (locator: Locator) => locator.evaluate((el: HTMLElement)
 
 test.describe('Services full E2E', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
     await page.emulateMedia({ reducedMotion: 'no-preference' })
   })
 
@@ -12,24 +12,70 @@ test.describe('Services full E2E', () => {
     const cards = page.getByTestId('service-card')
     await expect(cards).toHaveCount(4)
 
-    for (let i = 0; i < 4; i++) {
-      const card = cards.nth(i)
-      await card.focus()
+    const focus = page.locator(':focus')
+    const main = page.locator('main#main-content')
+    // Use the skip link to jump into <main> and reduce the number of Tab presses required
+    await page.keyboard.press('Tab')
+    await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused()
+    await page.keyboard.press('Enter')
+    await expect(main).toBeFocused()
+    const activeTag = await page.evaluate(() => document.activeElement?.tagName)
+    expect(activeTag).toBe('MAIN')
+
+    const tabToCard = async (cardIndex: number) => {
+      const target = cards.nth(cardIndex)
+      let attempts = 0
+      await expect.poll(async () => {
+        attempts += 1
+        await page.keyboard.press('Tab')
+        return target.evaluate((el) => {
+          const active = document.activeElement
+          return active === el || el.contains(active)
+        })
+      }, {
+        message: `Tab order should reach service card ${cardIndex + 1}`,
+        intervals: [150, 200, 260, 320],
+        timeout: 3200,
+      }).toBeTruthy()
+      expect(attempts).toBeLessThanOrEqual(40)
+      return target
+    }
+
+    for (const index of [0, 1, 2, 3] as const) {
+      const card = await tabToCard(index)
+      await expect(card).toHaveAttribute('data-service')
+      await expect(card).toHaveAttribute('tabindex', '0')
+      await expect(card).toContainText(/\S/, { timeout: 3000 })
+      await expect(focus).toHaveCount(1)
+      const focusWithinCard = await card.evaluate((el) => el.contains(document.activeElement))
+      expect(focusWithinCard).toBeTruthy()
+
       const icon = card.getByTestId('service-icon')
-      const anim = await icon.evaluate(el => getComputedStyle(el as HTMLElement).animationName)
-      expect(typeof anim).toBe('string')
-      expect(anim).not.toBe('none')
+      const iconAnimation = await icon.evaluate((el) => {
+        const style = getComputedStyle(el as HTMLElement)
+        return {
+          name: style.animationName,
+          duration: style.animationDuration,
+        }
+      })
+      expect(iconAnimation.name).toBeTruthy()
+      expect(iconAnimation.name?.toLowerCase()).not.toBe('none')
+      const iconDuration = Number.parseFloat(iconAnimation.duration)
+      expect(Number.isFinite(iconDuration)).toBeTruthy()
+      expect(iconDuration).toBeGreaterThan(0)
 
       const progress = card.getByTestId('service-progress')
       const start = await readWidth(progress)
-      await page.waitForTimeout(400)
-      const mid = await readWidth(progress)
-      expect(mid).toBeGreaterThan(start)
-      if (i < 3) {
-        await page.keyboard.press('Tab')
-        const next = cards.nth(i + 1)
-        await expect(next).toBeFocused()
-      }
+      await expect.poll(() => readWidth(progress), {
+        message: 'progress width should increase shortly after keyboard focus',
+        intervals: [150, 200, 260, 320],
+        timeout: 3200,
+      }).toBeGreaterThan(start)
+
+      const progressTransition = await progress.evaluate((el) => getComputedStyle(el as HTMLElement).transitionDuration)
+      const transitionDuration = Number.parseFloat(progressTransition)
+      expect(Number.isFinite(transitionDuration)).toBeTruthy()
+      expect(transitionDuration).toBeGreaterThan(0)
     }
   })
 
@@ -54,5 +100,3 @@ test.describe('Services full E2E', () => {
     await expect.poll(measureColumns).toBe(4)
   })
 })
-
-

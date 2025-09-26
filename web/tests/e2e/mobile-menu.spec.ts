@@ -60,6 +60,64 @@ test.describe('Mobile bottom sheet Menu', () => {
     await expect(nameInput).toBeFocused()
     await expect(page).toHaveURL(/#contact$/)
   })
+
+  test('drawer respects safe-area padding', async ({ page }) => {
+    const menuBtn = page.getByTestId('header-hamburger')
+    await expect(menuBtn).toBeVisible({ timeout: 10000 })
+    await menuBtn.click()
+
+    const panel = page.locator('#mobile-menu-panel')
+    await expect(panel).toBeVisible()
+
+    const paddingBottom = await panel.evaluate((el) => {
+      const pb = getComputedStyle(el).paddingBottom || '0px'
+      return Number.parseFloat(pb.toString())
+    })
+    expect(paddingBottom).toBeGreaterThanOrEqual(12)
+
+    const inner = page.getByTestId('mobile-menu-content')
+    const paddingLeft = await inner.evaluate((el) => {
+      const pl = getComputedStyle(el).paddingLeft || '0px'
+      return Number.parseFloat(pl.toString())
+    })
+    const paddingRight = await inner.evaluate((el) => {
+      const pr = getComputedStyle(el).paddingRight || '0px'
+      return Number.parseFloat(pr.toString())
+    })
+
+    expect(paddingLeft).toBeGreaterThanOrEqual(16)
+    expect(paddingRight).toBeGreaterThanOrEqual(16)
+  })
+
+  test('header safe-area padding resolves via computed style', async ({ page }) => {
+    const header = page.getByRole('banner')
+    await expect(header).toBeVisible()
+    const computed = await header.evaluate((el) => {
+      const style = getComputedStyle(el)
+      return {
+        top: {
+          raw: style.getPropertyValue('padding-top'),
+          value: parseFloat(style.paddingTop || '0'),
+        },
+        left: {
+          raw: style.getPropertyValue('padding-left'),
+          value: parseFloat(style.paddingLeft || '0'),
+        },
+        right: {
+          raw: style.getPropertyValue('padding-right'),
+          value: parseFloat(style.paddingRight || '0'),
+        },
+      }
+    })
+
+    expect(Number.isFinite(computed.top.value)).toBeTruthy()
+    expect(Number.isFinite(computed.left.value)).toBeTruthy()
+    expect(Number.isFinite(computed.right.value)).toBeTruthy()
+    expect(computed.top.value).toBeGreaterThanOrEqual(0)
+    expect(computed.left.value).toBeGreaterThanOrEqual(0)
+    expect(computed.right.value).toBeGreaterThanOrEqual(0)
+    expect(computed.top.raw.trim()).toMatch(/px$/)
+    expect(computed.left.raw.trim()).toMatch(/px$/)
+    expect(computed.right.raw.trim()).toMatch(/px$/)
+  })
 })
-
-

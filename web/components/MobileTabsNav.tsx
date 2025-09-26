@@ -26,6 +26,7 @@ export default function MobileTabsNav() {
   const closingRef = useRef<boolean>(false);
   // Track last close reason to control focus restore behavior
   const lastCloseReasonRef = useRef<"backdrop" | "close_button" | "escape" | "item_click" | "gesture" | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   const openMenu = useCallback((source: "tabs_nav" | "header" = "header") => {
     setIsMenuOpen(true);
@@ -83,6 +84,20 @@ export default function MobileTabsNav() {
       window.dispatchEvent(new CustomEvent(MOBILE_MENU_STATE, { detail: { open: isMenuOpen } }));
     } catch {}
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    if (typeof CSS === "undefined" || typeof CSS.supports !== "function") {
+      el.dataset.safeAreaEnv = "unknown";
+      return;
+    }
+    try {
+      el.dataset.safeAreaEnv = CSS.supports("padding-bottom", "env(safe-area-inset-bottom)") ? "supported" : "unsupported";
+    } catch {
+      el.dataset.safeAreaEnv = "error";
+    }
+  }, []);
 
   const handleMenuItemClick = useCallback((itemName: string) => {
     try {
@@ -174,12 +189,22 @@ export default function MobileTabsNav() {
           aria-modal="true"
           aria-labelledby="mobile-menu-title"
           className="fixed inset-x-0 bottom-0 z-[var(--z-modal-content)] md:hidden bg-slate-900 border-t border-slate-700/60 rounded-t-2xl shadow-2xl"
-          style={{ paddingBottom: "max(env(safe-area-inset-bottom), 12px)" }}
+          style={{ paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))" }}
+          ref={panelRef}
         >
-          <div className="max-w-screen-md mx-auto px-4 pt-2 pb-2">
+          <div
+            className="max-w-screen-md mx-auto pt-2 pb-2"
+            data-testid="mobile-menu-content"
+            style={{
+              paddingLeft: "calc(1rem + env(safe-area-inset-left, 0px))",
+              paddingRight: "calc(1rem + env(safe-area-inset-right, 0px))",
+            }}
+          >
             <Drawer.Handle className="mx-auto my-2 h-1.5 w-10 rounded-full bg-slate-600/70" aria-hidden="true" />
             <div className="flex items-center justify-between mb-2">
-              <h3 id="mobile-menu-title" className="text-white font-semibold">Menu</h3>
+              <Drawer.Title id="mobile-menu-title" className="text-white font-semibold">
+                Menu
+              </Drawer.Title>
               <button
                 type="button"
                 onClick={() => closeMenu("close_button")}

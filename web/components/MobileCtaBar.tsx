@@ -75,6 +75,20 @@ export default function MobileCtaBar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (typeof CSS === "undefined" || typeof CSS.supports !== "function") {
+      el.dataset.safeAreaEnv = "unknown";
+      return;
+    }
+    try {
+      el.dataset.safeAreaEnv = CSS.supports("padding-bottom", "env(safe-area-inset-bottom)") ? "supported" : "unsupported";
+    } catch {
+      el.dataset.safeAreaEnv = "error";
+    }
+  }, []);
+
   return (
     <nav
       aria-label="Primary actions"
@@ -83,7 +97,12 @@ export default function MobileCtaBar() {
       ref={containerRef}
     >
       <div
-        className="px-4 pt-3 pb-[max(env(safe-area-inset-bottom),12px)]"
+        className="pt-3"
+        style={{
+          paddingLeft: "calc(1rem + env(safe-area-inset-left, 0px))",
+          paddingRight: "calc(1rem + env(safe-area-inset-right, 0px))",
+          paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
+        }}
         data-testid="mobile-cta-padding"
       >
         <div className="max-w-screen-md mx-auto grid grid-cols-3 gap-2">

@@ -8,7 +8,31 @@ export const CONTACT_INFO = {
 
 export const WHATSAPP_PRESET = "Hi Pat, ";
 
-export const whatsappHref = (preset: string = WHATSAPP_PRESET): string =>
-  `https://wa.me/${CONTACT_INFO.whatsappDigits}?text=${encodeURIComponent(preset)}`;
+const WA_BASE = "https://wa.me/" as const;
+
+const resolveWithAnchor = (pathname: string, search: string): string | null => {
+  if (typeof document === "undefined") return null;
+  const anchor = document.createElement("a");
+  anchor.href = WA_BASE;
+  anchor.pathname = pathname;
+  anchor.search = search;
+  return anchor.href;
+};
+
+const resolveWithURL = (pathname: string, search: string): string => {
+  const url = new URL(pathname, WA_BASE);
+  url.search = search;
+  return url.toString();
+};
+
+export const whatsappHref = (preset: string = WHATSAPP_PRESET): string => {
+  const cleanDigits = CONTACT_INFO.whatsappDigits.replace(/\D+/g, "");
+  if (!cleanDigits) {
+    throw new Error("Missing WhatsApp digits for wa.me link");
+  }
+  const pathname = `/${cleanDigits}`;
+  const search = `?text=${encodeURIComponent(preset)}`;
+  return resolveWithAnchor(pathname, search) ?? resolveWithURL(pathname, search);
+};
 
 
