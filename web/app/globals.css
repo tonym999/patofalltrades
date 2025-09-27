@@ -31,6 +31,7 @@
     --bg-950: hsl(var(--background-end));
     --accent: hsl(var(--primary));
     --accent-strong: hsl(31 91% 55%);
+    --hero-scrim: 221 55% 10%;
 
     /* Compatibility tokens */
     --gold: var(--accent);
@@ -76,6 +77,7 @@
     --bg-950: hsl(var(--background-end));
     --accent: hsl(var(--primary));
     --accent-strong: hsl(31 91% 55%);
+    --hero-scrim: 221 45% 8%;
 
     /* Compatibility tokens */
     --gold: var(--accent);
