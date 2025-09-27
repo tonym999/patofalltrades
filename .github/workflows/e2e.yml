@@ -27,12 +27,13 @@ jobs:
           cache-dependency-path: 'web/pnpm-lock.yaml'
 
       - name: Install pnpm
-        run: |
-          corepack enable
-          corepack prepare pnpm@10.17.1 --activate
+        run: npm install -g pnpm@10.17.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
 
       - name: Build and start app
         run: pnpm run start:test &
