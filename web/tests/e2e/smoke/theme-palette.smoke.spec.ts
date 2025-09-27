@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Smoke Test - Theme palette', () => {
   test('exposes CSS variables and applies them to the layout shell @smoke', async ({ page }) => {
     await page.goto('/')
+    await page.accessibility.snapshot()
 
     const rootBackground = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--background').trim(),
