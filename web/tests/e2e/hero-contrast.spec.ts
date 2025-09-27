@@ -75,6 +75,8 @@ test.describe('Hero contrast @smoke', () => {
         canvas.width = heroImage.naturalWidth
         canvas.height = heroImage.naturalHeight
         const ctx = canvas.getContext('2d')!
+        const computedFilter = getComputedStyle(heroImage).filter
+        ctx.filter = computedFilter && computedFilter !== 'none' ? computedFilter : 'none'
         ctx.drawImage(heroImage, 0, 0, heroImage.naturalWidth, heroImage.naturalHeight)
         const pixel = ctx.getImageData(
           Math.round(normalizedX * (heroImage.naturalWidth - 1)),
