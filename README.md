@@ -55,3 +55,14 @@ For full options:
 ```bash
 bash scripts/setup_github_ssh_ci.sh --help
 ```
+
+## End-to-end testing
+
+The E2E suite lives under `web/` and uses Playwright. Local installs skip Playwright's postinstall hook, so browser binaries are not downloaded automatically. When you want to run smoke or full tests locally:
+
+```bash
+cd web
+pnpm run setup:e2e
+```
+
+The script runs `pnpm install` followed by `pnpm run playwright:install` to ensure Playwright downloads the required browsers. Afterwards you can run `pnpm run test:e2e` (or `test:e2e:smoke`) as usual.
