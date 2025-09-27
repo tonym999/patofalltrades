@@ -45,10 +45,14 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
             fill
             sizes="100vw"
             priority
-            className="object-cover"
+            className="object-cover filter brightness-110 saturate-110"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80" />
+        <div
+          className="absolute inset-0 bg-[hsl(var(--hero-scrim))]/70"
+          aria-hidden="true"
+          data-testid="hero-overlay"
+        />
       </motion.div>
 
       {/* Floating Tools */}
