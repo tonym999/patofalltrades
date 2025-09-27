@@ -2,6 +2,7 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -10,6 +11,7 @@
     "lint:fix": "eslint . --fix",
     "lint:ci": "eslint . --max-warnings=0",
     "playwright:install": "playwright install --with-deps",
+    "setup:e2e": "pnpm install && pnpm run playwright:install",
     "email": "email dev --dir emails --port 3001",
     "start:test": "next build && next start -p 3000",
     "test:e2e": "playwright test",
@@ -47,5 +49,13 @@
     "eslint-plugin-playwright": "^2.2.2",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }

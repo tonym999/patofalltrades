@@ -1,80 +1,17 @@
 name: E2E Tests
 
 on:
-  pull_request:
   push:
     branches:
       - main
-      - feat/**
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  e2e-smoke:
-    name: E2E Smoke (PR)
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    concurrency:
-      group: e2e-smoke-${{ github.ref }}
-      cancel-in-progress: true
-    defaults:
-      run:
-        working-directory: web
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - name: Install deps
-        run: npm ci --no-audit --no-fund
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-      - name: Install Playwright browsers and OS deps (webkit for libwoff2dec)
-        run: npx playwright install --with-deps chromium webkit
-      - name: Run E2E Smoke (Chromium)
-        run: npm run test:e2e:smoke
-      - name: Upload smoke report on failure (debug)
-        if: failure()
-        run: |
-          echo "workspace: $GITHUB_WORKSPACE"
-          node -v || true
-          npx playwright --version || true
-          ls -la "$GITHUB_WORKSPACE" || true
-          echo "--- cwd ---" && pwd && ls -la || true
-          echo "--- test-results ---" && ls -la test-results || true
-          echo "--- playwright-report ---" && ls -la playwright-report || true
-          echo "--- dir sizes ---" && du -sh test-results playwright-report || true
-          echo "--- sample screenshots ---" && find . -name "*.png" -type f | head -20 || true
-      - name: Upload smoke artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report-smoke
-          if-no-files-found: ignore
-          retention-days: 3
-          path: |
-            web/test-results/**
-            web/playwright-report/**
-
   e2e:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    permissions:
-      contents: read
-    concurrency:
-      group: e2e-${{ github.ref }}
-      cancel-in-progress: true
     defaults:
       run:
         working-directory: web
@@ -82,51 +19,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.17.1
+
+      - name: Setup Node and pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: web/package-lock.json
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: 'web/pnpm-lock.yaml'
 
-      - name: Install deps
-        run: npm ci --no-audit --no-fund
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
 
-      - name: Install Playwright browsers and OS deps (webkit for libwoff2dec)
-        run: npx playwright install --with-deps chromium webkit
-
-      - name: Run E2E (Chromium)
-        run: npm run test:e2e
-
-      - name: Upload report on failure (debug)
-        if: failure()
+      - name: Start server, wait, and run smoke tests
+        shell: bash
         run: |
-          echo "workspace: $GITHUB_WORKSPACE"
-          node -v || true
-          npx playwright --version || true
-          ls -la "$GITHUB_WORKSPACE" || true
-          echo "--- cwd ---" && pwd && ls -la || true
-          echo "--- test-results ---" && ls -la test-results || true
-          echo "--- playwright-report ---" && ls -la playwright-report || true
-          echo "--- dir sizes ---" && du -sh test-results playwright-report || true
-          echo "--- sample screenshots ---" && find . -name "*.png" -type f | head -20 || true
-      - name: Upload report on failure
+          set -euo pipefail
+          pnpm run start:test &
+          SERVER_PID=$!
+          echo "Started server with PID ${SERVER_PID}"
+          trap 'echo "Stopping server ${SERVER_PID}"; kill ${SERVER_PID} || true' EXIT
+
+          echo "Waiting for http://localhost:3000 ..."
+          for i in {1..120}; do
+            if curl -sf http://localhost:3000 >/dev/null; then
+              echo "Server is up"; break; fi
+            sleep 1
+          done
+          # Verify server became healthy; curl returns non-zero when not up
+          curl -sf http://localhost:3000 >/dev/null
+
+          pnpm run test:e2e:smoke
+
+      - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          if-no-files-found: ignore
-          retention-days: 3
-          path: |
-            web/test-results/**
-            web/playwright-report/**
-
-
+          path: web/playwright-report
