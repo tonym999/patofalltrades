@@ -19,17 +19,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.17.1
+
       - name: Setup Node and pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
           cache-dependency-path: 'web/pnpm-lock.yaml'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 10.17.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -63,4 +63,3 @@ jobs:
         with:
           name: playwright-report
           path: web/playwright-report
-
