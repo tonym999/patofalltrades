@@ -1,26 +1,91 @@
 @import "tailwindcss";
 
-:root {
-  /* Brand & accent */
-  --accent: #f59e0b; /* Amber 500 */
-  --accent-strong: #f97316; /* Orange 500 for gradients */
+@layer base {
+  :root {
+    /* Core palette (light) */
+    --background: 214 47% 97%;
+    --foreground: 222 40% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 40% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 40% 13%;
+    --primary: 40 89% 60%;
+    --primary-foreground: 222 40% 13%;
+    --secondary: 221 64% 91%;
+    --secondary-foreground: 221 42% 18%;
+    --muted: 221 51% 90%;
+    --muted-foreground: 220 23% 37%;
+    --accent-foreground: 222 40% 13%;
+    --destructive: 4 81% 56%;
+    --destructive-foreground: 210 30% 97%;
+    --border: 221 54% 90%;
+    --input: 221 54% 90%;
+    --ring: 40 89% 60%;
+    --radius: 0.75rem;
 
-  /* Background & surfaces */
-  --bg-950: #0b1220; /* Deep charcoal */
-  --bg-900: #0f172a; /* Dark navy */
-  --surface: rgba(255, 255, 255, 0.06);
+    /* Extended light tokens */
+    --background-top: 214 47% 94%;
+    --background-end: 214 47% 97%;
+    --surface: rgba(12, 23, 42, 0.05);
+    --bg-900: hsl(var(--background-top));
+    --bg-950: hsl(var(--background-end));
+    --accent: hsl(var(--primary));
+    --accent-strong: hsl(31 91% 55%);
 
-  /* Layering */
-  --z-modal-overlay: 200;
-  --z-modal-content: 210;
+    /* Compatibility tokens */
+    --gold: var(--accent);
+    --dark-navy: hsl(222 40% 13%);
+    --light-navy: hsl(221 64% 91%);
 
-  /* Deprecated (kept for compatibility with existing class names) */
-  --gold: var(--accent);
-  --dark-navy: var(--bg-900);
-  --light-navy: #1a1f2e;
-  /* dynamic heights for fixed mobile UI */
-  --cta-height: 0px;
-  --tabs-height: 0px;
+    /* Layering */
+    --z-modal-overlay: 200;
+    --z-modal-content: 210;
+
+    /* Fixed UI heights */
+    --cta-height: 0px;
+    --tabs-height: 0px;
+  }
+
+  .dark {
+    /* Core palette (dark) */
+    --background: 221 61% 8%;
+    --foreground: 221 100% 96%;
+    --card: 218 53% 14%;
+    --card-foreground: 221 100% 96%;
+    --popover: 218 53% 14%;
+    --popover-foreground: 221 100% 96%;
+    --primary: 40 89% 60%;
+    --primary-foreground: 229 65% 12%;
+    --secondary: 220 40% 20%;
+    --secondary-foreground: 222 100% 92%;
+    --muted: 221 35% 27%;
+    --muted-foreground: 222 65% 87%;
+    --accent-foreground: 229 65% 12%;
+    --destructive: 3 83% 54%;
+    --destructive-foreground: 210 40% 96%;
+    --border: 221 38% 23%;
+    --input: 221 38% 23%;
+    --ring: 40 89% 60%;
+    --radius: 0.75rem;
+
+    /* Extended dark tokens */
+    --background-top: 220 52% 12%;
+    --background-end: 221 61% 8%;
+    --surface: hsla(221, 45%, 22%, 0.65);
+    --bg-900: hsl(var(--background-top));
+    --bg-950: hsl(var(--background-end));
+    --accent: hsl(var(--primary));
+    --accent-strong: hsl(31 91% 55%);
+
+    /* Compatibility tokens */
+    --gold: var(--accent);
+    --dark-navy: hsl(220 52% 12%);
+    --light-navy: hsl(221 35% 32%);
+
+    /* Fixed UI heights */
+    --cta-height: 0px;
+    --tabs-height: 0px;
+  }
 }
 
 html {
@@ -29,8 +94,9 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
+  background-color: hsl(var(--background));
   background-image: linear-gradient(180deg, var(--bg-900), var(--bg-950));
-  color: #f0f0f0;
+  color: hsl(var(--foreground));
   overflow-x: hidden;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
