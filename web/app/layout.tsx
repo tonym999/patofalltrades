@@ -33,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth motion-enabled">
-      <body className={`${inter.className} antialiased`}>
+    <html lang="en" className="scroll-smooth motion-enabled dark">
+      <body className={`${inter.className} bg-background text-foreground antialiased`}>
         <SkipNavLink />
         <ScrollProgress />
         {children}
