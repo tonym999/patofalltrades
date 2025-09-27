@@ -35,18 +35,25 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Build and start app
-        run: pnpm run start:test &
-
-      - name: Wait for server
+      - name: Start server, wait, and run smoke tests
+        shell: bash
         run: |
-          for i in {1..60}; do
-            if curl -sSf http://localhost:3000 >/dev/null; then
-              echo "Server is up"; exit 0; fi; sleep 1; done
-          echo "Server failed to start"; exit 1
+          set -euo pipefail
+          pnpm run start:test &
+          SERVER_PID=$!
+          echo "Started server with PID ${SERVER_PID}"
+          trap 'echo "Stopping server ${SERVER_PID}"; kill ${SERVER_PID} || true' EXIT
 
-      - name: Run E2E smoke tests
-        run: pnpm run test:e2e:smoke
+          echo "Waiting for http://localhost:3000 ..."
+          for i in {1..120}; do
+            if curl -sf http://localhost:3000 >/dev/null; then
+              echo "Server is up"; break; fi
+            sleep 1
+          done
+          # Verify server became healthy; curl returns non-zero when not up
+          curl -sf http://localhost:3000 >/dev/null
+
+          pnpm run test:e2e:smoke
 
       - name: Upload Playwright report on failure
         if: failure()
