@@ -1,0 +1,343 @@
+{
+  "role": "WebArea",
+  "name": "Pat Of All Trades | Premium London Handyman Services",
+  "children": [
+    {
+      "role": "link",
+      "name": "Skip to main content"
+    },
+    {
+      "role": "link",
+      "name": "Pat Of All Trades logo Pat Of All Trades"
+    },
+    {
+      "role": "link",
+      "name": "Services"
+    },
+    {
+      "role": "link",
+      "name": "Portfolio"
+    },
+    {
+      "role": "link",
+      "name": "About"
+    },
+    {
+      "role": "link",
+      "name": "Testimonials"
+    },
+    {
+      "role": "link",
+      "name": "Get a Quote"
+    },
+    {
+      "role": "main",
+      "name": "",
+      "children": [
+        {
+          "role": "image",
+          "name": "Handyman hero background"
+        },
+        {
+          "role": "heading",
+          "name": "LONDON'S PREMIER HANDYMAN",
+          "level": 1
+        },
+        {
+          "role": "text",
+          "name": "Reliable. Professional. Unmatched Quality."
+        },
+        {
+          "role": "link",
+          "name": "View Portfolio"
+        },
+        {
+          "role": "heading",
+          "name": "Our Services",
+          "level": 2
+        },
+        {
+          "role": "text",
+          "name": "Comprehensive handyman services delivered with precision, professionalism, and pride. No job too big or small."
+        },
+        {
+          "role": "group",
+          "name": "General Repairs"
+        },
+        {
+          "role": "group",
+          "name": "Painting & Decorating"
+        },
+        {
+          "role": "group",
+          "name": "Electrical Work"
+        },
+        {
+          "role": "group",
+          "name": "Plumbing Services"
+        },
+        {
+          "role": "heading",
+          "name": "Our Work",
+          "level": 2
+        },
+        {
+          "role": "text",
+          "name": "Quality you can see. Results that last."
+        },
+        {
+          "role": "heading",
+          "name": "Bedroom: Southwark #001",
+          "level": 3
+        },
+        {
+          "role": "image",
+          "name": "bedroom in southwark (before)"
+        },
+        {
+          "role": "image",
+          "name": "bedroom in southwark (after)"
+        },
+        {
+          "role": "slider",
+          "name": "Reveal after photo width",
+          "valuetext": "",
+          "valuemin": 0,
+          "valuemax": 100,
+          "orientation": "horizontal",
+          "value": 50
+        },
+        {
+          "role": "heading",
+          "name": "Stairs: Colindale #001",
+          "level": 3
+        },
+        {
+          "role": "image",
+          "name": "stairs in colindale (before)"
+        },
+        {
+          "role": "image",
+          "name": "stairs in colindale (after)"
+        },
+        {
+          "role": "text",
+          "name": "↔"
+        },
+        {
+          "role": "heading",
+          "name": "Our Service Area",
+          "level": 2
+        },
+        {
+          "role": "text",
+          "name": "Proudly serving North West London and surrounding areas. We are based in Colindale and our core service areas include:"
+        },
+        {
+          "role": "text",
+          "name": "Barnet"
+        },
+        {
+          "role": "text",
+          "name": "Brent"
+        },
+        {
+          "role": "text",
+          "name": "Harrow"
+        },
+        {
+          "role": "text",
+          "name": "Camden"
+        },
+        {
+          "role": "text",
+          "name": "Hendon"
+        },
+        {
+          "role": "text",
+          "name": "Edgware"
+        },
+        {
+          "role": "text",
+          "name": "Don't see your area? Contact us to see if we cover your postcode!"
+        },
+        {
+          "role": "heading",
+          "name": "About Us",
+          "level": 2
+        },
+        {
+          "role": "text",
+          "name": "A decade of dedication to London homes."
+        },
+        {
+          "role": "image",
+          "name": "Craftsman"
+        },
+        {
+          "role": "text",
+          "name": "Founded in 2014, Pat Of All Trades was born from a simple mission: to provide Londoners with a handyman service that is not just reliable, but remarkably professional. We believe in clear communication, transparent pricing, and a finished product that exceeds expectations every time."
+        },
+        {
+          "role": "text",
+          "name": "0"
+        },
+        {
+          "role": "text",
+          "name": "Years Experience"
+        },
+        {
+          "role": "text",
+          "name": "0"
+        },
+        {
+          "role": "text",
+          "name": "Jobs Completed"
+        },
+        {
+          "role": "region",
+          "name": "Client testimonials",
+          "children": [
+            {
+              "role": "text",
+              "name": "Slide 1 of 4"
+            },
+            {
+              "role": "heading",
+              "name": "What Clients Say",
+              "level": 2
+            },
+            {
+              "role": "text",
+              "name": "Don't just take our word for it. Here's what our satisfied clients across London have to say."
+            },
+            {
+              "role": "tabpanel",
+              "name": "Show testimonial 1: Sarah Johnson from Kensington",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "image",
+                      "name": "Rated 5 out of 5",
+                      "description": "Rated 5 out of 5"
+                    },
+                    {
+                      "role": "text",
+                      "name": "Absolutely outstanding service. Pat was punctual, professional, and the quality of his work was second to none. He transformed our flat. Highly recommended!"
+                    },
+                    {
+                      "role": "text",
+                      "name": "Sarah Johnson"
+                    },
+                    {
+                      "role": "text",
+                      "name": " – "
+                    },
+                    {
+                      "role": "text",
+                      "name": "Kitchen Renovation"
+                    },
+                    {
+                      "role": "text",
+                      "name": "Location:"
+                    },
+                    {
+                      "role": "text",
+                      "name": "Kensington"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "tab",
+              "name": "Show testimonial 1: Sarah Johnson from Kensington",
+              "selected": true
+            },
+            {
+              "role": "tab",
+              "name": "Show testimonial 2: Michael Chen from Camden"
+            },
+            {
+              "role": "tab",
+              "name": "Show testimonial 3: Emma Williams from Shoreditch"
+            },
+            {
+              "role": "tab",
+              "name": "Show testimonial 4: James Thompson from Chelsea"
+            }
+          ]
+        },
+        {
+          "role": "heading",
+          "name": "Get In Touch",
+          "level": 2
+        },
+        {
+          "role": "text",
+          "name": "Ready to start your next project? Let's talk."
+        },
+        {
+          "role": "text",
+          "name": "Name"
+        },
+        {
+          "role": "textbox",
+          "name": "Name",
+          "required": true
+        },
+        {
+          "role": "text",
+          "name": "Email"
+        },
+        {
+          "role": "textbox",
+          "name": "Email",
+          "required": true
+        },
+        {
+          "role": "text",
+          "name": "Phone (optional)"
+        },
+        {
+          "role": "textbox",
+          "name": "Phone (optional)"
+        },
+        {
+          "role": "text",
+          "name": "Message"
+        },
+        {
+          "role": "text",
+          "name": "Tell us about your project, timeline, and any specifics you'd like us to consider. Maximum 5000 characters."
+        },
+        {
+          "role": "textbox",
+          "name": "Message",
+          "description": "Tell us about your project, timeline, and any specifics you'd like us to consider. Maximum 5000 characters.",
+          "multiline": true,
+          "required": true
+        },
+        {
+          "role": "button",
+          "name": "Send Message"
+        }
+      ]
+    },
+    {
+      "role": "text",
+      "name": "© 2024 Pat Of All Trades. All Rights Reserved."
+    },
+    {
+      "role": "text",
+      "name": "Premium Handyman Services in London"
+    },
+    {
+      "role": "link",
+      "name": ""
+    }
+  ]
+}

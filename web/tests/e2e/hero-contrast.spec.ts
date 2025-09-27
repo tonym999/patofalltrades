@@ -18,6 +18,10 @@ test.describe('Hero contrast @smoke', () => {
     await expect(heroHeading).toBeVisible()
     await expect(heroSubtitle).toBeVisible()
 
+    const accessibilityTree = await page.accessibility.snapshot()
+    const accessibilitySnapshot = JSON.stringify(accessibilityTree, null, 2)
+    expect(accessibilitySnapshot).toMatchSnapshot('hero-accessibility.json')
+
     const contrastOf = async (locator: import('@playwright/test').Locator) => {
       return locator.evaluate(element => {
         const toLinear = (channel: number): number => {
