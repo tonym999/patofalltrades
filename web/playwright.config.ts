@@ -25,7 +25,7 @@ export default defineConfig({
   ],
   webServer: !process.env.BASE_URL
     ? {
-        command: 'npm run start:test',
+        command: 'pnpm run start:test',
         port: PORT,
         timeout: 300_000,
         reuseExistingServer: !process.env.CI,
