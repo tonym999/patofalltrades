@@ -65,4 +65,7 @@ cd web
 pnpm run setup:e2e
 ```
 
-The script runs `pnpm install` followed by `pnpm run playwright:install` to ensure Playwright downloads the required browsers. Afterwards you can run `pnpm run test:e2e` (or `test:e2e:smoke`) as usual.
+The script runs `pnpm install` followed by `pnpm run playwright:install` to ensure Playwright downloads the required browsers. Afterwards you can run:
+
+- `pnpm run test:e2e:smoke` for the fast smoke pack (the same suite GitHub Actions runs in the `Smoke Tests` workflow).
+- `pnpm run test:e2e` for the full regression suite.
