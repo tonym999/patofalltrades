@@ -10,16 +10,12 @@ CONTACT_TO_EMAIL=your_destination_email@example.com
 CONTACT_FROM_EMAIL="Pat Of All Trades <onboarding@resend.dev>"
 ```
 
-Then run the development server:
+Then run the development server (pnpm is the default package manager for this repo):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+corepack enable
+corepack prepare pnpm@10.17.1 --activate
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -30,14 +26,29 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Development workflow
 
-- **Dev server (with Turbopack)**: `npm run dev` starts the watcher. It hot-reloads changes using Fast Refresh.
+- **Dev server (with Turbopack)**: `pnpm dev` starts the watcher. It hot-reloads changes using Fast Refresh.
 - **What hot-reloads**:
   - Client components, styles, and static assets are swapped in place without a full page reload.
   - Server components and API routes trigger a refresh on change.
-- **When to restart**: Changes to `next.config.ts`, `tsconfig.json`, or dependencies usually require stopping and re-running `npm run dev`.
-- **Windows note**: Avoid running `npm run build` while the dev server is active; Windows can lock `.next` files. Use one or the other.
-- **Production build**: `npm run build` then `npm start` to serve the optimized output.
+- **When to restart**: Changes to `next.config.ts`, `tsconfig.json`, or dependencies usually require stopping and re-running `pnpm dev`.
+- **Windows note**: Avoid running `pnpm build` while the dev server is active; Windows can lock `.next` files. Use one or the other.
+- **Production build**: `pnpm build` then `pnpm start` to serve the optimized output.
 - **Images**: When using `next/image` with `fill`, ensure the parent has a positioned container (e.g., `relative` + explicit size or `absolute inset-0`) so the image can render.
+
+## Package manager
+
+This repository uses pnpm. Key commands:
+
+```bash
+pnpm install            # install deps
+pnpm dev                # start dev server
+pnpm build              # build production bundle
+pnpm run start:test     # build+start server for e2e
+pnpm run test:e2e       # run all e2e tests
+pnpm run test:e2e:smoke # run smoke e2e tests
+```
+
+Postinstall build scripts are allowlisted via `package.json` → `pnpm.onlyBuiltDependencies`.
 
 ## Learn More
 
