@@ -1,16 +1,23 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
-  const [isHidden, setIsHidden] = useState(false);
-  const lastScrollYRef = useRef(0);
-  const showTimeoutRef = useRef<number | null>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Track scroll position to toggle header background
+  useEffect(() => {
+    const onScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    // Check initial scroll position
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {
@@ -35,64 +42,14 @@ export default function Header() {
     } catch {}
   };
 
-  // Hide on scroll down, show on scroll up (100ms debounce) with small delta
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      setIsHidden(false);
-      lastScrollYRef.current = Math.max(0, window.scrollY || 0);
-      return;
-    }
-    const DELTA = 4;
-    const onScroll = () => {
-      const yRaw = window.scrollY || 0;
-      const y = yRaw < 0 ? 0 : yRaw;
-
-      const last = lastScrollYRef.current;
-      lastScrollYRef.current = y;
-
-      const isScrollingDown = y > last + DELTA;
-      const isScrollingUp = y < last - DELTA;
-
-      if (y <= 2) {
-        if (showTimeoutRef.current) {
-          window.clearTimeout(showTimeoutRef.current);
-          showTimeoutRef.current = null;
-        }
-        setIsHidden(false);
-        return;
-      }
-
-      if (isScrollingDown) {
-        if (showTimeoutRef.current) {
-          window.clearTimeout(showTimeoutRef.current);
-          showTimeoutRef.current = null;
-        }
-        setIsHidden(true);
-      } else if (isScrollingUp) {
-        if (showTimeoutRef.current) {
-          window.clearTimeout(showTimeoutRef.current);
-        }
-        showTimeoutRef.current = window.setTimeout(() => {
-          setIsHidden(false);
-        }, 100);
-      }
-    };
-
-    // Initialize state on mount
-    lastScrollYRef.current = Math.max(0, window.scrollY || 0);
-    setIsHidden(false);
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (showTimeoutRef.current) window.clearTimeout(showTimeoutRef.current);
-    };
-  }, [prefersReducedMotion]);
-
   return (
     <header
       id="navbar"
-      className={`sticky-nav fixed top-0 left-0 right-0 z-[120] bg-white/80 backdrop-blur border-b border-slate-200/60 ${isHidden ? "sticky-nav--hidden" : ""}`}
+      className={`fixed top-0 left-0 right-0 z-[120] transition-all duration-300 ${
+        isScrolled
+          ? "bg-[#1a1f2e]/80 backdrop-blur-md border-b border-white/10"
+          : "bg-transparent border-b border-transparent"
+      }`}
       style={{
         paddingTop: "max(env(safe-area-inset-top), 0px)",
         paddingLeft: "max(env(safe-area-inset-left), 0px)",
@@ -109,7 +66,7 @@ export default function Header() {
               aria-controls="mobile-menu-panel"
               aria-expanded="false"
               aria-haspopup="dialog"
-              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-md text-slate-800 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-md text-white hover:text-[#FFD700] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               onClick={openMobileMenu}
               data-testid="header-hamburger"
               data-menu-trigger="mobile-menu"
@@ -117,20 +74,20 @@ export default function Header() {
               <MenuIcon size={22} aria-hidden="true" />
             </button>
 
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="text-2xl font-bold">
               <a href="#services" className="flex items-center gap-2">
-                <Image src="/logo.png" alt="Pat Of All Trades logo" width={32} height={32} className="rounded" />
-                <span className="tracking-wider">Pat Of All Trades</span>
+                <Image src="/pat-of-all-trades-logo.svg" alt="Pat Of All Trades logo" width={210} height={56} className="h-14 w-auto rounded" />
+                <span className="sr-only">Pat Of All Trades</span>
               </a>
             </div>
           </div>
 
           <nav className="hidden md:flex space-x-8 items-center" aria-label="Primary">
-            <a href="#services" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Services</a>
-            <a href="#portfolio" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Portfolio</a>
-            <a href="#about" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">About</a>
-            <a href="#testimonials" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Testimonials</a>
-            <a href="#contact" className="cta-btn text-dark-navy font-bold py-2 px-5 rounded-lg">Get a Quote</a>
+            <a href="#services" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">Services</a>
+            <a href="#portfolio" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">Portfolio</a>
+            <a href="#about" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">About</a>
+            <a href="#testimonials" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">Testimonials</a>
+            <a href="#contact" className="bg-gradient-to-r from-[#FFD700] to-[#ca8a04] text-[#1a1f2e] font-bold py-2 px-5 rounded-lg hover:from-[#ca8a04] hover:to-[#D4AF37] transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">Get a Quote</a>
           </nav>
         </div>
       </div>

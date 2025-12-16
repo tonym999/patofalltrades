@@ -56,7 +56,7 @@ test.describe('Accessibility focus management', () => {
     const remainingSteps = sequence.slice(1)
 
     await expect(focused).toHaveAttribute('href', firstStep.href)
-    await expect(focused).toHaveText(firstStep.textPattern)
+    await expect(focused).toHaveAccessibleName(/Pat Of All Trades/)
 
     for (const step of remainingSteps) {
       await page.keyboard.press('Tab')

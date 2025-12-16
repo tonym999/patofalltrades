@@ -15,9 +15,13 @@ export const metadata: Metadata = {
   title: "Pat Of All Trades | Premium London Handyman Services",
   description: "Reliable. Professional. Unmatched Quality.",
   icons: {
-    icon: '/logo.ico',
-    shortcut: '/logo.ico',
-    apple: '/logo.png',
+    icon: [
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/favicon-32.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
