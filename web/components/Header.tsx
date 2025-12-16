@@ -1,24 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  // Track scroll position to toggle header background
-  useEffect(() => {
-    const onScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    // Check initial scroll position
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {
     const btn = document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLButtonElement | null;
@@ -45,50 +32,62 @@ export default function Header() {
   return (
     <header
       id="navbar"
-      className={`fixed top-0 left-0 right-0 z-[120] transition-all duration-300 ${
-        isScrolled
-          ? "bg-[#1a1f2e]/80 backdrop-blur-md border-b border-white/10"
-          : "bg-transparent border-b border-transparent"
-      }`}
+      className="fixed top-0 left-0 right-0 z-40 bg-[#1a1f2e]/80 backdrop-blur-md border-b border-white/10"
       style={{
         paddingTop: "max(env(safe-area-inset-top), 0px)",
         paddingLeft: "max(env(safe-area-inset-left), 0px)",
         paddingRight: "max(env(safe-area-inset-right), 0px)",
       }}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
-          <div className="flex items-center gap-3">
-            {/* Mobile hamburger trigger */}
-            <button
-              type="button"
-              aria-label="Open menu"
-              aria-controls="mobile-menu-panel"
-              aria-expanded="false"
-              aria-haspopup="dialog"
-              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-md text-white hover:text-[#FFD700] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-              onClick={openMobileMenu}
-              data-testid="header-hamburger"
-              data-menu-trigger="mobile-menu"
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo / Brand with gradient text */}
+          <a href="#" className="text-2xl font-bold">
+            <span className="bg-gradient-to-r from-[#D4AF37] to-[#fbbf24] bg-clip-text text-transparent">
+              Pat Of All Trades
+            </span>
+          </a>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8" aria-label="Primary">
+            <a href="#services" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+              Services
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a href="#portfolio" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+              Portfolio
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a href="#about" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+              About
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a href="#testimonials" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+              Testimonials
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a 
+              href="#contact" 
+              className="bg-gradient-to-r from-[#D4AF37] to-[#ca8a04] text-[#0f172a] font-semibold px-6 py-2 rounded-full hover:shadow-lg hover:shadow-[#D4AF37]/50 hover:scale-105 transition-all duration-300"
             >
-              <MenuIcon size={22} aria-hidden="true" />
-            </button>
-
-            <div className="text-2xl font-bold">
-              <a href="#services" className="flex items-center gap-2">
-                <Image src="/pat-of-all-trades-logo.svg" alt="Pat Of All Trades logo" width={210} height={56} className="h-14 w-auto rounded" />
-                <span className="sr-only">Pat Of All Trades</span>
-              </a>
-            </div>
-          </div>
-
-          <nav className="hidden md:flex space-x-8 items-center" aria-label="Primary">
-            <a href="#services" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">Services</a>
-            <a href="#portfolio" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">Portfolio</a>
-            <a href="#about" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">About</a>
-            <a href="#testimonials" className="text-[#d1d5db] hover:text-[#D4AF37] transition duration-300">Testimonials</a>
-            <a href="#contact" className="bg-gradient-to-r from-[#FFD700] to-[#ca8a04] text-[#1a1f2e] font-bold py-2 px-5 rounded-lg hover:from-[#ca8a04] hover:to-[#D4AF37] transition-all duration-300 hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">Get a Quote</a>
+              Get a Quote
+            </a>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-controls="mobile-menu-panel"
+            aria-expanded="false"
+            aria-haspopup="dialog"
+            className="md:hidden w-6 h-6 flex items-center justify-center text-white"
+            onClick={openMobileMenu}
+            data-testid="header-hamburger"
+            data-menu-trigger="mobile-menu"
+          >
+            <MenuIcon size={24} aria-hidden="true" />
+          </button>
         </div>
       </div>
     </header>
