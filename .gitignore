@@ -45,6 +45,7 @@ Thumbs.db
 .cursor/*
 !.cursor/rules/
 !.cursor/skills/
+.claude/
 .cursorignore
 .cursorrules.local
 prompts/local/**
