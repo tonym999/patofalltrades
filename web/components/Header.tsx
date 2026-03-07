@@ -41,11 +41,24 @@ export default function Header() {
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo / Brand with gradient text */}
-          <a href="#" className="text-2xl font-bold">
-            <span className="bg-gradient-to-r from-[#D4AF37] to-[#fbbf24] bg-clip-text text-transparent">
-              Pat Of All Trades
-            </span>
+          {/* Logo / Brand */}
+          <a href="#" className="flex items-center">
+            <Image
+              src="/brand/pat-logo-horizontal-light.svg"
+              alt="Pat Of All Trades"
+              width={180}
+              height={37}
+              className="hidden md:block"
+              priority
+            />
+            <Image
+              src="/brand/pat-logo-compact-light.svg"
+              alt="Pat Of All Trades"
+              width={100}
+              height={33}
+              className="md:hidden"
+              priority
+            />
           </a>
 
           {/* Desktop Navigation */}
