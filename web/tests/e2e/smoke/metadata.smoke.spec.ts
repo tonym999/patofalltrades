@@ -2,6 +2,9 @@ import { expect, test } from '@playwright/test'
 
 test.describe('Smoke @smoke - Metadata and manifest', () => {
   test('homepage exposes expected social metadata', async ({ page }) => {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://patofalltrades.co.uk'
+    const origin = new URL(siteUrl).origin
+
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
 
@@ -20,7 +23,7 @@ test.describe('Smoke @smoke - Metadata and manifest', () => {
     )
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       'content',
-      'https://patofalltrades.co.uk/og-image.jpg',
+      `${origin}/og-image.jpg`,
     )
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute(
@@ -33,7 +36,7 @@ test.describe('Smoke @smoke - Metadata and manifest', () => {
     )
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
       'content',
-      'https://patofalltrades.co.uk/social-share.jpg',
+      `${origin}/social-share.jpg`,
     )
   })
 
