@@ -216,19 +216,19 @@ export default function MobileTabsNav() {
             </div>
 
             <div className="grid grid-cols-1 divide-y divide-white/10">
-              <Link href="#services" onClick={() => handleMenuItemClick("Services")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+              <Link href="/#services" onClick={() => handleMenuItemClick("Services")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                 Services
               </Link>
-              <Link href="#portfolio" onClick={() => handleMenuItemClick("Work")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+              <Link href="/#portfolio" onClick={() => handleMenuItemClick("Work")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                 Work
               </Link>
-              <Link href="#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+              <Link href="/#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                 Areas We Serve
               </Link>
-              <Link href="#about" onClick={() => handleMenuItemClick("About")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+              <Link href="/#about" onClick={() => handleMenuItemClick("About")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                 About
               </Link>
-              <Link href="#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+              <Link href="/#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                 Reviews
               </Link>
               <Link href="/#contact" onClick={handleGetInTouchClick} className="py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">

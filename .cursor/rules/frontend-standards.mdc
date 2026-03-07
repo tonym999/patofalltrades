@@ -9,7 +9,7 @@ globs:
 alwaysApply: true
 ---
 
-You are working in a Next.js 15 App Router codebase with React 19 and Tailwind v4.
+You are working in a Next.js 16 App Router codebase with React 19 and Tailwind v4.
 
 Follow these standards unless the user explicitly asks otherwise:
 

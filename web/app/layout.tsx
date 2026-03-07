@@ -10,11 +10,19 @@ const MobileTabsNav = dynamic(() => import("../components/MobileTabsNav"));
 import "./globals.css";
 
 const inter = Inter({ subsets: ['latin'] })
+const FALLBACK_SITE_URL = 'https://patofalltrades.co.uk'
+
+const resolveMetadataBase = () => {
+  const candidate = process.env.NEXT_PUBLIC_SITE_URL
+  try {
+    return new URL(candidate ?? FALLBACK_SITE_URL)
+  } catch {
+    return new URL(FALLBACK_SITE_URL)
+  }
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://patofalltrades.co.uk',
-  ),
+  metadataBase: resolveMetadataBase(),
   title: "Pat Of All Trades | Premium London Handyman Services",
   description: "Quality craftsmanship delivered across London. From small repairs to complete renovations — professional handyman services you can rely on.",
   icons: {

@@ -117,13 +117,15 @@ test('Tab order is logical', async ({ page }) => {
 test('Focus moves into dialog on open and returns on close', async ({ page }) => {
   await page.goto('/')
 
-  await page.click('[data-testid="open-dialog"]')
+  const trigger = page.getByTestId('open-dialog')
+  await trigger.click()
   const insideDialog = await page.evaluate(
     () => document.activeElement?.closest('[role="dialog"]') !== null
   )
   expect(insideDialog).toBe(true)
 
   await page.keyboard.press('Escape')
+  await expect(trigger).toBeFocused()
 })
 ```
 
@@ -146,7 +148,7 @@ test('Animations respect prefers-reduced-motion', async ({ browser }) => {
 ### Test naming conventions
 - Smoke: `feature.smoke.spec.ts` — tagged `@smoke`
 - Functional: `feature.spec.ts`
-- Include a basic axe scan in smoke tests; thorough audits in functional tests
+- Include a basic axe scan and at least one accessibility snapshot in smoke tests; run thorough audits in functional suites
 
 ## Response format
 1. Issues found, in priority order

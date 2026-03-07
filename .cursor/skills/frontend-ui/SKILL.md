@@ -13,7 +13,7 @@ description: Build or refactor frontend UI components with clean structure, resp
 - Converting rough UI into production-quality code
 
 ## Stack context
-- Next.js 15 App Router — Server Components by default, `"use client"` only when needed
+- Next.js 16 App Router — Server Components by default, `"use client"` only when needed
 - React 19, Tailwind v4 (CSS-based config, no `tailwind.config.ts`)
 - Theme tokens defined as CSS variables in `web/app/globals.css`
 - Existing utility classes: `.glass-card`, `.cta-btn`, `.btn-secondary`, `.parallax-bg`

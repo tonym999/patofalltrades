@@ -12,11 +12,11 @@ export default function Hero() {
       {/* Your existing hero content goes here */}
       <div className="container mx-auto px-6 md:px-10 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 md:mb-6 leading-tight">
-          <span className="text-[#FFD700]">Quality Craftsmanship.</span>
+          <span className="text-gold-bright">Quality Craftsmanship.</span>
           <br />
           <span className="text-white">Delivered.</span>
         </h1>
-        <p className="text-base sm:text-lg md:text-xl text-[#d1d5db] mb-6 md:mb-8 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-body mb-6 md:mb-8 max-w-2xl mx-auto">
           Premium handyman services across London. From small repairs to complete renovations, we bring professional excellence to every project.
         </p>
 

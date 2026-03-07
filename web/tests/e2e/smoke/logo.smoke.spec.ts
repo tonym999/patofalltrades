@@ -4,6 +4,7 @@ import AxeBuilder from '@axe-core/playwright'
 test.describe('Smoke @smoke - Header logo renders and is accessible', () => {
   test('Logo is visible with correct alt text', async ({ page }) => {
     await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
 
     const header = page.locator('#navbar')
     await expect(header).toBeVisible()
@@ -23,5 +24,4 @@ test.describe('Smoke @smoke - Header logo renders and is accessible', () => {
     expect(axe.violations).toEqual([])
   })
 })
-
 

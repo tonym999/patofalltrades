@@ -26,7 +26,9 @@ export default function Header() {
           detail: { trigger: e.currentTarget as HTMLElement, source: "header" },
         })
       );
-    } catch {}
+    } catch (err) {
+      console.warn("Failed to dispatch mobile menu event from header:", err);
+    }
   };
 
   return (
@@ -42,7 +44,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo / Brand */}
-          <a href="#" className="flex items-center">
+          <a href="/" className="flex items-center">
             <Image
               src="/brand/pat-logo-horizontal-light.svg"
               alt="Pat Of All Trades"
@@ -63,25 +65,25 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8" aria-label="Primary">
-            <a href="#services" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+            <a href="/#services" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
               Services
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
             </a>
-            <a href="#portfolio" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+            <a href="/#portfolio" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
               Portfolio
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
             </a>
-            <a href="#about" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+            <a href="/#about" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
               About
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
             </a>
-            <a href="#testimonials" className="group relative text-gray-300 hover:text-[#D4AF37] transition-colors duration-300">
+            <a href="/#testimonials" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
               Testimonials
-              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
             </a>
             <a 
-              href="#contact" 
-              className="bg-gradient-to-r from-[#D4AF37] to-[#ca8a04] text-[#0f172a] font-semibold px-6 py-2 rounded-full hover:shadow-lg hover:shadow-[#D4AF37]/50 hover:scale-105 transition-all duration-300"
+              href="/#contact" 
+              className="bg-gradient-to-r from-[color:var(--gold)] to-[color:var(--gold-hover)] text-[color:var(--deep-navy)] font-semibold px-6 py-2 rounded-full hover:shadow-lg hover:shadow-[0_0_25px_color-mix(in_srgb,var(--gold)_50%,transparent)] hover:scale-105 transition-all duration-300"
             >
               Get a Quote
             </a>
