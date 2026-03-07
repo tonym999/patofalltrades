@@ -43,6 +43,7 @@ Thumbs.db
 
 # Local overrides and Cursor config
 .cursor/
+.claude/
 .cursorignore
 .cursorrules.local
 prompts/local/**
