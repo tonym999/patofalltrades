@@ -1,17 +1,11 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
 export default function Header() {
-  const [isHidden, setIsHidden] = useState(false);
-  const lastScrollYRef = useRef(0);
-  const showTimeoutRef = useRef<number | null>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {
     const btn = document.querySelector('[data-menu-trigger="mobile-menu"]') as HTMLButtonElement | null;
@@ -32,106 +26,83 @@ export default function Header() {
           detail: { trigger: e.currentTarget as HTMLElement, source: "header" },
         })
       );
-    } catch {}
-  };
-
-  // Hide on scroll down, show on scroll up (100ms debounce) with small delta
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      setIsHidden(false);
-      lastScrollYRef.current = Math.max(0, window.scrollY || 0);
-      return;
+    } catch (err) {
+      console.warn("Failed to dispatch mobile menu event from header:", err);
     }
-    const DELTA = 4;
-    const onScroll = () => {
-      const yRaw = window.scrollY || 0;
-      const y = yRaw < 0 ? 0 : yRaw;
-
-      const last = lastScrollYRef.current;
-      lastScrollYRef.current = y;
-
-      const isScrollingDown = y > last + DELTA;
-      const isScrollingUp = y < last - DELTA;
-
-      if (y <= 2) {
-        if (showTimeoutRef.current) {
-          window.clearTimeout(showTimeoutRef.current);
-          showTimeoutRef.current = null;
-        }
-        setIsHidden(false);
-        return;
-      }
-
-      if (isScrollingDown) {
-        if (showTimeoutRef.current) {
-          window.clearTimeout(showTimeoutRef.current);
-          showTimeoutRef.current = null;
-        }
-        setIsHidden(true);
-      } else if (isScrollingUp) {
-        if (showTimeoutRef.current) {
-          window.clearTimeout(showTimeoutRef.current);
-        }
-        showTimeoutRef.current = window.setTimeout(() => {
-          setIsHidden(false);
-        }, 100);
-      }
-    };
-
-    // Initialize state on mount
-    lastScrollYRef.current = Math.max(0, window.scrollY || 0);
-    setIsHidden(false);
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (showTimeoutRef.current) window.clearTimeout(showTimeoutRef.current);
-    };
-  }, [prefersReducedMotion]);
+  };
 
   return (
     <header
       id="navbar"
-      className={`sticky-nav fixed top-0 left-0 right-0 z-[120] bg-white/80 backdrop-blur border-b border-slate-200/60 ${isHidden ? "sticky-nav--hidden" : ""}`}
+      className="fixed top-0 left-0 right-0 z-40 bg-[#1a1f2e]/80 backdrop-blur-md border-b border-white/10"
       style={{
         paddingTop: "max(env(safe-area-inset-top), 0px)",
         paddingLeft: "max(env(safe-area-inset-left), 0px)",
         paddingRight: "max(env(safe-area-inset-right), 0px)",
       }}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
-          <div className="flex items-center gap-3">
-            {/* Mobile hamburger trigger */}
-            <button
-              type="button"
-              aria-label="Open menu"
-              aria-controls="mobile-menu-panel"
-              aria-expanded="false"
-              aria-haspopup="dialog"
-              className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-md text-slate-800 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-              onClick={openMobileMenu}
-              data-testid="header-hamburger"
-              data-menu-trigger="mobile-menu"
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo / Brand */}
+          <a href="/" className="flex items-center">
+            <Image
+              src="/brand/pat-logo-horizontal-light.svg"
+              alt="Pat Of All Trades"
+              width={180}
+              height={37}
+              className="hidden md:block"
+              priority
+            />
+            <Image
+              src="/brand/pat-logo-compact-light.svg"
+              alt="Pat Of All Trades"
+              width={100}
+              height={33}
+              className="md:hidden"
+              priority
+            />
+          </a>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-8" aria-label="Primary">
+            <a href="/#services" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
+              Services
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a href="/#portfolio" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
+              Portfolio
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a href="/#about" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
+              About
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a href="/#testimonials" className="group relative text-body hover:text-[color:var(--gold)] transition-colors duration-300">
+              Testimonials
+              <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all duration-300 group-hover:w-full" />
+            </a>
+            <a 
+              href="/#contact" 
+              className="bg-gradient-to-r from-[color:var(--gold)] to-[color:var(--gold-hover)] text-[color:var(--deep-navy)] font-semibold px-6 py-2 rounded-full hover:shadow-lg hover:shadow-[0_0_25px_color-mix(in_srgb,var(--gold)_50%,transparent)] hover:scale-105 transition-all duration-300"
             >
-              <MenuIcon size={22} aria-hidden="true" />
-            </button>
-
-            <div className="text-2xl font-bold text-slate-900">
-              <a href="#services" className="flex items-center gap-2">
-                <Image src="/logo.png" alt="Pat Of All Trades logo" width={32} height={32} className="rounded" />
-                <span className="tracking-wider">Pat Of All Trades</span>
-              </a>
-            </div>
-          </div>
-
-          <nav className="hidden md:flex space-x-8 items-center" aria-label="Primary">
-            <a href="#services" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Services</a>
-            <a href="#portfolio" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Portfolio</a>
-            <a href="#about" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">About</a>
-            <a href="#testimonials" className="text-slate-700 hover:text-[var(--gold)] transition duration-300">Testimonials</a>
-            <a href="#contact" className="cta-btn text-dark-navy font-bold py-2 px-5 rounded-lg">Get a Quote</a>
+              Get a Quote
+            </a>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-controls="mobile-menu-panel"
+            aria-expanded="false"
+            aria-haspopup="dialog"
+            className="md:hidden w-6 h-6 flex items-center justify-center text-white"
+            onClick={openMobileMenu}
+            data-testid="header-hamburger"
+            data-menu-trigger="mobile-menu"
+          >
+            <MenuIcon size={24} aria-hidden="true" />
+          </button>
         </div>
       </div>
     </header>

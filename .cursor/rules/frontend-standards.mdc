@@ -1,0 +1,68 @@
+---
+description: Frontend standards for Next.js App Router, React 19, and Tailwind v4 UI code
+globs:
+  - "web/app/**/*.tsx"
+  - "web/app/**/*.css"
+  - "web/components/**/*.tsx"
+  - "web/components/**/*.ts"
+  - "web/hooks/**/*.ts"
+alwaysApply: true
+---
+
+You are working in a Next.js 16 App Router codebase with React 19 and Tailwind v4.
+
+Follow these standards unless the user explicitly asks otherwise:
+
+## General
+- Prefer existing patterns in the repo over inventing new ones
+- Prefer small, composable components over large multi-purpose ones
+- Keep code production-ready and maintainable
+- Avoid unnecessary dependencies — framer-motion, gsap, lucide-react, and vaul are already available
+- Keep logic readable and straightforward
+
+## TypeScript
+- Prefer explicit, narrow types
+- Avoid `any` unless absolutely necessary
+- Keep props minimal and well named
+- Prefer derived state over duplicated state
+
+## Next.js App Router
+- Components are Server Components by default — only add `"use client"` when the component needs browser APIs, hooks, or event handlers
+- Use the existing `ClientOnly` wrapper for components that must avoid SSR
+- Path alias is `@/*` mapping to `web/*`
+
+## React / UI structure
+- Use semantic HTML where possible
+- Prefer `<button>` for actions and `<a>` / `next/link` for navigation
+- Avoid div-heavy markup when a more semantic element exists
+- Keep JSX nesting under control
+- Extract repeated UI into reusable components when it improves clarity
+
+## Styling
+- Tailwind v4 is configured via CSS — theme tokens live in `globals.css` as CSS variables
+- Reuse existing tokens: `--background`, `--foreground`, `--primary`, `--gold`, `--card`, etc.
+- Reuse existing utility classes: `.glass-card`, `.cta-btn`, `.btn-secondary`, `.parallax-bg`
+- Keep spacing, typography, and colours consistent with the existing design system
+- Avoid magic numbers unless already established
+- Prefer responsive layouts by default
+
+## Accessibility
+- Ensure keyboard operability for interactive elements
+- Ensure visible focus states are preserved
+- Use labels, descriptions, and headings properly
+- Prefer native semantics over unnecessary ARIA
+- Do not add ARIA that duplicates native behaviour
+- Preserve existing patterns: `<SkipNavLink />`, `<ScrollProgress />`
+
+## UX quality
+- Consider loading, empty, error, and success states
+- Ensure important actions are visually clear
+- Preserve clear hierarchy and scannability
+- Reduce unnecessary friction in forms and flows
+- Respect `prefers-reduced-motion` when using framer-motion or gsap animations
+
+## Output behaviour
+When making changes:
+- Briefly explain the approach
+- Mention any important tradeoffs
+- Call out accessibility or responsive considerations when relevant

@@ -37,19 +37,20 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
     <section ref={heroRef} className="relative min-h-screen supports-[height:100dvh]:min-h-[100dvh] overflow-hidden">
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0 pointer-events-none">
-        {/* Single responsive image with sizes; lets the browser pick the right src from Next.js-generated srcset */}
+        {/* Responsive hero image - Next.js generates optimized srcset for each breakpoint */}
         <div className="absolute inset-0">
           <Image
             src="/hero.png"
             alt="Handyman hero background"
             fill
-            sizes="100vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
             priority
-            className="object-cover filter brightness-110 saturate-110"
+            quality={85}
+            className="object-cover object-center"
           />
         </div>
         <div
-          className="absolute inset-0 bg-[hsl(var(--hero-scrim))]/70"
+          className="absolute inset-0 bg-[#1a1f2e]/80"
           aria-hidden="true"
           data-testid="hero-overlay"
         />
@@ -73,9 +74,9 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
         animate={prefersReducedMotion ? { y: 0 } : { y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: prefersReducedMotion ? 0 : Infinity }}
       >
-        <div className="w-6 h-10 border-2 border-amber-400 rounded-full flex justify-center">
+        <div className="w-6 h-10 border-2 border-[#D4AF37] rounded-full flex justify-center">
           <motion.div
-            className="w-1 h-3 bg-amber-400 rounded-full mt-2"
+            className="w-1 h-3 bg-[#D4AF37] rounded-full mt-2"
             animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0, 1] }}
             transition={{ duration: 2, repeat: prefersReducedMotion ? 0 : Infinity }}
           />
