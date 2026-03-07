@@ -186,6 +186,7 @@ export default function MobileTabsNav() {
           />
           <Drawer.Content
             id="mobile-menu-panel"
+            aria-labelledby="mobile-menu-title"
             aria-describedby={undefined}
             className="fixed inset-x-0 bottom-0 z-[var(--z-modal-content)] md:hidden bg-[#1a1f2e] border-t border-white/10 rounded-t-2xl shadow-2xl"
             style={{ paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))" }}

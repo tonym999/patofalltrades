@@ -12,8 +12,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://patofalltrades.co.uk',
+  ),
   title: "Pat Of All Trades | Premium London Handyman Services",
-  description: "Reliable. Professional. Unmatched Quality.",
+  description: "Quality craftsmanship delivered across London. From small repairs to complete renovations — professional handyman services you can rely on.",
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -26,14 +29,14 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
   openGraph: {
     title: 'Pat Of All Trades | Premium London Handyman Services',
-    description: 'Reliable. Professional. Unmatched Quality.',
+    description: 'Quality craftsmanship delivered across London. From small repairs to complete renovations — professional handyman services you can rely on.',
     images: [{ url: '/og-image.jpg' }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Pat Of All Trades | Premium London Handyman Services',
-    description: 'Reliable. Professional. Unmatched Quality.',
+    description: 'Quality craftsmanship delivered across London. From small repairs to complete renovations — professional handyman services you can rely on.',
     images: ['/social-share.jpg'],
   },
 };
