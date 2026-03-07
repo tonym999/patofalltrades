@@ -8,8 +8,7 @@ test.describe('Smoke @smoke - Header logo renders and is accessible', () => {
     const header = page.locator('#navbar')
     await expect(header).toBeVisible()
 
-    // Assert logo image by accessible name
-    const logoImg = page.getByRole('img', { name: 'Pat Of All Trades logo' })
+    const logoImg = page.getByRole('img', { name: 'Pat Of All Trades' }).first()
     await expect(logoImg).toBeVisible()
 
     // Basic accessibility tree snapshot

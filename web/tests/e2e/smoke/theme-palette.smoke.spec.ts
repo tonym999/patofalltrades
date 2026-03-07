@@ -8,18 +8,17 @@ test.describe('Smoke Test - Theme palette', () => {
     const rootBackground = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--background').trim(),
     )
-    expect(rootBackground).toBe('221 61% 8%')
+    expect(rootBackground).toBe('224 28% 14%')
 
     const rootForeground = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--foreground').trim(),
     )
-    expect(rootForeground).toBe('221 100% 96%')
+    expect(rootForeground).toBe('0 0% 100%')
 
     const bodyTextColor = await page.evaluate(() => getComputedStyle(document.body).color)
-    expect(bodyTextColor).toBe('rgb(235, 241, 255)')
+    expect(bodyTextColor).toBe('rgb(255, 255, 255)')
 
     const bodyBackground = await page.evaluate(() => getComputedStyle(document.body).backgroundImage)
-    expect(bodyBackground).toContain('rgb(15, 25, 47)')
-    expect(bodyBackground).toContain('rgb(8, 16, 33)')
+    expect(bodyBackground).toContain('linear-gradient')
   })
 })

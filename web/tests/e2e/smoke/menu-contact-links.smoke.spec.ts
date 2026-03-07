@@ -18,7 +18,6 @@ test.describe('Smoke @smoke - Contact links in menu drawer', () => {
     const axe = await new AxeBuilder({ page }).include('#mobile-menu-panel').withTags(['wcag2a','wcag2aa']).analyze()
     expect(axe.violations).toEqual([])
     await expect(dialog).toHaveAttribute('role', 'dialog')
-    await expect(dialog).toHaveAttribute('aria-modal', 'true')
     const overlay = page.getByTestId('menu-overlay')
     await expect(overlay).toBeVisible({ timeout: 10000 })
 

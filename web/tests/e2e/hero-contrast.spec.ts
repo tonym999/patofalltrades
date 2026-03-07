@@ -12,14 +12,14 @@ test.describe('Hero contrast @smoke', () => {
   })
 
   test('hero heading and subtitle meet WCAG contrast', async ({ page }) => {
-    const heroHeading = page.getByRole('heading', { level: 1, name: /london's premier handyman/i })
-    const heroSubtitle = page.getByText(/reliable\. professional\. unmatched quality\./i)
+    const heroHeading = page.getByRole('heading', { level: 1, name: /quality craftsmanship/i })
+    const heroSubtitle = page.getByText(/premium handyman services across london/i)
 
     await expect(heroHeading).toBeVisible()
     await expect(heroSubtitle).toBeVisible()
 
     const accessibilityTree = await page.accessibility.snapshot()
-    const accessibilitySnapshot = JSON.stringify(accessibilityTree, null, 2)
+    const accessibilitySnapshot = `${JSON.stringify(accessibilityTree, null, 2)}\n`
     expect(accessibilitySnapshot).toMatchSnapshot('hero-accessibility.json')
 
     const contrastOf = async (locator: import('@playwright/test').Locator) => {
