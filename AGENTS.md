@@ -10,6 +10,7 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 - Stack: Next.js 16, React 19, Tailwind CSS v4, Playwright, TypeScript
 - App directory: [`web/`](web/)
 - Package manager: `pnpm` (run from `web/`)
+- Node version: root [`.nvmrc`](.nvmrc)
 - Hosting: Vercel (auto-deploys on merge to `main`)
 - Project board: [GitHub Projects v2](https://github.com/users/tonym999/projects/2) (`tonym999`, project `2`)
 - AI skills: `.cursor/skills/` — frontend-ui, accessibility-audit, design-review
@@ -28,6 +29,15 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 10. After code review (CodeRabbit), triage feedback and address it. See [Code Review Handling](#code-review-handling).
 
 When creating issues or PRs, use the GitHub templates under `.github/` so linked tickets contain the structured context CodeRabbit uses for PR validation.
+
+## Environment Bootstrap
+
+- Use `nvm` with the repo-root [`.nvmrc`](.nvmrc) before running project commands in a fresh shell.
+- `pnpm` is pinned in [`web/package.json`](web/package.json) and is expected to be launched via Corepack from the active Node installation.
+- Do not assume `pnpm` lives in `~/.local/share/pnpm`; in this repo it may resolve from the active `nvm` Node toolchain instead.
+- Run package-manager commands from [`web/`](web/) so Corepack sees the version pinned by the `packageManager` field in [`web/package.json`](web/package.json).
+- A fresh machine or cache may still require Corepack to prepare that pinned version once before offline agent sessions can use it.
+- After changing [`.codex/environments/environment.toml`](.codex/environments/environment.toml), restart Codex and verify a fresh session resolves `node` and `pnpm` before treating the fix as complete.
 
 ## Commit Standards
 

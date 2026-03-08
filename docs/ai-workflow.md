@@ -20,6 +20,29 @@ git checkout -b feature/[ticket-id]-[kebab-description]
 
 When creating new work items or PRs, use the GitHub issue and PR templates in `.github/` so CodeRabbit receives consistent ticket context for validation.
 
+## Environment Bootstrap
+
+Use the repo-root [`.nvmrc`](../.nvmrc) to select the project's Node version in fresh shells before running project commands. In this repository, `pnpm` is pinned in [`web/package.json`](../web/package.json) and is typically provided by Corepack through the active `nvm` Node installation rather than a standalone binary in `~/.local/share/pnpm`.
+
+For Codex sessions, [`.codex/environments/environment.toml`](../.codex/environments/environment.toml) should:
+
+- point temp/cache directories at writable Linux paths
+- source `nvm`
+- run `nvm use` from the repo root
+- avoid hard-coding an unrelated pnpm path
+
+If those settings change, fully restart Codex and validate the fresh session before continuing work. A minimal verification looks like:
+
+```bash
+command -v node
+node -v
+cd web
+command -v pnpm
+pnpm -v
+```
+
+If `pnpm` prompts Corepack to download a version unexpectedly, confirm the active Node version from [`.nvmrc`](../.nvmrc), whether the environment runner actually applied the repo bootstrap, and whether the machine has already prepared the package-manager version pinned in [`web/package.json`](../web/package.json) at least once.
+
 ## Testing — CI Specifics
 
 - Run locally: `pnpm run test:e2e:smoke` (from `web/`)
