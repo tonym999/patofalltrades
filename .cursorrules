@@ -29,11 +29,14 @@ After creating or switching to a branch, sync deps in `web/`:
 After a PR review, use the GitHub MCP or `gh` CLI to fetch and process feedback:
 
 ```
-gh api repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/reviews
-gh api repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/comments
+gh api --paginate repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/reviews
+gh api --paginate repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/comments
+gh api --paginate repos/tonym999/patofalltrades/issues/{PR_NUMBER}/comments
+gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: PR_NUMBER) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
 ```
 
 - Filter to comments authored by `coderabbitai[bot]`.
+- Use GraphQL `reviewThreads` or GitHub MCP to determine unresolved vs resolved threads; the REST endpoints do not expose `isResolved`.
 - Follow the triage flow in [AGENTS.md — Code Review Handling](AGENTS.md#code-review-handling).
 - Present unresolved threads to the user grouped by priority (change requests → nitpicks → informational).
 - After fixes are pushed, resolve addressed threads via the API or prompt the user to resolve them on GitHub.

@@ -69,8 +69,8 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 PRs are reviewed by CodeRabbit. After a review is posted:
 
 1. **Fetch** all review threads on the PR.
-2. **Filter** to threads where any comment author is `coderabbitai` (or the CodeRabbit bot).
-3. **Split** into unresolved and resolved threads.
+2. **Filter** to threads where any comment author is `coderabbitai[bot]`.
+3. **Split** into unresolved and resolved threads using GraphQL `reviewThreads` or GitHub MCP, because the REST comment endpoints do not expose `isResolved`.
 4. **Classify** unresolved threads:
    - **Change requests** — direct issues, bugs, or required fixes (`🔧`, `⚠️`, `🐛`, `🚨`)
    - **Nitpicks** — minor style or naming suggestions (`💭`, `📝`)

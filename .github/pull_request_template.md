@@ -17,6 +17,7 @@ Explain how this PR satisfies the linked issue title, problem statement, expecte
 ## Testing
 
 - [ ] Not run
+- [ ] Docs-only / Not applicable
 - [ ] `pnpm run lint` (from `web/`)
 - [ ] `pnpm run test:e2e:smoke` (from `web/`)
 - [ ] Other:
@@ -37,4 +38,3 @@ Add screenshots, recordings, logs, or `N/A`.
 - [ ] The PR description uses the same terminology as the issue
 - [ ] Acceptance criteria are covered or explicitly called out as not done
 - [ ] New docs or workflow changes are reflected in repo documentation
-

@@ -34,24 +34,27 @@ Use the GitHub API to get all review data:
 
 ```bash
 # All reviews (includes CodeRabbit's summary review)
-gh api repos/tonym999/patofalltrades/pulls/{PR}/reviews
+gh api --paginate repos/tonym999/patofalltrades/pulls/{PR}/reviews
 
 # All inline comments (file-level feedback)
-gh api repos/tonym999/patofalltrades/pulls/{PR}/comments
+gh api --paginate repos/tonym999/patofalltrades/pulls/{PR}/comments
 
 # Issue-style comments (top-level summary)
-gh api repos/tonym999/patofalltrades/issues/{PR}/comments
+gh api --paginate repos/tonym999/patofalltrades/issues/{PR}/comments
+
+# Thread resolution metadata
+gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: PR_NUMBER) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
 ```
 
 ### Processing Flow
 
-1. Collect all comments from the three endpoints above.
+1. Collect all comments from the three REST endpoints above and fetch `reviewThreads` via GraphQL for thread resolution metadata.
 2. Keep only those authored by `coderabbitai[bot]`.
-3. Group by review thread (comments sharing `in_reply_to_id` belong to the same thread).
-4. Check thread resolution status — resolved threads can be skipped unless the user asks.
-5. Within each unresolved thread, use the **latest comment** as the primary summary (it often contains CodeRabbit's refined position after discussion). Keep earlier comments for context.
+3. Group inline review comments from `/pulls/{PR}/comments` by `in_reply_to_id`; top-level review summaries from `/pulls/{PR}/reviews` and issue comments from `/issues/{PR}/comments` should be handled separately because they do not use `in_reply_to_id`.
+4. Use GraphQL `reviewThreads.isResolved` to distinguish unresolved and resolved inline threads; resolved threads can be skipped unless the user asks.
+5. Within each unresolved thread, use the latest comment as the primary summary and keep earlier comments for context.
 6. Classify each thread by its markers. If no marker is present, infer from tone: direct instructions are change requests; questions or "consider" phrasing are informational.
-7. Present to the user grouped by priority, with file path and line number for each.
+7. Present the remaining items to the user grouped by priority, with file path and line number where applicable.
 
 ### After Fixing
 
