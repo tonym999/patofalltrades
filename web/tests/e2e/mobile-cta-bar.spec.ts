@@ -210,7 +210,11 @@ test.describe('Mobile CTA Bar', () => {
     await page.focus('body')
     const ctaLinks = page.getByTestId('mobile-cta-link')
     const call = ctaLinks.nth(0)
-    await call.focus()
+    for (let i = 0; i < 20; i += 1) {
+      await page.keyboard.press('Tab')
+      if (await call.evaluate((el) => el === document.activeElement)) break
+    }
+    await expect(call).toBeFocused()
     const getFocusSignal = (locator: typeof call) => locator.evaluate((el) => {
       const cs = getComputedStyle(el)
       const outlineWidth = Number.parseFloat(cs.outlineWidth || '0')
