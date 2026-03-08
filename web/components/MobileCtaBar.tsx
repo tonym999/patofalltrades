@@ -92,8 +92,9 @@ export default function MobileCtaBar() {
   return (
     <nav
       aria-label="Primary actions"
-      className={`md:hidden fixed bottom-0 inset-x-0 z-50 backdrop-blur-xl bg-white/70 border-t border-white/60 shadow-lg ${scrolled ? "bottom-cta--shadow" : ""}`}
+      className={`md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-white/10 bg-[#1a1f2e]/95 shadow-2xl backdrop-blur-xl ${scrolled ? "bottom-cta--shadow" : ""}`}
       data-shadowed={scrolled ? "true" : "false"}
+      data-testid="mobile-cta-bar"
       ref={containerRef}
     >
       <div
@@ -109,11 +110,11 @@ export default function MobileCtaBar() {
           <a
             href={`tel:${CONTACT_INFO.phoneE164}`}
             aria-label={`Call ${CONTACT_INFO.phoneE164}`}
-            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-slate-200/70 bg-white/5 px-3 text-sm font-semibold text-slate-900 transition-colors hover:bg-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 text-sm font-semibold text-gray-300 transition-colors hover:border-[#D4AF37]/40 hover:bg-white/10 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
             data-testid="mobile-cta-link"
             data-action="call"
           >
-            <Phone size={18} aria-hidden="true" className="text-slate-800 transition-transform group-hover:-translate-y-0.5" />
+            <Phone size={18} aria-hidden="true" className="text-[#D4AF37] transition-transform group-hover:-translate-y-0.5" />
             <span>Call</span>
           </a>
           <a
@@ -121,17 +122,17 @@ export default function MobileCtaBar() {
             rel="noopener noreferrer"
             target="_blank"
             aria-label="WhatsApp chat with Pat"
-            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-emerald-300/80 bg-transparent px-3 text-sm font-semibold text-emerald-900 transition-colors hover:bg-emerald-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 text-sm font-semibold text-gray-300 transition-colors hover:border-[#D4AF37]/40 hover:bg-white/10 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
             data-testid="mobile-cta-link"
             data-action="whatsapp"
           >
-            <MessageCircle size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
+            <MessageCircle size={18} aria-hidden="true" className="text-[#D4AF37] transition-transform group-hover:-translate-y-0.5" />
             <span>WhatsApp</span>
           </a>
           <Link
             href="/#contact"
             onClick={handleGetQuote}
-            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-amber-300/80 bg-transparent px-3 text-sm font-semibold text-amber-900 transition-colors hover:bg-amber-50/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[#D4AF37]/50 bg-[#D4AF37] px-3 text-sm font-semibold text-[#0f172a] transition-colors hover:bg-[#FFD700] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
             data-testid="mobile-cta-link"
             data-action="get-quote"
           >

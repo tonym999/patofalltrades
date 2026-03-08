@@ -19,6 +19,127 @@ test.describe('Mobile CTA Bar', () => {
 		await expect(call).toBeVisible()
 	})
 
+	test('uses the dark theme surface and gold-accent button styling', async ({ page }) => {
+		const nav = page.getByTestId('mobile-cta-bar')
+		await expect(nav).toBeVisible()
+		const navStyles = await nav.evaluate((el) => {
+			const cs = getComputedStyle(el)
+			return {
+				backgroundColor: cs.backgroundColor,
+				borderTopColor: cs.borderTopColor,
+			}
+		})
+		expect(navStyles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+		expect(navStyles.backgroundColor).not.toBe('rgb(255, 255, 255)')
+		expect(navStyles.borderTopColor).not.toBe('rgb(255, 255, 255)')
+
+		const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
+		const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
+		const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
+
+		const [neutralStyles, whatsappStyles, quoteStyles] = await Promise.all([
+			call.evaluate((el) => {
+				const cs = getComputedStyle(el)
+				return {
+					color: cs.color,
+					backgroundColor: cs.backgroundColor,
+				}
+			}),
+			whatsapp.evaluate((el) => {
+				const cs = getComputedStyle(el)
+				return {
+					color: cs.color,
+					backgroundColor: cs.backgroundColor,
+				}
+			}),
+			getQuote.evaluate((el) => {
+				const cs = getComputedStyle(el)
+				return {
+					color: cs.color,
+					backgroundColor: cs.backgroundColor,
+				}
+			}),
+		])
+
+		expect(neutralStyles.color).not.toBe('rgb(15, 23, 42)')
+		expect(neutralStyles.color).not.toBe('rgb(255, 255, 255)')
+		expect(neutralStyles.color).not.toBe('rgb(6, 78, 59)')
+		expect(neutralStyles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+
+		expect(whatsappStyles.color).not.toBe('rgb(6, 78, 59)')
+		expect(whatsappStyles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+
+		expect(quoteStyles.color).toBe('rgb(15, 23, 42)')
+		expect(quoteStyles.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+	})
+
+	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {
+		async function contrastOf(locator: import('@playwright/test').Locator): Promise<number> {
+			return locator.evaluate((el: Element) => {
+				const toLin = (v: number): number => {
+					const x = v / 255
+					return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)
+				}
+				const luminance = (r: number, g: number, b: number): number => 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b)
+				const getRGB = (cssColor: string): [number, number, number, number] => {
+					const canvas = document.createElement('canvas')
+					canvas.width = canvas.height = 1
+					const ctx = canvas.getContext('2d')!
+					ctx.clearRect(0,0,1,1)
+					ctx.fillStyle = cssColor
+					ctx.fillRect(0,0,1,1)
+					const [r,g,b,a] = Array.from(ctx.getImageData(0,0,1,1).data) as [number, number, number, number]
+					return [r,g,b,a/255]
+				}
+				const composite = (
+					foreground: [number, number, number, number],
+					background: [number, number, number, number]
+				): [number, number, number, number] => {
+					const alpha = foreground[3] + background[3] * (1 - foreground[3])
+					if (alpha === 0) return [0, 0, 0, 0]
+					const r = ((foreground[0] * foreground[3]) + (background[0] * background[3] * (1 - foreground[3]))) / alpha
+					const g = ((foreground[1] * foreground[3]) + (background[1] * background[3] * (1 - foreground[3]))) / alpha
+					const b = ((foreground[2] * foreground[3]) + (background[2] * background[3] * (1 - foreground[3]))) / alpha
+					return [r, g, b, alpha]
+				}
+
+				const resolveBackground = (start: Element): [number, number, number, number] => {
+					let bg: [number, number, number, number] = [255,255,255,0]
+					let node: Element | null = start
+					while (node) {
+						const rgba = getRGB(getComputedStyle(node).backgroundColor)
+						bg = composite(rgba, bg)
+						if (bg[3] >= 0.999) {
+							return [bg[0], bg[1], bg[2], 1]
+						}
+						node = (node as HTMLElement).parentElement
+					}
+					return composite(bg, [255,255,255,1])
+				}
+
+				const text = getRGB(getComputedStyle(el).color)
+				const bg = resolveBackground(el)
+				const Ltext = luminance(text[0], text[1], text[2])
+				const Lbg = luminance(bg[0], bg[1], bg[2])
+				const lighter = Math.max(Ltext, Lbg)
+				const darker = Math.min(Ltext, Lbg)
+				return (lighter + 0.05) / (darker + 0.05)
+			})
+		}
+
+		const call = page.getByRole('link', { name: 'Call' })
+		const callContrast = await contrastOf(call)
+		expect(callContrast).toBeGreaterThanOrEqual(4.5)
+
+		const whatsapp = page.getByRole('link', { name: 'WhatsApp' })
+		const whatsappContrast = await contrastOf(whatsapp)
+		expect(whatsappContrast).toBeGreaterThanOrEqual(4.5)
+
+		const getQuote = page.getByRole('link', { name: 'Get Quote' })
+		const quoteContrast = await contrastOf(getQuote)
+		expect(quoteContrast).toBeGreaterThanOrEqual(4.5)
+	})
+
 	test('tel link opens dialer scheme', async ({ page }) => {
 		const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
 		await expect(call).toHaveAttribute('href', `tel:${CONTACT_INFO.phoneE164}`)
@@ -106,48 +227,4 @@ test.describe('Mobile CTA Bar', () => {
 		expect(paddingMetrics.resolved.trim()).toMatch(/px$/)
 	})
 
-	test('buttons meet WCAG 4.5:1 contrast', async ({ page }) => {
-		async function contrastOf(locator: import('@playwright/test').Locator): Promise<number> {
-			return locator.evaluate((el: Element) => {
-				const toLin = (v: number): number => {
-					const x = v / 255
-					return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4)
-				}
-				const luminance = (r: number, g: number, b: number): number => 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b)
-				const getRGB = (cssColor: string): [number, number, number, number] => {
-					const canvas = document.createElement('canvas')
-					canvas.width = canvas.height = 1
-					const ctx = canvas.getContext('2d')!
-					ctx.clearRect(0,0,1,1)
-					ctx.fillStyle = cssColor
-					ctx.fillRect(0,0,1,1)
-					const [r,g,b,a] = Array.from(ctx.getImageData(0,0,1,1).data) as [number, number, number, number]
-					return [r,g,b,a/255]
-				}
-				// nearest non-transparent background
-				let node: Element | null = el
-				let bg: [number, number, number, number] = [255,255,255,1]
-				while (node) {
-					const c = getComputedStyle(node).backgroundColor
-					const rgba = getRGB(c)
-					if (rgba[3] > 0) { bg = [rgba[0], rgba[1], rgba[2], 1]; break }
-					node = (node as HTMLElement).parentElement
-				}
-				const [cr,cg,cb] = getRGB(getComputedStyle(el).color)
-				const Ltext = luminance(cr,cg,cb)
-				const Lbg = luminance(bg[0], bg[1], bg[2])
-				const lighter = Math.max(Ltext, Lbg)
-				const darker = Math.min(Ltext, Lbg)
-				return (lighter + 0.05) / (darker + 0.05)
-			})
-		}
-
-		const call = page.getByRole('link', { name: 'Call' })
-		const callContrast = await contrastOf(call)
-		expect(callContrast).toBeGreaterThanOrEqual(4.5)
-
-		const getQuote = page.getByRole('link', { name: 'Get Quote' })
-		const quoteContrast = await contrastOf(getQuote)
-		expect(quoteContrast).toBeGreaterThanOrEqual(4.5)
-	})
 })
