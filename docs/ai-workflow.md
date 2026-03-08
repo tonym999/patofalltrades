@@ -43,7 +43,7 @@ gh api --paginate repos/tonym999/patofalltrades/pulls/{PR}/comments
 gh api --paginate repos/tonym999/patofalltrades/issues/{PR}/comments
 
 # Thread resolution metadata
-gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: PR_NUMBER) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
+gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: {PR_NUMBER}) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
 ```
 
 ### Processing Flow

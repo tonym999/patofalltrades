@@ -32,7 +32,7 @@ After a PR review, use the GitHub MCP or `gh` CLI to fetch and process feedback:
 gh api --paginate repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/reviews
 gh api --paginate repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/comments
 gh api --paginate repos/tonym999/patofalltrades/issues/{PR_NUMBER}/comments
-gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: PR_NUMBER) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
+gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: {PR_NUMBER}) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
 ```
 
 - Filter to comments authored by `coderabbitai[bot]`.
