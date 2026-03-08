@@ -1,85 +1,55 @@
-# GitHub Workflow Automation Rules
+# Cursor AI — Project Rules
 
-Project: https://github.com/users/tonym999/projects/2/views/1?layout=board
-Base branch: main
-Branch pattern: feature/[ticket-id]-[description]
-Commit format: conventional commits
-Test requirements: Minimum 1 smoke test per feature
+Follow the workflow, commit standards, testing, and implementation rules defined in [AGENTS.md](AGENTS.md).
+This file contains Cursor-specific guidance only.
 
 ---
 
-Scope:
-- This file defines the AI-assisted workflow for ticket-to-deployment automation using Cursor AI and GitHub MCP.
+## Ticket Selection
 
-Core Workflow:
-1) Ticket selection
-   - Auto-fetch the top (or only) In-Progress ticket from the project board. "Top" should follow the board's sort order; make the column name configurable (e.g., In-Progress vs In Progress).
-   - If none exist, prompt the user for a new ticket idea (e.g., "Add contact form", "Optimize SEO").
-2) Branching
-   - Create a new branch from `main` using: feature/[ticket-id]-[kebab-description]
-   - After branching, sync deps in the app folder:
-     - If `pnpm-lock.yaml` → `pnpm install`
-     - Else if `yarn.lock` → `yarn install --frozen-lockfile`
-     - Else if `package-lock.json` → `npm ci` (fallback: `npm install`)
-3) Implementation
-   - Make focused edits that satisfy the ticket acceptance criteria.
-   - Add or update tests according to the Test Requirements section.
-4) Testing
-   - Ensure at least one smoke test per feature exists under `web/tests/e2e/smoke/`.
-   - Add functional tests under `web/tests/e2e/functional/` when applicable.
-   - Include basic accessibility checks (e.g., `await page.accessibility.snapshot()`) and consider performance metrics where relevant.
-5) Commit & Push
-   - Use conventional commits (e.g., `feat(profile): add user profile page`).
-   - Push branch to origin and prepare for PR.
+- Auto-fetch the top In-Progress ticket from the project board.
+  Column name may vary (e.g., "In-Progress", "In Progress"); match flexibly.
+- If no in-progress ticket exists, prompt the user for a new ticket idea.
 
-MCP Guidance:
-- Use the GitHub MCP server to:
-  - Query the Project board for in-progress tickets.
-  - Create issues, branches (via instructions), labels, and comments as needed.
+## Dependency Sync
+
+After creating or switching to a branch, sync deps in `web/`:
+- If `pnpm-lock.yaml` exists → `pnpm install`
+- Else if `yarn.lock` → `yarn install --frozen-lockfile`
+- Else if `package-lock.json` → `npm ci` (fallback: `npm install`)
+
+## MCP Guidance
+
+- Use the GitHub MCP server to query the project board, create issues, labels, and comments.
 - Use the Playwright MCP server (when available) to run headless verifications.
+- Project board: https://github.com/users/tonym999/projects/2
 
-Project Board Access:
-- Project: https://github.com/users/tonym999/projects/2
-- View: In-Progress (board layout)
-- Strategy: Filter to items in progress, select one ticket, derive ticket id and description.
+## Code Review Triage (CodeRabbit)
 
-Branching Rules:
-- Name format: feature/[ticket-id]-[description]
-- Description must be lowercase kebab-case; keep it concise and meaningful.
+After a PR review, use the GitHub MCP or `gh` CLI to fetch and process feedback:
 
-Commit Standards (Conventional Commits):
-- feat(scope): description
-- fix(scope): description
-- chore(scope): description
-- docs(scope): description
-- test(scope): description
-- refactor(scope): description
- - perf(scope): description
- - style(scope): description
- - build(scope): description
- - ci(scope): description
- - revert: <commit-hash-or-subject>
+```
+gh api repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/reviews
+gh api repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/comments
+```
 
-Testing Rules (Playwright):
-- Add at least one smoke test under `web/tests/e2e/smoke/` validating the critical path.
-- Add functional tests under `web/tests/e2e/functional/` for detailed behaviors.
-- Use fixtures under `web/tests/e2e/fixtures/` if setup is shared across tests.
-- Include an accessibility snapshot for at least one critical-path test when feasible.
-- Optionally add Axe (`@axe-core/playwright`) for actionable violations on key pages.
+- Filter to comments authored by `coderabbitai[bot]`.
+- Follow the triage flow in [AGENTS.md — Code Review Handling](AGENTS.md#code-review-handling).
+- Present unresolved threads to the user grouped by priority (change requests → nitpicks → informational).
+- After fixes are pushed, resolve addressed threads via the API or prompt the user to resolve them on GitHub.
 
-Error Handling:
-- If a step fails (API/network), retry up to 2 times with exponential backoff.
-- If still failing, log context and proceed to next actionable step or request assistance.
+## AI Skills
 
-Documentation:
-- Update `docs/ai-workflow.md` if new workflow steps or caveats are introduced.
+Check `.cursor/skills/` for domain-specific guidance:
+- `frontend-ui` — building/refactoring UI components
+- `accessibility-audit` — auditing and improving accessibility
+- `design-review` — reviewing visual hierarchy, spacing, polish
 
-Definition of Done (per ticket):
-- Branch created following the pattern
+## Definition of Done (per ticket)
+
+- Branch created following the naming pattern
 - Implementation complete and lint-clean
 - Playwright smoke test present
 - Commit(s) use conventional commits
-- Branch pushed and ready for PR
- - Issue and PR are present on the project board in the correct column
-
-
+- Branch pushed and PR created
+- Issue and PR on the project board in the correct column

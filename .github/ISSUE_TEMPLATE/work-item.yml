@@ -1,0 +1,73 @@
+name: Work Item
+description: Create a scoped implementation ticket with enough detail for CodeRabbit PR validation.
+title: "[Work Item]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write the issue so the title and description stand on their own.
+        CodeRabbit validates PRs against linked issue titles and descriptions, so keep the objective specific and technical.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user, product, or engineering problem are we solving?
+      placeholder: |
+        The repo lacks a root AGENTS.md, so agent-specific rules are harder to discover and differ by tool.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-solution
+    attributes:
+      label: Expected Solution
+      description: Describe the intended implementation or outcome.
+      placeholder: |
+        Add a root AGENTS.md that defines repo-wide agent instructions and reconcile existing workflow docs to point to it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: Affected Components
+      description: List the files, subsystems, pages, or workflows expected to change.
+      placeholder: |
+        - AGENTS.md
+        - .cursorrules
+        - docs/ai-workflow.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Use a flat checklist of specific, testable outcomes.
+      placeholder: |
+        - [ ] A root AGENTS.md is added
+        - [ ] Existing workflow docs are reconciled
+        - [ ] Instructions are no longer duplicated across files
+    validations:
+      required: true
+
+  - type: textarea
+    id: non-goals
+    attributes:
+      label: Non-Goals
+      description: Call out adjacent work that should not be pulled into this ticket.
+      placeholder: |
+        - Rewriting unrelated docs
+        - Changing the deployment setup
+
+  - type: textarea
+    id: implementation-notes
+    attributes:
+      label: Implementation Notes
+      description: Optional technical notes, constraints, linked docs, or references.
+      placeholder: |
+        Keep issue wording consistent with the eventual PR description and commit scope.
+
