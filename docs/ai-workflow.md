@@ -3,6 +3,8 @@
 ## Overview
 This document explains the automated development workflow powered by Cursor AI and GitHub MCP, with CodeRabbit review integration.
 
+The canonical repository-local entrypoint for agent instructions is [`AGENTS.md`](../AGENTS.md). Use this document for supporting detail and operational background rather than duplicating the root instructions.
+
 ## Workflow
 1. Select an in-progress ticket from the project board.
 2. Create a feature branch from `main` using `feature/[ticket-id]-[description]`.
