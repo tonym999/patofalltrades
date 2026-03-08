@@ -13,10 +13,11 @@ test.describe('Mobile CTA Bar', () => {
   })
 
   test('renders on mobile view and shows buttons @smoke', async ({ page }) => {
-    const bar = page.getByRole('link', { name: 'Get Quote' })
+    const bar = page.getByTestId('mobile-cta-bar')
     await expect(bar).toBeVisible()
-    const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
-    await expect(call).toBeVisible()
+    await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="call"]')).toBeVisible()
+    await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')).toBeVisible()
+    await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')).toBeVisible()
   })
 
   test('uses the dark theme surface and gold-accent button styling', async ({ page }) => {
@@ -204,14 +205,7 @@ test.describe('Mobile CTA Bar', () => {
     const ctaLinks = page.getByTestId('mobile-cta-link')
     const call = ctaLinks.nth(0)
     await call.focus()
-    await page.keyboard.press('Tab')
-    const whatsapp = ctaLinks.nth(1)
-    await expect(whatsapp).toBeFocused()
-    await page.keyboard.press('Tab')
-    const getQuote = ctaLinks.nth(2)
-    await expect(getQuote).toBeFocused()
-
-    const focusSignal = await getQuote.evaluate((el) => {
+    const getFocusSignal = (locator: typeof call) => locator.evaluate((el) => {
       const cs = getComputedStyle(el)
       const outlineWidth = Number.parseFloat(cs.outlineWidth || '0')
       if (Number.isFinite(outlineWidth) && outlineWidth > 0) return 'outline'
@@ -220,7 +214,17 @@ test.describe('Mobile CTA Bar', () => {
       return 'none'
     })
 
-    expect(focusSignal).not.toBe('none')
+    expect(await getFocusSignal(call)).not.toBe('none')
+
+    await page.keyboard.press('Tab')
+    const whatsapp = ctaLinks.nth(1)
+    await expect(whatsapp).toBeFocused()
+    expect(await getFocusSignal(whatsapp)).not.toBe('none')
+
+    await page.keyboard.press('Tab')
+    const getQuote = ctaLinks.nth(2)
+    await expect(getQuote).toBeFocused()
+    expect(await getFocusSignal(getQuote)).not.toBe('none')
   })
 
   test('respects safe-area bottom padding', async ({ page }) => {
