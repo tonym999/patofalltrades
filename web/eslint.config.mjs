@@ -1,20 +1,5 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const playwrightOverrides = compat
-  .extends("plugin:playwright/recommended")
-  .map((conf) => ({
-    ...conf,
-    files: ["tests/e2e/**", "tests/e2e/functional/**"],
-  }));
+import coreWebVitals from "eslint-config-next/core-web-vitals";
+import playwright from "eslint-plugin-playwright";
 
 const eslintConfig = [
   {
@@ -31,8 +16,11 @@ const eslintConfig = [
       "test-results/**",
     ],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  ...playwrightOverrides,
+  ...coreWebVitals,
+  {
+    ...playwright.configs["flat/recommended"],
+    files: ["tests/e2e/**"],
+  },
 ];
 
 export default eslintConfig;
