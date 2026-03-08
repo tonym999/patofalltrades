@@ -34,13 +34,13 @@ Use the GitHub API to get all review data:
 
 ```bash
 # All reviews (includes CodeRabbit's summary review)
-gh api --paginate repos/tonym999/patofalltrades/pulls/{PR}/reviews
+gh api --paginate repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/reviews
 
 # All inline comments (file-level feedback)
-gh api --paginate repos/tonym999/patofalltrades/pulls/{PR}/comments
+gh api --paginate repos/tonym999/patofalltrades/pulls/{PR_NUMBER}/comments
 
 # Issue-style comments (top-level summary)
-gh api --paginate repos/tonym999/patofalltrades/issues/{PR}/comments
+gh api --paginate repos/tonym999/patofalltrades/issues/{PR_NUMBER}/comments
 
 # Thread resolution metadata
 gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: {PR_NUMBER}) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
