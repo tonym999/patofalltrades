@@ -89,10 +89,17 @@ export default function MobileCtaBar() {
     }
   }, []);
 
+  const secondaryCtaClassName =
+    "group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]";
+
+  const neutralCtaClassName = `${secondaryCtaClassName} mobile-cta-neutral focus-visible:ring-[var(--ring-soft)]`;
+
+  const whatsappCtaClassName = `${secondaryCtaClassName} mobile-cta-whatsapp focus-visible:ring-[var(--ring-soft)]`;
+
   return (
     <nav
       aria-label="Primary actions"
-      className={`md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-white/10 bg-[#1a1f2e]/95 shadow-2xl backdrop-blur-xl ${scrolled ? "bottom-cta--shadow" : ""}`}
+      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-50 border-t shadow-2xl backdrop-blur-xl ${scrolled ? "bottom-cta--shadow" : ""}`}
       data-shadowed={scrolled ? "true" : "false"}
       data-testid="mobile-cta-bar"
       ref={containerRef}
@@ -110,11 +117,11 @@ export default function MobileCtaBar() {
           <a
             href={`tel:${CONTACT_INFO.phoneE164}`}
             aria-label={`Call ${CONTACT_INFO.phoneE164}`}
-            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 text-sm font-semibold text-gray-300 transition-colors hover:border-[#D4AF37]/40 hover:bg-white/10 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
+            className={neutralCtaClassName}
             data-testid="mobile-cta-link"
             data-action="call"
           >
-            <Phone size={18} aria-hidden="true" className="text-[#D4AF37] transition-transform group-hover:-translate-y-0.5" />
+            <Phone size={18} aria-hidden="true" className="text-[var(--gold)] transition-transform group-hover:-translate-y-0.5" />
             <span>Call</span>
           </a>
           <a
@@ -122,17 +129,17 @@ export default function MobileCtaBar() {
             rel="noopener noreferrer"
             target="_blank"
             aria-label="WhatsApp chat with Pat"
-            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 text-sm font-semibold text-gray-300 transition-colors hover:border-[#D4AF37]/40 hover:bg-white/10 hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
+            className={whatsappCtaClassName}
             data-testid="mobile-cta-link"
             data-action="whatsapp"
           >
-            <MessageCircle size={18} aria-hidden="true" className="text-[#D4AF37] transition-transform group-hover:-translate-y-0.5" />
+            <MessageCircle size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
             <span>WhatsApp</span>
           </a>
           <Link
             href="/#contact"
             onClick={handleGetQuote}
-            className="group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[#D4AF37]/50 bg-[#D4AF37] px-3 text-sm font-semibold text-[#0f172a] transition-colors hover:bg-[#FFD700] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD700]/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]"
+            className="cta-btn group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--gold)_50%,transparent)] bg-[var(--gold)] px-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] hover:bg-[var(--gold-hover)]"
             data-testid="mobile-cta-link"
             data-action="get-quote"
           >
