@@ -17,14 +17,15 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 ## Workflow
 
 1. Select the active ticket from the project board (In Progress column). If none exists, create or confirm a new issue first.
-2. Create a branch from `main`: `feature/[ticket-id]-[kebab-description]`
-3. Run `pnpm install` in `web/` after branching.
-4. Implement only the scope needed for the ticket.
-5. Run smoke tests: `pnpm run test:e2e:smoke` (from `web/`).
-6. Commit with a conventional commit message. Include `Closes #N` when the work completes a ticket.
-7. Push the branch and create a PR scoped to the ticket.
-8. Ensure the issue and PR are on the project board in the correct column.
-9. After code review (CodeRabbit), triage feedback and address it. See [Code Review Handling](#code-review-handling).
+2. Before starting the next ticket after a merge, switch back to `main` and update it from `origin` so the next branch includes the latest merged docs, templates, and code.
+3. Create a fresh branch from that updated `main`: `feature/[ticket-id]-[kebab-description]`
+4. Run `pnpm install` in `web/` after branching.
+5. Implement only the scope needed for the ticket.
+6. Run smoke tests: `pnpm run test:e2e:smoke` (from `web/`).
+7. Commit with a conventional commit message. Include `Closes #N` when the work completes a ticket.
+8. Push the branch and create a PR scoped to the ticket.
+9. Ensure the issue and PR are on the project board in the correct column.
+10. After code review (CodeRabbit), triage feedback and address it. See [Code Review Handling](#code-review-handling).
 
 When creating issues or PRs, use the GitHub templates under `.github/` so linked tickets contain the structured context CodeRabbit uses for PR validation.
 
@@ -60,6 +61,8 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 ## Git Rules
 
 - Branch naming: `feature/[ticket-id]-[description]` (lowercase kebab-case)
+- After a PR is merged, return to `main`, update it from `origin`, and branch fresh for the next ticket.
+- Do not create a new ticket branch from an older feature branch or a stale local `main`.
 - Keep PRs scoped to a single ticket when possible.
 - Do not commit secrets or environment-specific credentials.
 - Avoid destructive git operations (`push --force`, `reset --hard`) unless explicitly requested.

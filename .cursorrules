@@ -11,6 +11,12 @@ This file contains Cursor-specific guidance only.
   Column name may vary (e.g., "In-Progress", "In Progress"); match flexibly.
 - If no in-progress ticket exists, prompt the user for a new ticket idea.
 
+## Branch Base
+
+- Before starting the next ticket after a merge, switch back to `main` and update it from `origin`.
+- Create the new `feature/[ticket-id]-[description]` branch from that refreshed `main`.
+- Do not branch from the previous feature branch or from a stale local `main`.
+
 ## Dependency Sync
 
 After creating or switching to a branch, sync deps in `web/`:

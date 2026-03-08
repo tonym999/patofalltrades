@@ -1,0 +1,23 @@
+[env]
+# Force temp and cache directories to Linux-safe locations.
+TMPDIR = "/tmp"
+TMP = "/tmp"
+TEMP = "/tmp"
+XDG_CACHE_HOME = "/home/raver/.cache"
+
+# Hardcode Node and pnpm paths for WSL sessions.
+NVM_DIR = "/home/raver/.nvm"
+PATH = "/home/raver/.local/share/pnpm:${PATH}"
+
+[setup]
+# Fallback script to ensure the shell runner evaluates the environment.
+linux = """
+export TMPDIR=/tmp
+export TMP=/tmp
+export TEMP=/tmp
+export XDG_CACHE_HOME="$HOME/.cache"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+export PATH="$HOME/.local/share/pnpm:$PATH"
+[ -f "$PWD/.nvmrc" ] && nvm use --silent >/dev/null 2>&1
+"""
