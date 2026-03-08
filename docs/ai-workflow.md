@@ -46,9 +46,11 @@ gh api --paginate repos/tonym999/patofalltrades/issues/{PR_NUMBER}/comments
 gh api graphql -f query='query { repository(owner: "tonym999", name: "patofalltrades") { pullRequest(number: {PR_NUMBER}) { reviewThreads(first: 100) { nodes { id isResolved path line comments(first: 20) { nodes { id databaseId body author { login } createdAt url } } } } } } }'
 ```
 
+The GraphQL example above is intentionally bounded to the first 100 review threads and the first 20 comments per thread. For unusually large PRs, use cursor pagination or GitHub MCP to avoid missing additional threads or replies.
+
 ### Processing Flow
 
-1. Collect all comments from the three REST endpoints above and fetch `reviewThreads` via GraphQL for thread resolution metadata.
+1. Collect all comments from the three REST endpoints above and fetch `reviewThreads` via GraphQL for thread resolution metadata. The example query shown here is a bounded fetch, not full cursor pagination.
 2. Keep only those authored by `coderabbitai[bot]`.
 3. Group inline review comments from `/pulls/{PR}/comments` by `in_reply_to_id`; top-level review summaries from `/pulls/{PR}/reviews` and issue comments from `/issues/{PR}/comments` should be handled separately because they do not use `in_reply_to_id`.
 4. Use GraphQL `reviewThreads.isResolved` to distinguish unresolved and resolved inline threads; resolved threads can be skipped unless the user asks.
