@@ -4,7 +4,19 @@ The canonical rules live in [`AGENTS.md`](../AGENTS.md). This document covers su
 
 ## MCP Step Sequence
 
-Get Project Items → Get Issue Details → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open PR → Triage Review → Fix → Resolve Threads
+Get Project Items → Get Issue Details → Return to Main → Update Main from Origin → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open PR → Triage Review → Fix → Resolve Threads
+
+## Branch Base Hygiene
+
+Before starting a new ticket, especially after the previous PR was merged, switch back to `main`, update it from `origin`, and create the next feature branch from that refreshed base. Do not branch from the previous feature branch or from a stale local `main`.
+
+Typical sequence:
+
+```bash
+git checkout main
+git pull --ff-only origin main
+git checkout -b feature/[ticket-id]-[kebab-description]
+```
 
 When creating new work items or PRs, use the GitHub issue and PR templates in `.github/` so CodeRabbit receives consistent ticket context for validation.
 
@@ -79,6 +91,7 @@ The GraphQL example above is intentionally bounded to the first 100 review threa
 ## Onboarding
 
 - Read [`AGENTS.md`](../AGENTS.md) first for workflow and rules.
+- Start each new ticket from a freshly updated `main`, not from the last feature branch.
 - Check `.cursorrules` for Cursor-specific behaviour.
 - Check `.cursor/skills/` for domain-specific AI guidance (UI, accessibility, design review).
 - Review `.cursor/rules/frontend-standards.mdc` for frontend coding standards.
