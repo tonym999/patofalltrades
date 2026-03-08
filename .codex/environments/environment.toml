@@ -3,11 +3,7 @@
 TMPDIR = "/tmp"
 TMP = "/tmp"
 TEMP = "/tmp"
-XDG_CACHE_HOME = "/home/raver/.cache"
-
-# Hardcode Node and pnpm paths for WSL sessions.
-NVM_DIR = "/home/raver/.nvm"
-PATH = "/home/raver/.local/share/pnpm:${PATH}"
+XDG_CACHE_HOME = "/tmp/codex-cache"
 
 [setup]
 # Fallback script to ensure the shell runner evaluates the environment.
@@ -15,7 +11,8 @@ linux = """
 export TMPDIR=/tmp
 export TMP=/tmp
 export TEMP=/tmp
-export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+mkdir -p "$XDG_CACHE_HOME"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 export PATH="$HOME/.local/share/pnpm:$PATH"
