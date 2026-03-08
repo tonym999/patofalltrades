@@ -27,6 +27,10 @@
     --background-top: 224 28% 14%;          /* Dark Navy #1a1f2e */
     --background-end: 222 47% 11%;          /* Deep Navy #0f172a */
     --surface: rgba(26, 31, 46, 0.9);       /* Dark Navy 90% opacity */
+    --surface-elevated: rgba(26, 31, 46, 0.95);
+    --surface-border-subtle: rgba(255, 255, 255, 0.1);
+    --surface-overlay-soft: rgba(255, 255, 255, 0.05);
+    --surface-overlay-strong: rgba(255, 255, 255, 0.1);
     --bg-900: hsl(var(--background-top));
     --bg-950: hsl(var(--background-end));
     
@@ -51,6 +55,13 @@
     --text-body: #d1d5db;                   /* Gray-300 */
     --text-muted: #9ca3af;                  /* Gray-400 */
     --text-dark: #6b7280;                   /* Gray-500 */
+    --whatsapp-accent: #25D366;
+    --whatsapp-accent-soft: rgba(37, 211, 102, 0.14);
+    --whatsapp-accent-strong: rgba(37, 211, 102, 0.22);
+    --whatsapp-accent-border: rgba(37, 211, 102, 0.35);
+    --whatsapp-accent-border-strong: rgba(37, 211, 102, 0.5);
+    --ring-soft: rgba(212, 175, 55, 0.7);
+    --ring-strong: rgba(255, 215, 0, 0.8);
 
     /* Layering */
     --z-modal-overlay: 200;
@@ -87,6 +98,10 @@
     --background-top: 224 28% 14%;          /* Dark Navy #1a1f2e */
     --background-end: 222 47% 11%;          /* Deep Navy #0f172a */
     --surface: rgba(26, 31, 46, 0.9);       /* Dark Navy 90% opacity */
+    --surface-elevated: rgba(26, 31, 46, 0.95);
+    --surface-border-subtle: rgba(255, 255, 255, 0.1);
+    --surface-overlay-soft: rgba(255, 255, 255, 0.05);
+    --surface-overlay-strong: rgba(255, 255, 255, 0.1);
     --bg-900: hsl(var(--background-top));
     --bg-950: hsl(var(--background-end));
     
@@ -111,6 +126,13 @@
     --text-body: #d1d5db;                   /* Gray-300 */
     --text-muted: #9ca3af;                  /* Gray-400 */
     --text-dark: #6b7280;                   /* Gray-500 */
+    --whatsapp-accent: #25D366;
+    --whatsapp-accent-soft: rgba(37, 211, 102, 0.14);
+    --whatsapp-accent-strong: rgba(37, 211, 102, 0.22);
+    --whatsapp-accent-border: rgba(37, 211, 102, 0.35);
+    --whatsapp-accent-border-strong: rgba(37, 211, 102, 0.5);
+    --ring-soft: rgba(212, 175, 55, 0.7);
+    --ring-strong: rgba(255, 215, 0, 0.8);
 
     /* Fixed UI heights */
     --cta-height: 0px;
@@ -215,17 +237,47 @@ body {
 .cta-btn {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(to right, #FFD700, #ca8a04);
-  color: #1a1f2e;
+  background-color: var(--gold);
+  background-image: linear-gradient(to right, var(--gold-bright), var(--gold-hover));
+  color: hsl(var(--primary-foreground));
   transition-property: box-shadow, transform, background;
   transition-duration: 0.3s;
   transition-timing-function: ease;
 }
 
 .cta-btn:hover {
-  background: linear-gradient(to right, #ca8a04, #D4AF37);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  background-color: var(--gold-hover);
+  background-image: linear-gradient(to right, var(--gold-hover), var(--gold));
+  box-shadow: 0 0 25px color-mix(in srgb, var(--gold) 50%, transparent);
   transform: scale(1.05);
+}
+
+.mobile-cta-surface {
+  background-color: rgba(26, 31, 46, 0.95);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-cta-neutral {
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #d1d5db;
+}
+
+.mobile-cta-neutral:hover {
+  border-color: color-mix(in srgb, var(--gold) 40%, transparent);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #D4AF37;
+}
+
+.mobile-cta-whatsapp {
+  border-color: rgba(37, 211, 102, 0.35);
+  background-color: rgba(37, 211, 102, 0.14);
+  color: #25D366;
+}
+
+.mobile-cta-whatsapp:hover {
+  border-color: rgba(37, 211, 102, 0.5);
+  background-color: rgba(37, 211, 102, 0.22);
 }
 
 /* Secondary Button (outlined) */
