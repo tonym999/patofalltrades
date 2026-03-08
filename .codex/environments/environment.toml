@@ -4,6 +4,7 @@ TMPDIR = "/tmp"
 TMP = "/tmp"
 TEMP = "/tmp"
 XDG_CACHE_HOME = "/tmp/codex-cache"
+COREPACK_HOME = "/tmp/corepack"
 
 [setup]
 # Fallback script to ensure the shell runner evaluates the environment.
@@ -11,10 +12,10 @@ linux = """
 export TMPDIR=/tmp
 export TMP=/tmp
 export TEMP=/tmp
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-mkdir -p "$XDG_CACHE_HOME"
+export XDG_CACHE_HOME=/tmp/codex-cache
+export COREPACK_HOME=/tmp/corepack
+mkdir -p "$XDG_CACHE_HOME" "$COREPACK_HOME"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-export PATH="$HOME/.local/share/pnpm:$PATH"
 [ -f "$PWD/.nvmrc" ] && nvm use --silent >/dev/null 2>&1
 """
