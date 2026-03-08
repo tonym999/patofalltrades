@@ -179,6 +179,12 @@ test.describe('Mobile CTA Bar', () => {
     const callBox = await call.boundingBox()
     expect(callBox).not.toBeNull()
     expect(callBox!.height).toBeGreaterThanOrEqual(44)
+
+    const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
+    await expect(whatsapp).toBeVisible()
+    const whatsappBox = await whatsapp.boundingBox()
+    expect(whatsappBox).not.toBeNull()
+    expect(whatsappBox!.height).toBeGreaterThanOrEqual(44)
   })
 
   test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
