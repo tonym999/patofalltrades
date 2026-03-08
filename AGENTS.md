@@ -24,8 +24,8 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 5. Implement only the scope needed for the ticket.
 6. Run smoke tests: `pnpm run test:e2e:smoke` (from `web/`).
 7. Commit with a conventional commit message. Include `Closes #N` when the work completes a ticket.
-8. Push the branch and create a PR scoped to the ticket.
-9. Ensure the issue and PR are on the project board in the correct column.
+8. Push the branch and create a PR scoped to the ticket. Link the PR to the issue.
+9. Keep the issue as the project board item of record. The board automation moves linked issues from `In Progress` to `In Review` when a PR is linked, then to `Done` when that PR is merged. Do not add PRs to the board by default.
 10. After code review (CodeRabbit), triage feedback and address it. See [Code Review Handling](#code-review-handling).
 
 When creating issues or PRs, use the GitHub templates under `.github/` so linked tickets contain the structured context CodeRabbit uses for PR validation.

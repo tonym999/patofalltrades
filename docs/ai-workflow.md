@@ -4,7 +4,7 @@ The canonical rules live in [`AGENTS.md`](../AGENTS.md). This document covers su
 
 ## MCP Step Sequence
 
-Get Project Items → Get Issue Details → Return to Main → Update Main from Origin → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open PR → Triage Review → Fix → Resolve Threads
+Get Project Items → Get Issue Details → Return to Main → Update Main from Origin → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open Linked PR → Move Issue to In Review → Triage Review → Fix → Resolve Threads → Merge → Move Issue to Done
 
 ## Branch Base Hygiene
 
@@ -19,6 +19,24 @@ git checkout -b feature/[ticket-id]-[kebab-description]
 ```
 
 When creating new work items or PRs, use the GitHub issue and PR templates in `.github/` so CodeRabbit receives consistent ticket context for validation.
+
+## Project Board Status Flow
+
+The GitHub project board is issue-focused in normal operation. Keep the issue on the board as the single tracking item for the work and link the PR back to that issue instead of creating a separate PR card.
+
+Use status changes like this:
+
+- `Todo`: scoped work item exists but implementation has not started yet
+- `In Progress`: active implementation is underway on a branch
+- `In Review`: a linked PR is open and the issue is waiting on review, follow-up fixes, or merge
+- `Done`: the linked work has landed, or the issue is otherwise fully completed
+
+The GitHub Project built-in workflows should handle the normal transitions automatically:
+
+- `Pull request linked to issue`: move the issue to `In Review`
+- `Pull request merged`: move the issue to `Done`
+
+If either workflow is disabled or unavailable, make those status updates manually. Only add PRs to the board if there is a deliberate exception to the repo's default issue-only tracking practice.
 
 ## Environment Bootstrap
 
