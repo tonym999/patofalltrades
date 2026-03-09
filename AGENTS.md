@@ -30,6 +30,13 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 
 When creating issues or PRs, use the GitHub templates under `.github/` so linked tickets contain the structured context CodeRabbit uses for PR validation.
 
+## Issue Labels
+
+- When creating or grooming an open issue, apply labels before work starts.
+- Follow the canonical label taxonomy in [`docs/ai-workflow.md`](docs/ai-workflow.md#issue-label-taxonomy).
+- For planned work items, use one primary type label, 1-3 area labels, and exactly one priority label.
+- Normalize legacy labels to the documented canonical labels instead of keeping both.
+
 ## Environment Bootstrap
 
 - Use `nvm` with the repo-root [`.nvmrc`](.nvmrc) before running project commands in a fresh shell.

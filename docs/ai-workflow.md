@@ -38,6 +38,32 @@ The GitHub Project built-in workflows should handle the normal transitions autom
 
 If either workflow is disabled or unavailable, make those status updates manually. Only add PRs to the board if there is a deliberate exception to the repo's default issue-only tracking practice.
 
+## Issue Label Taxonomy
+
+Use labels intentionally so open issues can be filtered, prioritized, and triaged without rereading every ticket.
+
+### Label Rules
+
+- Every open issue should have labels before implementation starts.
+- Work items should usually have one primary type label, 1-3 area labels, and one priority label.
+- The work-item issue template may prefill `enhancement`; keep it only when it still matches the ticket.
+- When touching older open issues, normalize legacy labels instead of stacking synonyms.
+
+### Canonical Labels
+
+| Group | Guidance | Canonical labels |
+|---|---|---|
+| Type | Use one when it adds signal about the nature of the work. | `enhancement`, `bug`, `chore`, `question` |
+| Area | Add 1-3 labels describing the product area, discipline, or workflow affected. | `frontend`, `cms`, `content`, `build`, `testing`, `tooling`, `developer-experience`, `automation`, `deployment`, `security`, `documentation`, `ux`, `ui`, `ui-polish`, `design-system`, `visual`, `branding`, `mobile`, `a11y`, `seo`, `analytics`, `quality`, `schema`, `data-fetching`, `preview`, `compliance`, `performance` |
+| Priority | Use exactly one on planned work items. | `priority: high`, `priority: medium`, `priority: low` |
+
+### Legacy Label Normalization
+
+- Prefer `enhancement` over `feat` for issue labels. `feat` remains valid for commit messages, but not as the preferred issue label.
+- Prefer `performance` over `perf` for issue labels. `perf` remains valid for commit messages, but not as the preferred issue label.
+- If a ticket is documentation-heavy, `documentation` can stand alone or pair with area labels such as `developer-experience` or `automation`.
+- If a ticket spans multiple concerns, favor the few labels that best improve board filtering over exhaustive tagging.
+
 ## Environment Bootstrap
 
 Use the repo-root [`.nvmrc`](../.nvmrc) to select the project's Node version in fresh shells before running project commands. In this repository, `pnpm` is pinned in [`web/package.json`](../web/package.json) and is typically provided by Corepack through the active `nvm` Node installation rather than a standalone binary in `~/.local/share/pnpm`.

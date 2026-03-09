@@ -9,6 +9,11 @@ body:
       value: |
         Write the issue so the title and description stand on their own.
         CodeRabbit validates PRs against linked issue titles and descriptions, so keep the objective specific and technical.
+        After creating the issue, make sure the labels match the repo taxonomy:
+        - keep or replace the default `enhancement` label as needed
+        - add 1-3 area labels
+        - add exactly one `priority:*` label for planned work
+        - prefer `enhancement` over `feat` and `performance` over `perf`
 
   - type: textarea
     id: problem
@@ -70,4 +75,3 @@ body:
       description: Optional technical notes, constraints, linked docs, or references.
       placeholder: |
         Keep issue wording consistent with the eventual PR description and commit scope.
-
