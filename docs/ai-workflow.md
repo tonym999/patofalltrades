@@ -4,7 +4,7 @@ The canonical rules live in [`AGENTS.md`](../AGENTS.md). This document covers su
 
 ## MCP Step Sequence
 
-Get Project Items → Get Issue Details → Return to Main → Update Main from Origin → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open Linked PR → Move Issue to In Review → Triage Review → Fix → Resolve Threads → Merge → Move Issue to Done
+Get Project Items → Get Issue Details → Return to Main → Update Main from Origin → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open Linked PR → Verify Issue in In Review (or move it manually if automation is unavailable) → Triage Review → Fix → Resolve Threads → Merge → Verify Issue in Done (or move it manually if automation is unavailable)
 
 ## Branch Base Hygiene
 
