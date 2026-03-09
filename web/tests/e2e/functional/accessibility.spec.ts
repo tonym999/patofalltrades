@@ -44,12 +44,12 @@ test.describe('Accessibility focus management', () => {
     await page.keyboard.press('Tab')
 
     const sequence = [
-      { textPattern: /Pat Of All Trades/, href: '#services' },
-      { textPattern: /^Services$/, href: '#services' },
-      { textPattern: /^Portfolio$/, href: '#portfolio' },
-      { textPattern: /^About$/, href: '#about' },
-      { textPattern: /^Testimonials$/, href: '#testimonials' },
-      { textPattern: /^Get a Quote$/, href: '#contact' },
+      { textPattern: /Pat Of All Trades/, href: '/' },
+      { textPattern: /^Services$/, href: '/#services' },
+      { textPattern: /^Portfolio$/, href: '/#portfolio' },
+      { textPattern: /^About$/, href: '/#about' },
+      { textPattern: /^Testimonials$/, href: '/#testimonials' },
+      { textPattern: /^Get a Quote$/, href: '/#contact' },
     ] as const
 
     const firstStep = sequence[0]

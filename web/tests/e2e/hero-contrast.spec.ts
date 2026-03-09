@@ -2,6 +2,27 @@ import { expect, test } from '@playwright/test'
 
 const MIN_CONTRAST = 4.5
 
+type AccessibilityNode = {
+  role?: string
+  name?: string
+  children?: AccessibilityNode[]
+  [key: string]: unknown
+}
+
+const isInjectedDevtoolsNode = (node: AccessibilityNode) =>
+  (node.role === 'button' && node.name === 'Open Next.js Dev Tools') ||
+  (node.role === 'alert' && !node.name && (!node.children || node.children.length === 0))
+
+const normalizeAccessibilityTree = (node: AccessibilityNode | null): AccessibilityNode | null => {
+  if (!node || isInjectedDevtoolsNode(node)) return null
+
+  const normalizedChildren = node.children
+    ?.map((child) => normalizeAccessibilityTree(child))
+    .filter((child): child is AccessibilityNode => child !== null)
+
+  return normalizedChildren ? { ...node, children: normalizedChildren } : { ...node }
+}
+
 test.describe('Hero contrast @smoke', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
@@ -18,7 +39,7 @@ test.describe('Hero contrast @smoke', () => {
     await expect(heroHeading).toBeVisible()
     await expect(heroSubtitle).toBeVisible()
 
-    const accessibilityTree = await page.accessibility.snapshot()
+    const accessibilityTree = normalizeAccessibilityTree(await page.accessibility.snapshot())
     const accessibilitySnapshot = `${JSON.stringify(accessibilityTree, null, 2)}\n`
     expect(accessibilitySnapshot).toMatchSnapshot('hero-accessibility.json')
 

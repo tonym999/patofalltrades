@@ -3,13 +3,16 @@ import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import dynamic from "next/dynamic";
-import ClientOnly from "../components/ClientOnly";
 import SkipNavLink from "../components/SkipNavLink";
 const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"));
 const MobileTabsNav = dynamic(() => import("../components/MobileTabsNav"));
 import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  fallback: ['Arial', 'Helvetica', 'sans-serif'],
+})
 const FALLBACK_SITE_URL = 'https://patofalltrades.co.uk'
 
 const resolveMetadataBase = () => {
@@ -67,13 +70,9 @@ export default function RootLayout({
         <ScrollProgress />
         {children}
         {/* Primary actions nav first in DOM for focus order */}
-        <ClientOnly>
-          <MobileCtaBar />
-        </ClientOnly>
+        <MobileCtaBar />
         {/* Secondary tabs nav after CTA in DOM */}
-        <ClientOnly>
-          <MobileTabsNav />
-        </ClientOnly>
+        <MobileTabsNav />
         <Analytics />
       </body>
     </html>

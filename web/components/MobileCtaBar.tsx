@@ -99,7 +99,7 @@ export default function MobileCtaBar() {
   return (
     <nav
       aria-label="Primary actions"
-      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-50 border-t shadow-2xl backdrop-blur-xl ${scrolled ? "bottom-cta--shadow" : ""}`}
+      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-50 border-t ${scrolled ? "bottom-cta--shadow" : ""}`}
       data-shadowed={scrolled ? "true" : "false"}
       data-testid="mobile-cta-bar"
       ref={containerRef}
