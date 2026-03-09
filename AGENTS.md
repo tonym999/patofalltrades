@@ -30,6 +30,14 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 
 When creating issues or PRs, use the GitHub templates under `.github/` so linked tickets contain the structured context CodeRabbit uses for PR validation.
 
+## Issue Labels
+
+- When creating or grooming an open issue, apply labels before work starts.
+- For planned work items, use one primary type label when appropriate (`enhancement`, `bug`, `chore`, `question`) plus 1-3 area labels and exactly one priority label.
+- Use area labels to describe the part of the product or workflow involved, such as `frontend`, `cms`, `content`, `build`, `testing`, `tooling`, `deployment`, `security`, `seo`, `ux`, `ui`, `schema`, `data-fetching`, or `preview`.
+- Prefer canonical issue labels: use `enhancement` instead of `feat`, and `performance` instead of `perf`.
+- If you touch an older open issue that still uses a legacy label, normalize it to the canonical label instead of keeping both.
+
 ## Environment Bootstrap
 
 - Use `nvm` with the repo-root [`.nvmrc`](.nvmrc) before running project commands in a fresh shell.
