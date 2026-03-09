@@ -5,19 +5,30 @@ const MIN_CONTRAST = 4.5
 type AccessibilityNode = {
   role?: string
   name?: string
+  description?: string
   children?: AccessibilityNode[]
   [key: string]: unknown
 }
 
-const isInjectedDevtoolsNode = (node: AccessibilityNode) =>
-  (node.role === 'button' && node.name === 'Open Next.js Dev Tools') ||
-  (node.role === 'alert' && !node.name && (!node.children || node.children.length === 0))
+const isDevtoolsButtonNode = (node: AccessibilityNode) =>
+  node.role === 'button' && node.name === 'Open Next.js Dev Tools'
 
 const normalizeAccessibilityTree = (node: AccessibilityNode | null): AccessibilityNode | null => {
-  if (!node || isInjectedDevtoolsNode(node)) return null
+  if (!node || isDevtoolsButtonNode(node)) return null
 
+  const hasDevtoolsButtonSibling = node.children?.some((child) => isDevtoolsButtonNode(child)) ?? false
   const normalizedChildren = node.children
-    ?.map((child) => normalizeAccessibilityTree(child))
+    ?.filter((child) => {
+      const isInjectedDevtoolsAlert =
+        hasDevtoolsButtonSibling &&
+        child.role === 'alert' &&
+        !child.name &&
+        !child.description &&
+        (!child.children || child.children.length === 0)
+
+      return !isInjectedDevtoolsAlert
+    })
+    .map((child) => normalizeAccessibilityTree(child))
     .filter((child): child is AccessibilityNode => child !== null)
 
   return normalizedChildren ? { ...node, children: normalizedChildren } : { ...node }
