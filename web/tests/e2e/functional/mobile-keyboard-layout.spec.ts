@@ -1,4 +1,5 @@
 import { test, expect, devices } from '@playwright/test'
+import { ensureMobile } from '../utils/ensureMobile'
 
 const mobileProfiles = [
   { name: 'iPhone 12', device: devices['iPhone 12'] },
@@ -14,7 +15,7 @@ test.describe('Mobile keyboard-safe layout', () => {
         const page = await context.newPage()
         await page.goto('/')
         await page.waitForLoadState('load')
-        await page.emulateMedia({ reducedMotion: 'reduce' })
+        await ensureMobile(page)
 
         const bar = page.getByTestId('mobile-cta-bar')
         const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
