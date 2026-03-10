@@ -15,6 +15,15 @@ test.describe('Smart Scroll Behavior @smoke', () => {
 
     const header = page.getByRole('banner')
     await expect(header).toBeVisible()
+    const cta = page.getByRole('navigation', { name: 'Primary actions' })
+    await cta.waitFor({ state: 'visible', timeout: 5000 })
+
+    const fixedSurfaceFilters = await Promise.all([
+      header.evaluate((el) => getComputedStyle(el).backdropFilter),
+      cta.evaluate((el) => getComputedStyle(el).backdropFilter),
+    ])
+
+    expect(fixedSurfaceFilters).toEqual(['none', 'none'])
 
     // Header stays visible after scrolling down (static glassmorphism nav)
     await page.mouse.wheel(0, 900)
@@ -25,8 +34,6 @@ test.describe('Smart Scroll Behavior @smoke', () => {
     await expect(header).toBeVisible()
 
     // Bottom CTA bar shadow when scrolled
-    const cta = page.getByRole('navigation', { name: 'Primary actions' })
-    await cta.waitFor({ state: 'visible', timeout: 5000 })
     await expect.poll(
       async () => cta.getAttribute('data-shadowed'),
       { message: 'CTA should gain shadow after scrolling', intervals: [150, 225, 300, 375], timeout: 3200 }

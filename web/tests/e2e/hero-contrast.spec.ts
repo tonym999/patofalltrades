@@ -2,6 +2,38 @@ import { expect, test } from '@playwright/test'
 
 const MIN_CONTRAST = 4.5
 
+type AccessibilityNode = {
+  role?: string
+  name?: string
+  description?: string
+  children?: AccessibilityNode[]
+  [key: string]: unknown
+}
+
+const isDevtoolsButtonNode = (node: AccessibilityNode) =>
+  node.role === 'button' && node.name === 'Open Next.js Dev Tools'
+
+const normalizeAccessibilityTree = (node: AccessibilityNode | null): AccessibilityNode | null => {
+  if (!node || isDevtoolsButtonNode(node)) return null
+
+  const hasDevtoolsButtonSibling = node.children?.some((child) => isDevtoolsButtonNode(child)) ?? false
+  const normalizedChildren = node.children
+    ?.filter((child) => {
+      const isInjectedDevtoolsAlert =
+        hasDevtoolsButtonSibling &&
+        child.role === 'alert' &&
+        !child.name &&
+        !child.description &&
+        (!child.children || child.children.length === 0)
+
+      return !isInjectedDevtoolsAlert
+    })
+    .map((child) => normalizeAccessibilityTree(child))
+    .filter((child): child is AccessibilityNode => child !== null)
+
+  return normalizedChildren ? { ...node, children: normalizedChildren } : { ...node }
+}
+
 test.describe('Hero contrast @smoke', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
@@ -18,7 +50,7 @@ test.describe('Hero contrast @smoke', () => {
     await expect(heroHeading).toBeVisible()
     await expect(heroSubtitle).toBeVisible()
 
-    const accessibilityTree = await page.accessibility.snapshot()
+    const accessibilityTree = normalizeAccessibilityTree(await page.accessibility.snapshot())
     const accessibilitySnapshot = `${JSON.stringify(accessibilityTree, null, 2)}\n`
     expect(accessibilitySnapshot).toMatchSnapshot('hero-accessibility.json')
 
