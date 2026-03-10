@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { test, expect, devices } from '@playwright/test'
 import { ensureMobile } from './utils/ensureMobile'
-import { CONTACT_INFO, WHATSAPP_PRESET, whatsappHref } from '../../config/contact'
+import { CONTACT_INFO } from '../../config/contact'
 
 test.use({ ...devices['iPhone 12'] })
 
@@ -12,12 +12,13 @@ test.describe('Mobile CTA Bar', () => {
     await ensureMobile(page)
   })
 
-  test('renders on mobile view and shows buttons @smoke', async ({ page }) => {
+  test('renders on mobile view and shows only two primary buttons @smoke', async ({ page }) => {
     const bar = page.getByTestId('mobile-cta-bar')
     await expect(bar).toBeVisible()
+    await expect(bar.getByTestId('mobile-cta-link')).toHaveCount(2)
     await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="call"]')).toBeVisible()
-    await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')).toBeVisible()
     await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')).toBeVisible()
+    await expect(bar.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')).toHaveCount(0)
   })
 
   test('uses the dark theme surface and gold-accent button styling', async ({ page }) => {
@@ -38,19 +39,10 @@ test.describe('Mobile CTA Bar', () => {
     expect(navStyles.computedBorderTopColor).toBe('rgba(255, 255, 255, 0.1)')
 
     const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
-    const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
     const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
 
-    const [neutralStyles, whatsappStyles, quoteStyles] = await Promise.all([
+    const [neutralStyles, quoteStyles] = await Promise.all([
       call.evaluate((el) => {
-        const cs = getComputedStyle(el)
-        return {
-          className: (el as HTMLElement).className,
-          color: cs.color,
-          backgroundColor: cs.backgroundColor,
-        }
-      }),
-      whatsapp.evaluate((el) => {
         const cs = getComputedStyle(el)
         return {
           className: (el as HTMLElement).className,
@@ -71,10 +63,6 @@ test.describe('Mobile CTA Bar', () => {
     expect(neutralStyles.className).toContain('mobile-cta-neutral')
     expect(neutralStyles.color).toBe('rgb(209, 213, 219)')
     expect(neutralStyles.backgroundColor).toBe('rgba(255, 255, 255, 0.05)')
-
-    expect(whatsappStyles.className).toContain('mobile-cta-whatsapp')
-    expect(whatsappStyles.color).toBe('rgb(37, 211, 102)')
-    expect(whatsappStyles.backgroundColor).toBe('rgba(37, 211, 102, 0.14)')
 
     expect(quoteStyles.className).toContain('cta-btn')
     expect(quoteStyles.color).toBe('rgb(26, 31, 46)')
@@ -143,13 +131,10 @@ test.describe('Mobile CTA Bar', () => {
       })
     }
 
-    const call = page.getByRole('link', { name: 'Call' })
+    const call = page.locator('[data-testid="mobile-cta-link"][data-action="call"]')
     expect(await contrastOf(call)).toBeGreaterThanOrEqual(4.5)
 
-    const whatsapp = page.getByRole('link', { name: 'WhatsApp' })
-    expect(await contrastOf(whatsapp)).toBeGreaterThanOrEqual(4.5)
-
-    const getQuote = page.getByRole('link', { name: 'Get Quote' })
+    const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
     expect(await contrastOf(getQuote)).toBeGreaterThanOrEqual(4.5)
   })
 
@@ -179,31 +164,26 @@ test.describe('Mobile CTA Bar', () => {
     const callBox = await call.boundingBox()
     expect(callBox).not.toBeNull()
     expect(callBox!.height).toBeGreaterThanOrEqual(44)
-
-    const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
-    await expect(whatsapp).toBeVisible()
-    const whatsappBox = await whatsapp.boundingBox()
-    expect(whatsappBox).not.toBeNull()
-    expect(whatsappBox!.height).toBeGreaterThanOrEqual(44)
   })
 
-  test('WhatsApp CTA opens chat in new tab with preset message', async ({ page }) => {
-    const whatsapp = page.locator('[data-testid="mobile-cta-link"][data-action="whatsapp"]')
-    await expect(whatsapp).toHaveAttribute('target', '_blank')
-    await expect(whatsapp).toHaveAttribute('rel', /noopener/)
-    await expect(whatsapp).toHaveAttribute('rel', /noreferrer/)
-    const expectedHref = whatsappHref()
-    await expect(whatsapp).toHaveAttribute('href', /wa\.me/)
-    const resolvedHref = await whatsapp.evaluate((node, base) => {
-      const href = node.getAttribute('href') ?? ''
-      return new URL(href, base).toString()
-    }, expectedHref)
-    const expectedUrl = new URL(expectedHref)
-    const actualUrl = new URL(resolvedHref)
-    expect(actualUrl.origin).toBe(expectedUrl.origin)
-    expect(actualUrl.pathname).toBe(expectedUrl.pathname)
-    expect(actualUrl.searchParams.get('text')).toBe(expectedUrl.searchParams.get('text'))
-    expect(actualUrl.searchParams.get('text')).toBe(WHATSAPP_PRESET)
+  test('footer keeps the full contact list available', async ({ page }) => {
+    const footer = page.getByRole('contentinfo')
+    await footer.scrollIntoViewIfNeeded()
+
+    const callLink = footer.getByRole('link', { name: /Call Pat/i })
+    const whatsappLink = footer.getByRole('link', { name: /WhatsApp Pat/i })
+    const emailLink = footer.getByRole('link', { name: /Email Pat/i })
+
+    await expect(callLink).toBeVisible()
+    await expect(whatsappLink).toBeVisible()
+    await expect(emailLink).toBeVisible()
+
+    const stickyBar = page.getByTestId('mobile-cta-bar')
+    const [emailBox, barBox] = await Promise.all([emailLink.boundingBox(), stickyBar.boundingBox()])
+
+    expect(emailBox).not.toBeNull()
+    expect(barBox).not.toBeNull()
+    expect(emailBox!.y + emailBox!.height).toBeLessThanOrEqual(barBox!.y - 8)
   })
 
   test('visible focus rings on keyboard focus', async ({ page }) => {
@@ -227,12 +207,7 @@ test.describe('Mobile CTA Bar', () => {
     expect(await getFocusSignal(call)).not.toBe('none')
 
     await page.keyboard.press('Tab')
-    const whatsapp = ctaLinks.nth(1)
-    await expect(whatsapp).toBeFocused()
-    expect(await getFocusSignal(whatsapp)).not.toBe('none')
-
-    await page.keyboard.press('Tab')
-    const getQuote = ctaLinks.nth(2)
+    const getQuote = ctaLinks.nth(1)
     await expect(getQuote).toBeFocused()
     expect(await getFocusSignal(getQuote)).not.toBe('none')
   })

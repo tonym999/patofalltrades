@@ -2,6 +2,44 @@ import AxeBuilder from '@axe-core/playwright'
 import { test, expect, devices } from '@playwright/test'
 
 test.describe('Accessibility focus management', () => {
+  test('homepage heading outline keeps one h1 and does not skip levels', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
+
+    const outline = await page.evaluate(() => {
+      const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).map((heading) => ({
+        level: Number.parseInt(heading.tagName.slice(1), 10),
+        tagName: heading.tagName,
+        text: heading.textContent?.trim() ?? '',
+      }))
+
+      const skipped = headings.flatMap((heading, index) => {
+        if (index === 0) return []
+        const previous = headings[index - 1]
+        return heading.level > previous.level + 1 ? [`${previous.tagName}->${heading.tagName}:${heading.text}`] : []
+      })
+
+      const sectionHeadings = Array.from(document.querySelectorAll('main > section')).map((section) => {
+        const heading = section.querySelector('h1, h2, h3, h4, h5, h6')
+        return heading?.tagName ?? null
+      })
+
+      return {
+        h1Count: headings.filter((heading) => heading.tagName === 'H1').length,
+        sectionHeadings,
+        skipped,
+      }
+    })
+
+    expect(outline.h1Count).toBe(1)
+    expect(outline.sectionHeadings[0]).toBe('H1')
+    expect(outline.sectionHeadings.slice(1)).toEqual(
+      Array.from({ length: Math.max(outline.sectionHeadings.length - 1, 0) }, () => 'H2')
+    )
+    expect(outline.skipped).toEqual([])
+  })
+
   test('skip link transfers focus to main content region', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 })
     await page.goto('/')

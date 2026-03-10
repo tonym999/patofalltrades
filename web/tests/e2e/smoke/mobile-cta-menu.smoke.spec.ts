@@ -3,12 +3,13 @@ import { test, expect } from '@playwright/test'
 const MOBILE_VIEWPORT = { width: 390, height: 844 }
 
 test.describe('Smoke @smoke - Mobile CTA bar coexists with menu', () => {
-  test('CTA bar visible before open and after close', async ({ page }) => {
+  test('CTA bar keeps two primary actions while footer keeps the full contact list', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT)
     await page.goto('/')
 
     const ctaNav = page.getByRole('navigation', { name: 'Primary actions' })
     await expect(ctaNav).toBeVisible()
+    await expect(ctaNav.getByTestId('mobile-cta-link')).toHaveCount(2)
 
     const hamburger = page.getByTestId('header-hamburger')
     await expect(hamburger).toBeVisible()
@@ -23,9 +24,23 @@ test.describe('Smoke @smoke - Mobile CTA bar coexists with menu', () => {
     await expect(dialog).toBeHidden()
     await expect(hamburger).toBeFocused()
 
-    // Scroll a bit after closing to ensure sticky CTA remains in view
+    // Scroll through the page to ensure sticky CTA remains in view until the footer contact list appears.
     await page.evaluate(() => window.scrollTo(0, 400))
     await expect(ctaNav).toBeVisible()
+
+    const footer = page.getByRole('contentinfo')
+    await footer.scrollIntoViewIfNeeded()
+    const callLink = footer.getByRole('link', { name: /Call Pat/i })
+    const whatsappLink = footer.getByRole('link', { name: /WhatsApp Pat/i })
+    const emailLink = footer.getByRole('link', { name: /Email Pat/i })
+    await expect(callLink).toBeVisible()
+    await expect(whatsappLink).toBeVisible()
+    await expect(emailLink).toBeVisible()
+
+    const [emailBox, ctaBarBox] = await Promise.all([emailLink.boundingBox(), ctaNav.boundingBox()])
+    expect(emailBox).not.toBeNull()
+    expect(ctaBarBox).not.toBeNull()
+    expect(emailBox!.y + emailBox!.height).toBeLessThanOrEqual(ctaBarBox!.y - 8)
 
     const ax = await page.accessibility.snapshot()
     expect(ax).toBeTruthy()
