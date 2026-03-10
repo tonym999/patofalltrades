@@ -329,11 +329,32 @@
     },
     {
       "role": "text",
-      "name": "© 2024 Pat Of All Trades. All Rights Reserved."
+      "name": "Pat Of All Trades"
     },
     {
       "role": "text",
       "name": "Premium Handyman Services in London"
+    },
+    {
+      "role": "text",
+      "name": "© 2024 Pat Of All Trades. All Rights Reserved."
+    },
+    {
+      "role": "heading",
+      "name": "Contact Pat",
+      "level": 2
+    },
+    {
+      "role": "link",
+      "name": "Call Pat"
+    },
+    {
+      "role": "link",
+      "name": "WhatsApp Pat"
+    },
+    {
+      "role": "link",
+      "name": "Email Pat"
     },
     {
       "role": "link",

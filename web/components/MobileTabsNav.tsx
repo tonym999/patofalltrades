@@ -240,7 +240,7 @@ export default function MobileTabsNav() {
               </div>
 
               <div className="mt-3 pt-3 border-t border-white/10">
-                <h4 className="sr-only">Contact</h4>
+                <h3 className="sr-only">Contact</h3>
                 <div className="grid grid-cols-1 gap-2">
                   <a
                     href={whatsappHref()}

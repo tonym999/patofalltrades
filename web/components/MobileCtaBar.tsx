@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ClipboardList, MessageCircle, Phone } from "lucide-react";
-import { CONTACT_INFO, whatsappHref } from "@/config/contact";
+import { ClipboardList, Phone } from "lucide-react";
+import { CONTACT_INFO } from "@/config/contact";
 
 export default function MobileCtaBar() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -94,8 +94,6 @@ export default function MobileCtaBar() {
 
   const neutralCtaClassName = `${secondaryCtaClassName} mobile-cta-neutral focus-visible:ring-[var(--ring-soft)]`;
 
-  const whatsappCtaClassName = `${secondaryCtaClassName} mobile-cta-whatsapp focus-visible:ring-[var(--ring-soft)]`;
-
   return (
     <nav
       aria-label="Primary actions"
@@ -113,7 +111,7 @@ export default function MobileCtaBar() {
         }}
         data-testid="mobile-cta-padding"
       >
-        <div className="max-w-screen-md mx-auto grid grid-cols-3 gap-2">
+        <div className="max-w-screen-md mx-auto grid grid-cols-2 gap-2">
           <a
             href={`tel:${CONTACT_INFO.phoneE164}`}
             aria-label={`Call ${CONTACT_INFO.phoneE164}`}
@@ -123,18 +121,6 @@ export default function MobileCtaBar() {
           >
             <Phone size={18} aria-hidden="true" className="text-[var(--gold)] transition-transform group-hover:-translate-y-0.5" />
             <span>Call</span>
-          </a>
-          <a
-            href={whatsappHref()}
-            rel="noopener noreferrer"
-            target="_blank"
-            aria-label="WhatsApp chat with Pat"
-            className={whatsappCtaClassName}
-            data-testid="mobile-cta-link"
-            data-action="whatsapp"
-          >
-            <MessageCircle size={18} aria-hidden="true" className="transition-transform group-hover:-translate-y-0.5" />
-            <span>WhatsApp</span>
           </a>
           <Link
             href="/#contact"
