@@ -215,7 +215,7 @@ export default function MobileTabsNav() {
                 <button
                   type="button"
                   onClick={() => closeMenu("close_button")}
-                  className="motion-standard text-[#9ca3af] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
+                  className="transition-colors motion-standard text-[#9ca3af] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
                   aria-label="Close menu"
                 >
                   <XIcon size={20} aria-hidden="true" />
@@ -223,22 +223,22 @@ export default function MobileTabsNav() {
               </div>
 
               <div className="grid grid-cols-1 divide-y divide-white/10">
-                <Link href="/#services" onClick={() => handleMenuItemClick("Services")} className="motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#services" onClick={() => handleMenuItemClick("Services")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                   Services
                 </Link>
-                <Link href="/#portfolio" onClick={() => handleMenuItemClick("Work")} className="motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#portfolio" onClick={() => handleMenuItemClick("Work")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                   Work
                 </Link>
-                <Link href="/#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                   Areas We Serve
                 </Link>
-                <Link href="/#about" onClick={() => handleMenuItemClick("About")} className="motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#about" onClick={() => handleMenuItemClick("About")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                   About
                 </Link>
-                <Link href="/#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                   Reviews
                 </Link>
-                <Link href="/#contact" onClick={handleGetInTouchClick} className="motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#contact" onClick={handleGetInTouchClick} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
                   Get in Touch
                 </Link>
               </div>
@@ -250,7 +250,7 @@ export default function MobileTabsNav() {
                     href={whatsappHref()}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="motion-standard py-3 min-h-[44px] inline-flex items-center gap-2 text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
+                    className="transition-colors motion-standard py-3 min-h-[44px] inline-flex items-center gap-2 text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
                     aria-label="WhatsApp chat with Pat"
                   >
                     <WhatsAppIcon size={18} aria-hidden="true" />
@@ -258,7 +258,7 @@ export default function MobileTabsNav() {
                   </a>
                   <a
                     href={`mailto:${CONTACT_INFO.email}`}
-                    className="motion-standard py-3 min-h-[44px] inline-flex items-center gap-2 text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
+                    className="transition-colors motion-standard py-3 min-h-[44px] inline-flex items-center gap-2 text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
                     aria-label="Email Pat"
                   >
                     <MailIcon size={18} aria-hidden="true" />
