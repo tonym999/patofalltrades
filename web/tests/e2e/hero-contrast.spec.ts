@@ -17,6 +17,10 @@ const normalizeAccessibilityTree = (node: AccessibilityNode | null): Accessibili
   if (!node || isDevtoolsButtonNode(node)) return null
 
   const hasDevtoolsButtonSibling = node.children?.some((child) => isDevtoolsButtonNode(child)) ?? false
+  const normalizedName = node.name?.replace(
+    /© \d{4} Pat Of All Trades\. All Rights Reserved\./,
+    '© YYYY Pat Of All Trades. All Rights Reserved.',
+  )
   const normalizedChildren = node.children
     ?.filter((child) => {
       const isInjectedDevtoolsAlert =
@@ -31,7 +35,9 @@ const normalizeAccessibilityTree = (node: AccessibilityNode | null): Accessibili
     .map((child) => normalizeAccessibilityTree(child))
     .filter((child): child is AccessibilityNode => child !== null)
 
-  return normalizedChildren ? { ...node, children: normalizedChildren } : { ...node }
+  const normalizedNode = normalizedName ? { ...node, name: normalizedName } : { ...node }
+
+  return normalizedChildren ? { ...normalizedNode, children: normalizedChildren } : normalizedNode
 }
 
 test.describe('Hero contrast @smoke', () => {

@@ -170,9 +170,20 @@ test.describe('Mobile CTA Bar', () => {
     const footer = page.getByRole('contentinfo')
     await footer.scrollIntoViewIfNeeded()
 
-    await expect(footer.getByRole('link', { name: /Call Pat/i })).toBeVisible()
-    await expect(footer.getByRole('link', { name: /WhatsApp Pat/i })).toBeVisible()
-    await expect(footer.getByRole('link', { name: /Email Pat/i })).toBeVisible()
+    const callLink = footer.getByRole('link', { name: /Call Pat/i })
+    const whatsappLink = footer.getByRole('link', { name: /WhatsApp Pat/i })
+    const emailLink = footer.getByRole('link', { name: /Email Pat/i })
+
+    await expect(callLink).toBeVisible()
+    await expect(whatsappLink).toBeVisible()
+    await expect(emailLink).toBeVisible()
+
+    const stickyBar = page.getByTestId('mobile-cta-bar')
+    const [emailBox, barBox] = await Promise.all([emailLink.boundingBox(), stickyBar.boundingBox()])
+
+    expect(emailBox).not.toBeNull()
+    expect(barBox).not.toBeNull()
+    expect(emailBox!.y + emailBox!.height).toBeLessThanOrEqual(barBox!.y - 8)
   })
 
   test('visible focus rings on keyboard focus', async ({ page }) => {

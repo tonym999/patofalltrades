@@ -337,7 +337,15 @@
     },
     {
       "role": "text",
-      "name": "© 2024 Pat Of All Trades. All Rights Reserved."
+      "name": "© "
+    },
+    {
+      "role": "text",
+      "name": "2026"
+    },
+    {
+      "role": "text",
+      "name": " Pat Of All Trades. All Rights Reserved."
     },
     {
       "role": "heading",
@@ -346,15 +354,15 @@
     },
     {
       "role": "link",
-      "name": "Call Pat"
+      "name": "Call Pat +44 7123 456 789"
     },
     {
       "role": "link",
-      "name": "WhatsApp Pat"
+      "name": "WhatsApp Pat Fastest way to share photos and project details"
     },
     {
       "role": "link",
-      "name": "Email Pat"
+      "name": "Email Pat pat@patofalltrades.co.uk"
     },
     {
       "role": "link",

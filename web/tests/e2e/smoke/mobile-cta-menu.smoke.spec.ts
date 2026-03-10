@@ -30,9 +30,17 @@ test.describe('Smoke @smoke - Mobile CTA bar coexists with menu', () => {
 
     const footer = page.getByRole('contentinfo')
     await footer.scrollIntoViewIfNeeded()
-    await expect(footer.getByRole('link', { name: /Call Pat/i })).toBeVisible()
-    await expect(footer.getByRole('link', { name: /WhatsApp Pat/i })).toBeVisible()
-    await expect(footer.getByRole('link', { name: /Email Pat/i })).toBeVisible()
+    const callLink = footer.getByRole('link', { name: /Call Pat/i })
+    const whatsappLink = footer.getByRole('link', { name: /WhatsApp Pat/i })
+    const emailLink = footer.getByRole('link', { name: /Email Pat/i })
+    await expect(callLink).toBeVisible()
+    await expect(whatsappLink).toBeVisible()
+    await expect(emailLink).toBeVisible()
+
+    const [emailBox, ctaBarBox] = await Promise.all([emailLink.boundingBox(), ctaNav.boundingBox()])
+    expect(emailBox).not.toBeNull()
+    expect(ctaBarBox).not.toBeNull()
+    expect(emailBox!.y + emailBox!.height).toBeLessThanOrEqual(ctaBarBox!.y - 8)
 
     const ax = await page.accessibility.snapshot()
     expect(ax).toBeTruthy()
