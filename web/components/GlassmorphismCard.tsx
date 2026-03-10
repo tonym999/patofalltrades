@@ -64,7 +64,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
       {...rest}
     >
       <div
-        className={`pointer-events-none absolute -inset-1 rounded-2xl border-4 border-amber-400/70 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 ${motionReduceUtilities} shadow-[0_0_34px_rgba(245,158,11,0.45)]`}
+        className={`pointer-events-none absolute -inset-1 rounded-2xl border-4 border-amber-400/70 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-[var(--motion-duration-base-active)] ease-[var(--motion-ease-standard-active)] ${motionReduceUtilities} shadow-[0_0_34px_rgba(245,158,11,0.45)]`}
         aria-hidden="true"
       />
 
@@ -72,7 +72,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
         className={`
         relative bg-slate-800/40 backdrop-blur-md border-2 border-slate-700/50 
         group-hover:border-amber-400/70 group-focus-within:border-amber-400/80
-        transition-colors duration-500 ${motionReduceUtilities} rounded-xl overflow-hidden
+        transition-colors duration-[var(--motion-duration-slow-active)] ease-[var(--motion-ease-standard-active)] ${motionReduceUtilities} rounded-xl overflow-hidden
         ${contentClassName}
       `}
       >

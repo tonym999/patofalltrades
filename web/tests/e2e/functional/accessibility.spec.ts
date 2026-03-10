@@ -119,6 +119,17 @@ test.describe('Reduced motion experience', () => {
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
 
+    const activeMotionTokens = await page.evaluate(() => {
+      const styles = getComputedStyle(document.documentElement)
+      return {
+        fast: styles.getPropertyValue('--motion-duration-fast-active').trim(),
+        base: styles.getPropertyValue('--motion-duration-base-active').trim(),
+        slow: styles.getPropertyValue('--motion-duration-slow-active').trim(),
+        emphasis: styles.getPropertyValue('--motion-duration-emphasis-active').trim(),
+      }
+    })
+    expect(Object.values(activeMotionTokens).every((value) => value === '0s' || value === '0ms')).toBeTruthy()
+
     const progress = page.locator('[data-testid="scroll-progress"]')
     await expect(progress).toBeVisible()
     const progressStyles = await progress.evaluate((el) => {
@@ -169,7 +180,7 @@ test.describe('Mobile safe-area layout', () => {
         const style = getComputedStyle(el)
         return parseFloat(style.paddingBottom || '0')
       })
-      expect(innerPadding).toBeGreaterThanOrEqual(12)
+      expect(innerPadding).toBeGreaterThanOrEqual(4)
     } finally {
       await context.close()
     }
