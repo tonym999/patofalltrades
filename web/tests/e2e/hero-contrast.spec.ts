@@ -17,10 +17,12 @@ const normalizeAccessibilityTree = (node: AccessibilityNode | null): Accessibili
   if (!node || isDevtoolsButtonNode(node)) return null
 
   const hasDevtoolsButtonSibling = node.children?.some((child) => isDevtoolsButtonNode(child)) ?? false
-  const normalizedName = node.name?.replace(
-    /© \d{4} Pat Of All Trades\. All Rights Reserved\./,
-    '© YYYY Pat Of All Trades. All Rights Reserved.',
-  )
+  const normalizedName = node.name
+    ?.replace(
+      /© \d{4} Pat Of All Trades\. All Rights Reserved\./,
+      '© YYYY Pat Of All Trades. All Rights Reserved.',
+    )
+    .replace(/^\d{4}$/, 'YYYY')
   const normalizedChildren = node.children
     ?.filter((child) => {
       const isInjectedDevtoolsAlert =
