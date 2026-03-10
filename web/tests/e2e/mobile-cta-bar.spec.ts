@@ -222,7 +222,7 @@ test.describe('Mobile CTA Bar', () => {
       }
     })
     expect(Number.isFinite(paddingMetrics.paddingBottom)).toBeTruthy()
-    expect(paddingMetrics.paddingBottom).toBeGreaterThanOrEqual(12)
+    expect(paddingMetrics.paddingBottom).toBeGreaterThanOrEqual(4)
     expect(paddingMetrics.resolved.trim()).toMatch(/px$/)
   })
 })

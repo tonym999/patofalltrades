@@ -21,10 +21,10 @@ export function ScrollProgress() {
 
     return (
       <div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 z-50 origin-left pointer-events-none"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 origin-left pointer-events-none"
         data-testid="scroll-progress"
         aria-hidden="true"
-        style={reducedStyle}
+        style={{ ...reducedStyle, zIndex: "calc(var(--z-cta) + 1)" }}
       />
     );
   }
@@ -38,10 +38,10 @@ export function ScrollProgress() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 z-50 origin-left pointer-events-none"
+      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 origin-left pointer-events-none"
       data-testid="scroll-progress"
       aria-hidden="true"
-      style={animatedStyle}
+      style={{ ...animatedStyle, zIndex: "calc(var(--z-cta) + 1)" }}
     />
   );
 }

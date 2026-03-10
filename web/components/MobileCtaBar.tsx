@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, Phone } from "lucide-react";
 import { CONTACT_INFO } from "@/config/contact";
 
 export default function MobileCtaBar() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
   const handleGetQuote = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -37,30 +36,6 @@ export default function MobileCtaBar() {
     // Otherwise allow navigation to the route (keep href="#contact" on same page; consider "/#contact" if needed)
   }, []);
 
-  // Expose CTA height to CSS var so other UI can offset
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const update = () => {
-      const h = el.offsetHeight || 0;
-      document.documentElement.style.setProperty("--cta-height", `${h}px`);
-    };
-    update();
-    const ResizeObserverCtor = typeof window !== "undefined" ? (window as typeof window & { ResizeObserver?: typeof ResizeObserver }).ResizeObserver : undefined;
-    const ro = typeof ResizeObserverCtor === "function" ? new ResizeObserverCtor(update) : null;
-    ro?.observe?.(el);
-    window.addEventListener("orientationchange", update);
-    window.addEventListener("resize", update);
-    window.addEventListener("load", update);
-    return () => {
-      ro?.disconnect?.();
-      window.removeEventListener("orientationchange", update);
-      window.removeEventListener("resize", update);
-      window.removeEventListener("load", update);
-      document.documentElement.style.setProperty("--cta-height", "0px");
-    };
-  }, []);
-
   // Add subtle shadow when the page is scrolled
   useEffect(() => {
     const onScroll = () => {
@@ -76,38 +51,39 @@ export default function MobileCtaBar() {
   }, []);
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    // Keep the old dataset signal for tests/debugging even though the bar now uses static tokens.
+    const bar = document.querySelector<HTMLElement>('[data-testid="mobile-cta-bar"]');
+    if (!bar) return;
     if (typeof CSS === "undefined" || typeof CSS.supports !== "function") {
-      el.dataset.safeAreaEnv = "unknown";
+      bar.dataset.safeAreaEnv = "unknown";
       return;
     }
     try {
-      el.dataset.safeAreaEnv = CSS.supports("padding-bottom", "env(safe-area-inset-bottom)") ? "supported" : "unsupported";
+      bar.dataset.safeAreaEnv = CSS.supports("padding-bottom", "env(safe-area-inset-bottom)") ? "supported" : "unsupported";
     } catch {
-      el.dataset.safeAreaEnv = "error";
+      bar.dataset.safeAreaEnv = "error";
     }
   }, []);
 
   const secondaryCtaClassName =
-    "group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]";
+    "group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors motion-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]";
 
   const neutralCtaClassName = `${secondaryCtaClassName} mobile-cta-neutral focus-visible:ring-[var(--ring-soft)]`;
 
   return (
     <nav
       aria-label="Primary actions"
-      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-50 border-t ${scrolled ? "bottom-cta--shadow" : ""}`}
+      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-[var(--z-cta)] border-t ${scrolled ? "bottom-cta--shadow" : ""}`}
       data-shadowed={scrolled ? "true" : "false"}
       data-testid="mobile-cta-bar"
-      ref={containerRef}
+      style={{ minHeight: "calc(var(--h-cta-active) + env(safe-area-inset-bottom, 0px))" }}
     >
       <div
-        className="pt-3"
+        className="pt-1"
         style={{
           paddingLeft: "calc(1rem + env(safe-area-inset-left, 0px))",
           paddingRight: "calc(1rem + env(safe-area-inset-right, 0px))",
-          paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
+          paddingBottom: "calc(0.25rem + env(safe-area-inset-bottom, 0px))",
         }}
         data-testid="mobile-cta-padding"
       >
@@ -125,7 +101,7 @@ export default function MobileCtaBar() {
           <Link
             href="/#contact"
             onClick={handleGetQuote}
-            className="cta-btn group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--gold)_50%,transparent)] bg-[var(--gold)] px-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] hover:bg-[var(--gold-hover)]"
+            className="cta-btn motion-emphasis group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--gold)_50%,transparent)] bg-[var(--gold)] px-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] hover:bg-[var(--gold-hover)]"
             data-testid="mobile-cta-link"
             data-action="get-quote"
           >

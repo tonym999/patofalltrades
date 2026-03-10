@@ -78,7 +78,7 @@ function ServiceCard({
     : "group-focus-within:animate-[spin_1800ms_linear] group-hover:animate-[spin_1800ms_linear] motion-reduce:animate-none";
   const progressTransitionClasses = shouldReduceMotion
     ? "transition-none duration-0"
-    : "transition-[width] duration-[1200ms] ease-in-out";
+    : "transition-[width] duration-[var(--motion-duration-emphasis-active)] ease-[var(--motion-ease-emphasized-active)]";
 
   const setCardRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -127,16 +127,16 @@ function ServiceCard({
 
       <h3
         id={headingId}
-        className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-200"
+        className="text-2xl font-bold text-white mb-3 group-hover:text-amber-400 group-focus-within:text-amber-400 transition-colors duration-[var(--motion-duration-fast-active)] ease-[var(--motion-ease-standard-active)]"
       >
         {service.title}
       </h3>
 
-      <p className="text-gray-300 mb-4 leading-relaxed group-hover:text-gray-200 group-focus-within:text-gray-200 transition-colors duration-200">{service.description}</p>
+      <p className="text-gray-300 mb-4 leading-relaxed group-hover:text-gray-200 group-focus-within:text-gray-200 transition-colors duration-[var(--motion-duration-fast-active)] ease-[var(--motion-ease-standard-active)]">{service.description}</p>
 
       {/* Focus/hover progress bar directly under description */}
       <div
-        className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300`}
+        className={`h-1 bg-slate-700/40 rounded-full overflow-hidden mb-6 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-[var(--motion-duration-base-active)] ease-[var(--motion-ease-standard-active)]`}
         aria-hidden="true"
       >
         <div
@@ -164,7 +164,7 @@ function ServiceCard({
       {/* Hover underline accent (CSS-driven for group hover/focus) */}
       <div
         aria-hidden="true"
-        className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-300 ease-out motion-reduce:transition-none motion-reduce:duration-0`}
+        className={`mt-2 h-0.5 bg-gradient-to-r ${service.gradient} rounded-full w-0 group-hover:w-full group-focus-within:w-full transition-[width] duration-[var(--motion-duration-base-active)] ease-[var(--motion-ease-standard-active)] motion-reduce:transition-none motion-reduce:duration-0`}
       />
     </GlassmorphismCard>
   );
