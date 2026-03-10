@@ -15,6 +15,7 @@ import { Drawer } from "vaul";
 import { Mail as MailIcon, MessageCircle as WhatsAppIcon, X as XIcon } from "lucide-react";
 import { track } from "@vercel/analytics";
 import { CONTACT_INFO, whatsappHref } from "@/config/contact";
+import { focusFirstEditable } from "@/lib/focusFirstEditable";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 import type { OpenMobileMenuDetail } from "@/lib/mobileMenuEvents";
 
@@ -149,14 +150,7 @@ export default function MobileTabsNav() {
       } catch {
         contactSection.scrollIntoView();
       }
-      const firstField = document.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-        '#contact input, #contact textarea, #contact select, #quote input, #quote textarea, #quote select'
-      );
-      if (firstField) {
-        window.setTimeout(() => {
-          firstField.focus({ preventScroll: true });
-        }, 250);
-      }
+      focusFirstEditable(undefined, 250);
       const targetHash = (contactSection as HTMLElement).id ? `#${(contactSection as HTMLElement).id}` : "#contact";
       if (window.location.hash !== targetHash) {
         history.replaceState(null, "", targetHash);

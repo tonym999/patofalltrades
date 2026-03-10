@@ -4,9 +4,23 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, Phone } from "lucide-react";
 import { CONTACT_INFO } from "@/config/contact";
+import { focusFirstEditable } from "@/lib/focusFirstEditable";
+
+const EDITABLE_SELECTOR = [
+  'input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([disabled]):not([readonly])',
+  "textarea:not([disabled]):not([readonly])",
+  "select:not([disabled])",
+  '[contenteditable="true"]',
+  '[contenteditable="plaintext-only"]',
+].join(", ");
+
+function isEditableElement(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && target.matches(EDITABLE_SELECTOR);
+}
 
 export default function MobileCtaBar() {
   const [scrolled, setScrolled] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const handleGetQuote = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     // Respect modifier/middle clicks and let browser handle them
@@ -21,13 +35,7 @@ export default function MobileCtaBar() {
       } catch {
         contactSection.scrollIntoView();
       }
-      // Focus the first field on the quote/contact form
-      const firstField = document.getElementById("name") as HTMLInputElement | null;
-      if (firstField) {
-        window.setTimeout(() => {
-          firstField.focus({ preventScroll: true });
-        }, 250);
-      }
+      focusFirstEditable(undefined, 250);
       if (window.location.hash !== "#contact") {
         history.replaceState(null, "", "#contact");
       }
@@ -65,6 +73,31 @@ export default function MobileCtaBar() {
     }
   }, []);
 
+  useEffect(() => {
+    const syncInputFocus = (target: EventTarget | null = document.activeElement) => {
+      setInputFocused(isEditableElement(target));
+    };
+
+    const onFocusIn = (event: FocusEvent) => {
+      syncInputFocus(event.target);
+    };
+
+    const onFocusOut = () => {
+      requestAnimationFrame(() => {
+        syncInputFocus();
+      });
+    };
+
+    syncInputFocus();
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
+  }, []);
+
   const secondaryCtaClassName =
     "group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors motion-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]";
 
@@ -73,10 +106,16 @@ export default function MobileCtaBar() {
   return (
     <nav
       aria-label="Primary actions"
-      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-[var(--z-cta)] border-t ${scrolled ? "bottom-cta--shadow" : ""}`}
+      className={`mobile-cta-surface md:hidden fixed bottom-0 inset-x-0 z-[var(--z-cta)] border-t transition-[transform,opacity] motion-standard ${scrolled ? "bottom-cta--shadow" : ""}`}
       data-shadowed={scrolled ? "true" : "false"}
       data-testid="mobile-cta-bar"
-      style={{ minHeight: "calc(var(--h-cta-active) + env(safe-area-inset-bottom, 0px))" }}
+      style={{
+        minHeight: "calc(var(--h-cta-active) + env(safe-area-inset-bottom, 0px))",
+        opacity: inputFocused ? 0 : 1,
+        pointerEvents: inputFocused ? "none" : undefined,
+        transform: inputFocused ? "translateY(calc(100% + env(safe-area-inset-bottom, 0px)))" : undefined,
+        visibility: inputFocused ? "hidden" : "visible",
+      }}
     >
       <div
         className="pt-1"

@@ -8,8 +8,15 @@ test.describe('Mobile bottom sheet Menu', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await page.waitForLoadState('domcontentloaded')
+    await page.waitForLoadState('load')
     await ensureMobile(page)
+    const header = page.getByRole('banner')
+    await expect.poll(async () => {
+      return header.evaluate((el) => {
+        const cs = getComputedStyle(el)
+        return `${cs.position}|${cs.zIndex}`
+      })
+    }).toBe('fixed|40')
   })
 
   test('opens and closes via button and backdrop @smoke', async ({ page }) => {
@@ -57,8 +64,10 @@ test.describe('Mobile bottom sheet Menu', () => {
     const getInTouch = page.getByRole('link', { name: 'Get in Touch' })
     await getInTouch.click()
     const nameInput = page.locator('#name')
-    await expect(nameInput).toBeFocused()
+    const stickyBar = page.getByTestId('mobile-cta-bar')
+    await expect.poll(async () => page.evaluate(() => document.activeElement?.id ?? '')).toBe('name')
     await expect(page).toHaveURL(/#contact$/)
+    await expect(stickyBar).toBeHidden()
   })
 
   test('drawer respects safe-area padding', async ({ page }) => {
