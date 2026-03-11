@@ -50,11 +50,32 @@ async function expectNoHorizontalOverflow(page: Page) {
     .toBeLessThanOrEqual(1)
 }
 
+async function instrumentAnalytics(page: Page) {
+  await page.addInitScript(() => {
+    type VaCall = [string, { name?: string; data?: Record<string, unknown> }?]
+
+    const capturedEvents: VaCall[] = []
+    const windowWithAnalytics = window as typeof window & {
+      __vaEvents?: VaCall[]
+      vaq?: VaCall[]
+      va?: (...args: VaCall) => void
+    }
+
+    windowWithAnalytics.__vaEvents = capturedEvents
+    windowWithAnalytics.va = (...args: VaCall) => {
+      capturedEvents.push(args)
+      windowWithAnalytics.vaq = windowWithAnalytics.vaq || []
+      windowWithAnalytics.vaq.push(args)
+    }
+  })
+}
+
 for (const profile of MOBILE_QA_MATRIX) {
   test.describe(`Smoke @smoke - Mobile QA matrix (${profile.name})`, () => {
     test.use(profile.use)
 
     test('drawer and primary CTA flow stay operable', async ({ page }) => {
+      await instrumentAnalytics(page)
       await page.goto('/')
       await page.waitForLoadState('load')
       await ensureMobile(page)
@@ -78,7 +99,9 @@ for (const profile of MOBILE_QA_MATRIX) {
       const quoteBox = await getQuote.boundingBox()
       expect(quoteBox).not.toBeNull()
       expect(quoteBox!.height).toBeGreaterThanOrEqual(44)
-      expect(quoteBox!.x + quoteBox!.width).toBeLessThanOrEqual(page.viewportSize()!.width)
+      const viewportSize = page.viewportSize()
+      expect(viewportSize).not.toBeNull()
+      expect(quoteBox!.x + quoteBox!.width).toBeLessThanOrEqual(viewportSize!.width)
 
       await hamburger.click()
       const dialog = page.getByRole('dialog', { name: 'Menu' })
@@ -115,6 +138,18 @@ for (const profile of MOBILE_QA_MATRIX) {
       })
 
       await expect(ctaBar).toBeVisible()
+      await expect
+        .poll(async () => page.evaluate(() => {
+          const windowWithAnalytics = window as typeof window & {
+            __vaEvents?: Array<[string, { name?: string; data?: { position?: string } }?]>
+          }
+
+          return (windowWithAnalytics.__vaEvents || []).filter((event) => {
+            const [, payload] = event
+            return payload?.name === 'cta_quote_click' && payload.data?.position === 'cta-bar'
+          }).length
+        }))
+        .toBe(1)
       await expectNoHorizontalOverflow(page)
     })
   })

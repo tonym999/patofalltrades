@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, Phone } from "lucide-react";
+import { track } from "@vercel/analytics";
 import { CONTACT_INFO } from "@/config/contact";
 import { focusFirstEditable } from "@/lib/focusFirstEditable";
 
@@ -18,13 +19,29 @@ function isEditableElement(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && target.matches(EDITABLE_SELECTOR);
 }
 
+function hasModifierClick(event: React.MouseEvent<HTMLAnchorElement>): boolean {
+  return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button === 1;
+}
+
 export default function MobileCtaBar() {
   const [scrolled, setScrolled] = useState(false);
   const [inputFocused, setInputFocused] = useState(false);
 
+  const handleCall = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (hasModifierClick(e)) return;
+
+    try {
+      track("cta_call_click", { position: "cta-bar" });
+    } catch {}
+  }, []);
+
   const handleGetQuote = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     // Respect modifier/middle clicks and let browser handle them
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
+    if (hasModifierClick(e)) return;
+
+    try {
+      track("cta_quote_click", { position: "cta-bar" });
+    } catch {}
 
     const contactSection = document.getElementById("contact") || document.getElementById("quote");
     if (contactSection) {
@@ -133,6 +150,7 @@ export default function MobileCtaBar() {
             className={neutralCtaClassName}
             data-testid="mobile-cta-link"
             data-action="call"
+            onClick={handleCall}
           >
             <Phone size={18} aria-hidden="true" className="text-[var(--gold)] transition-transform group-hover:-translate-y-0.5" />
             <span>Call</span>
