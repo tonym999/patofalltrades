@@ -9,15 +9,8 @@ export function focusFirstEditable(
   let cancelled = false;
   const pendingTimeouts = new Set<number>();
 
-  const tryFocus = (remaining: number) => {
-    if (cancelled) return;
-
-    const field = document.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector);
-    if (!field) return;
-
-    field.focus({ preventScroll: true });
-
-    if (document.activeElement === field || remaining <= 1) {
+  const scheduleRetry = (remaining: number) => {
+    if (cancelled || remaining <= 1) {
       return;
     }
 
@@ -26,6 +19,24 @@ export function focusFirstEditable(
       tryFocus(remaining - 1);
     }, 50);
     pendingTimeouts.add(retryTimeout);
+  };
+
+  const tryFocus = (remaining: number) => {
+    if (cancelled) return;
+
+    const field = document.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector);
+    if (!field) {
+      scheduleRetry(remaining);
+      return;
+    }
+
+    field.focus({ preventScroll: true });
+
+    if (document.activeElement === field || remaining <= 1) {
+      return;
+    }
+
+    scheduleRetry(remaining);
   };
 
   const initialTimeout = window.setTimeout(() => {
