@@ -70,6 +70,19 @@ async function instrumentAnalytics(page: Page) {
   })
 }
 
+async function countTrackedCtaEvent(page: Page, eventName: 'cta_call_click' | 'cta_quote_click') {
+  return page.evaluate((trackedEventName) => {
+    const windowWithAnalytics = window as typeof window & {
+      __vaEvents?: Array<[string, { name?: string; data?: { position?: string } }?]>
+    }
+
+    return (windowWithAnalytics.__vaEvents || []).filter((event) => {
+      const [, payload] = event
+      return payload?.name === trackedEventName && payload.data?.position === 'cta-bar'
+    }).length
+  }, eventName)
+}
+
 for (const profile of MOBILE_QA_MATRIX) {
   test.describe(`Smoke @smoke - Mobile QA matrix (${profile.name})`, () => {
     test.use(profile.use)
@@ -94,6 +107,13 @@ for (const profile of MOBILE_QA_MATRIX) {
 
       const callLink = ctaBar.locator('[data-testid="mobile-cta-link"][data-action="call"]')
       await expect(callLink).toHaveAttribute('href', `tel:${CONTACT_INFO.phoneE164}`)
+      await page.evaluate(() => {
+        document
+          .querySelector('[data-testid="mobile-cta-link"][data-action="call"]')
+          ?.addEventListener('click', (event) => event.preventDefault(), { once: true })
+      })
+      await callLink.click()
+      await expect.poll(async () => countTrackedCtaEvent(page, 'cta_call_click')).toBe(1)
 
       const getQuote = ctaBar.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
       const quoteBox = await getQuote.boundingBox()
@@ -138,18 +158,7 @@ for (const profile of MOBILE_QA_MATRIX) {
       })
 
       await expect(ctaBar).toBeVisible()
-      await expect
-        .poll(async () => page.evaluate(() => {
-          const windowWithAnalytics = window as typeof window & {
-            __vaEvents?: Array<[string, { name?: string; data?: { position?: string } }?]>
-          }
-
-          return (windowWithAnalytics.__vaEvents || []).filter((event) => {
-            const [, payload] = event
-            return payload?.name === 'cta_quote_click' && payload.data?.position === 'cta-bar'
-          }).length
-        }))
-        .toBe(1)
+      await expect.poll(async () => countTrackedCtaEvent(page, 'cta_quote_click')).toBe(1)
       await expectNoHorizontalOverflow(page)
     })
   })
