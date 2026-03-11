@@ -1,5 +1,30 @@
 const DEFAULT_EDITABLE_SELECTOR =
-  "#contact input, #contact textarea, #contact select, #quote input, #quote textarea, #quote select";
+  "#contact input:not([type='hidden']), #contact textarea, #contact select, #quote input:not([type='hidden']), #quote textarea, #quote select";
+
+type EditableField =
+  | HTMLInputElement
+  | HTMLTextAreaElement
+  | HTMLSelectElement;
+
+function isFocusableField(field: EditableField): boolean {
+  if (field.disabled) return false;
+  if ("readOnly" in field && field.readOnly) return false;
+  if (field.matches("[inert], [aria-hidden='true']")) return false;
+  if (field.tabIndex < 0) return false;
+
+  let node: HTMLElement | null = field;
+  while (node) {
+    if (node.hidden || node.getAttribute("aria-hidden") === "true" || node.hasAttribute("inert")) {
+      return false;
+    }
+    node = node.parentElement;
+  }
+
+  const styles = window.getComputedStyle(field);
+  if (styles.display === "none" || styles.visibility === "hidden") return false;
+
+  return field.getClientRects().length > 0;
+}
 
 export function focusFirstEditable(
   selector: string = DEFAULT_EDITABLE_SELECTOR,
@@ -24,7 +49,9 @@ export function focusFirstEditable(
   const tryFocus = (remaining: number) => {
     if (cancelled) return;
 
-    const field = document.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(selector);
+    const field = Array.from(
+      document.querySelectorAll<EditableField>(selector)
+    ).find(isFocusableField);
     if (!field) {
       scheduleRetry(remaining);
       return;
