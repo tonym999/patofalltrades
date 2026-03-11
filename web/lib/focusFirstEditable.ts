@@ -32,7 +32,7 @@ export function focusFirstEditable(
   attempts = 6
 ): () => void {
   let cancelled = false;
-  const pendingTimeouts = new Set<number>();
+  const pendingTimeouts = new Set<ReturnType<typeof window.setTimeout>>();
 
   const scheduleRetry = (remaining: number) => {
     if (cancelled || remaining <= 1) {
