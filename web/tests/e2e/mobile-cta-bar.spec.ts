@@ -8,8 +8,15 @@ test.use({ ...devices['iPhone 12'] })
 test.describe('Mobile CTA Bar', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await page.waitForLoadState('domcontentloaded')
+    await page.waitForLoadState('load')
     await ensureMobile(page)
+    const bar = page.getByTestId('mobile-cta-bar')
+    await expect.poll(async () => {
+      return bar.evaluate((el) => {
+        const cs = getComputedStyle(el)
+        return `${cs.position}|${cs.backgroundColor}`
+      })
+    }).toBe('fixed|rgba(26, 31, 46, 0.95)')
   })
 
   test('renders on mobile view and shows only two primary buttons @smoke', async ({ page }) => {
@@ -143,13 +150,26 @@ test.describe('Mobile CTA Bar', () => {
     await expect(call).toHaveAttribute('href', `tel:${CONTACT_INFO.phoneE164}`)
   })
 
-  test('Get Quote scrolls to #contact and focuses first field', async ({ page }) => {
+  test('Get Quote scrolls to #contact, hides the sticky CTA, and preserves scroll position', async ({ page }) => {
     const getQuote = page.locator('[data-testid="mobile-cta-link"][data-action="get-quote"]')
+    const bar = page.getByTestId('mobile-cta-bar')
     await expect(getQuote).toBeVisible()
     await getQuote.click()
     const nameInput = page.locator('#name')
-    await expect(nameInput).toBeFocused()
+    await expect.poll(async () => page.evaluate(() => document.activeElement?.id ?? '')).toBe('name')
     await expect(page).toHaveURL(/#contact$/)
+
+    await expect(bar).toBeHidden()
+
+    const scrollWhileFocused = await page.evaluate(() => window.scrollY)
+    await page.evaluate(() => {
+      ;(document.activeElement as HTMLElement | null)?.blur?.()
+    })
+
+    await expect(bar).toBeVisible()
+
+    const scrollAfterBlur = await page.evaluate(() => window.scrollY)
+    expect(Math.abs(scrollAfterBlur - scrollWhileFocused)).toBeLessThanOrEqual(8)
   })
 
   test('buttons are at least 44px tall', async ({ page }) => {
