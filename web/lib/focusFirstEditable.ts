@@ -32,14 +32,14 @@ export function focusFirstEditable(
   attempts = 6
 ): () => void {
   let cancelled = false;
-  const pendingTimeouts = new Set<ReturnType<typeof window.setTimeout>>();
+  const pendingTimeouts = new Set<ReturnType<typeof setTimeout>>();
 
   const scheduleRetry = (remaining: number) => {
     if (cancelled || remaining <= 1) {
       return;
     }
 
-    const retryTimeout = window.setTimeout(() => {
+    const retryTimeout = setTimeout(() => {
       pendingTimeouts.delete(retryTimeout);
       tryFocus(remaining - 1);
     }, 50);
@@ -66,7 +66,7 @@ export function focusFirstEditable(
     scheduleRetry(remaining);
   };
 
-  const initialTimeout = window.setTimeout(() => {
+  const initialTimeout = setTimeout(() => {
     pendingTimeouts.delete(initialTimeout);
     tryFocus(attempts);
   }, delayMs);
@@ -75,7 +75,7 @@ export function focusFirstEditable(
   return () => {
     cancelled = true;
     for (const timeoutId of pendingTimeouts) {
-      window.clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
     }
     pendingTimeouts.clear();
   };
