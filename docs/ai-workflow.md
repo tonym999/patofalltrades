@@ -90,7 +90,8 @@ If `pnpm` prompts Corepack to download a version unexpectedly, confirm the activ
 ## Testing — CI Specifics
 
 - Run locally: `pnpm run test:e2e:smoke` (from `web/`)
-- CI: cache Playwright browsers and run `pnpm exec playwright install --with-deps && pnpm run test:e2e:smoke`
+- Run the cross-device accessibility baseline locally when accessibility-critical UI changes: `pnpm run test:e2e:a11y` (from `web/`)
+- CI: cache Playwright browsers and run `pnpm exec playwright install --with-deps && pnpm run test:e2e:smoke && pnpm run test:e2e:a11y`
 - Optionally capture navigation timing metrics for performance monitoring when meaningful.
 
 ## CodeRabbit Review Integration
