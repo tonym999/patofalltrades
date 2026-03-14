@@ -10,7 +10,7 @@ export default function About() {
         <div className="flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
             <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl">
-              <Image src="/skilled-handman.png" alt="Craftsman" fill priority sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+              <Image src="/skilled-handman.png" alt="Craftsman" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
           </div>
           <div className="md:w-1/2">
@@ -31,5 +31,4 @@ export default function About() {
     </section>
   );
 }
-
 

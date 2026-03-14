@@ -37,18 +37,15 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
     <section ref={heroRef} className="relative min-h-screen supports-[height:100dvh]:min-h-[100dvh] overflow-hidden">
       {/* Background with parallax */}
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0 pointer-events-none">
-        {/* Responsive hero image - Next.js generates optimized srcset for each breakpoint */}
-        <div className="absolute inset-0">
-          <Image
-            src="/hero.png"
-            alt="Handyman hero background"
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
-            priority
-            quality={85}
-            className="object-cover object-center"
-          />
-        </div>
+        <Image
+          src="/hero.avif"
+          alt="Handyman hero background"
+          fill
+          sizes="(max-width: 768px) 100vw, 1440px"
+          priority
+          quality={85}
+          className="object-cover object-center"
+        />
         <div
           className="absolute inset-0 bg-[#1a1f2e]/80"
           aria-hidden="true"

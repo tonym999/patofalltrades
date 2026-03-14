@@ -58,7 +58,6 @@ export default function Header() {
               width={180}
               height={37}
               className="hidden md:block"
-              priority
             />
             <Image
               src="/brand/pat-logo-compact-light.svg"
@@ -66,7 +65,6 @@ export default function Header() {
               width={100}
               height={33}
               className="md:hidden"
-              priority
             />
           </Link>
 
