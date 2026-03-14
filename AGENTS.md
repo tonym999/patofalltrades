@@ -103,8 +103,10 @@ PRs are reviewed by CodeRabbit. After a review is posted:
 
 - If automation or network steps fail, retry up to 2 times with exponential backoff.
 - If still failing, surface the blocker with context rather than silently continuing.
+- When a failure reveals a repo-specific surprise, environment quirk, or misleading tool behaviour, document it in [`docs/ai-workflow.md`](docs/ai-workflow.md) before considering the work complete so future agents do not rediscover it the hard way.
 
 ## Documentation
 
 - Update `docs/ai-workflow.md` when workflow or operational expectations change.
 - Reconcile new instructions with this file rather than duplicating across multiple config files.
+- Treat unexpected-but-important findings as documentation work, not tribal knowledge. Add a short note covering what happened, how to detect it quickly, and the preferred workaround.

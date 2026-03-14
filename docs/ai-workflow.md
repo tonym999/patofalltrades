@@ -150,6 +150,38 @@ The GraphQL example above is intentionally bounded to the first 100 review threa
 - If Playwright browsers are missing: `pnpm exec playwright install` (add `--with-deps` on Linux/CI).
 - Retry transient network steps before escalating.
 
+### GitHub CLI in sandboxed sessions
+
+Some Codex or agent sessions can reach GitHub inconsistently depending on sandbox/network restrictions. A confusing but observed failure mode is:
+
+- `gh auth status` reports invalid or stale credentials
+- read-only commands such as `gh api user` or `gh project view 2 --owner tonym999` still succeed
+- write or mutating commands such as `gh issue create` fail with `error connecting to api.github.com`
+
+In practice, this can mean the blocker is sandboxed network access rather than expired GitHub auth.
+
+Use this quick check sequence before assuming credentials are broken:
+
+```bash
+gh auth status
+gh api user
+gh project view 2 --owner tonym999
+```
+
+Interpret the results like this:
+
+- If `gh api user` and `gh project view` succeed, GitHub CLI access is at least partially working even if `gh auth status` looks unhealthy.
+- If a mutating command fails with `error connecting to api.github.com`, treat it as a likely sandbox/network restriction first.
+- Retry up to 2 times with exponential backoff as required by repo policy before escalating.
+
+Preferred handling for agents:
+
+1. Try the `gh` command in the sandbox first.
+2. If it fails with a likely network/sandbox error, retry up to 2 times.
+3. If it still fails, rerun the required command outside the sandbox with explicit approval rather than assuming the user must re-authenticate.
+
+There is no guaranteed sandbox-safe way to always access `gh` for every operation. Reads may work while writes fail, and behavior can vary by session. Treat sandbox access as opportunistic, verify with a real `gh api` call, and escalate when the task depends on GitHub network access.
+
 ## Security & Secrets
 
 - Store GITHUB_TOKEN via GitHub CLI (`gh auth login`) or repo/org secrets; never commit tokens.
