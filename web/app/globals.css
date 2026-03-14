@@ -242,6 +242,35 @@ body {
   outline-offset: 4px;
 }
 
+.interactive-focus-ring {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-duration: var(--motion-duration-base-active);
+  transition-timing-function: var(--motion-ease-standard-active);
+}
+
+.interactive-focus-ring:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow:
+    0 0 0 2px rgba(15, 23, 42, 0.96),
+    0 0 0 4px var(--ring-strong);
+}
+
+.interactive-focus-ring-soft:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow:
+    0 0 0 2px rgba(15, 23, 42, 0.96),
+    0 0 0 4px var(--ring-soft);
+}
+
+@media (forced-colors: active) {
+  .interactive-focus-ring:focus-visible,
+  .interactive-focus-ring-soft:focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
 /* Ensure content is not obscured by fixed bottom bars on small screens */
 @media (max-width: 767px) {
   main {
@@ -295,6 +324,10 @@ body {
   transform: scale(1.05);
 }
 
+.cta-btn:focus-visible {
+  transform: none;
+}
+
 .mobile-cta-surface {
   background-color: rgba(26, 31, 46, 0.95);
   border-top-color: rgba(255, 255, 255, 0.1);
@@ -342,6 +375,10 @@ body {
 .btn-secondary:hover {
   background: #D4AF37;
   color: #1a1f2e;
+}
+
+.whatsapp-widget:focus-visible {
+  transform: scale(1.05);
 }
 
 /* Sticky Nav Styling */

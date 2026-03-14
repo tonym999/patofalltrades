@@ -34,16 +34,16 @@ export default function ContactForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
           <div>
             <label htmlFor="name" className="block text-gray-300 mb-2">Name</label>
-            <input id="name" name="name" required type="text" placeholder="Your Name" autoComplete="name" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+            <input id="name" name="name" required type="text" placeholder="Your Name" autoComplete="name" className="interactive-focus-ring-soft w-full rounded-lg border border-gray-600 bg-light-navy/50 p-3 text-white placeholder:text-gray-400 focus:border-gold focus:outline-none transition" />
           </div>
           <div>
             <label htmlFor="email" className="block text-gray-300 mb-2">Email</label>
-            <input id="email" name="email" required type="email" placeholder="your@email.com" autoComplete="email" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+            <input id="email" name="email" required type="email" placeholder="your@email.com" autoComplete="email" className="interactive-focus-ring-soft w-full rounded-lg border border-gray-600 bg-light-navy/50 p-3 text-white placeholder:text-gray-400 focus:border-gold focus:outline-none transition" />
           </div>
         </div>
         <div className="mb-6">
           <label htmlFor="phone" className="block text-gray-300 mb-2">Phone (optional)</label>
-          <input id="phone" name="phone" type="tel" placeholder="Phone" autoComplete="tel" className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition" />
+          <input id="phone" name="phone" type="tel" placeholder="Phone" autoComplete="tel" className="interactive-focus-ring-soft w-full rounded-lg border border-gray-600 bg-light-navy/50 p-3 text-white placeholder:text-gray-400 focus:border-gold focus:outline-none transition" />
         </div>
         <label htmlFor="message" className="block text-gray-300 mb-2">Message</label>
         <p id="message-help" className="sr-only">Tell us about your project, timeline, and any specifics you&#39;d like us to consider. Maximum 5000 characters.</p>
@@ -58,13 +58,13 @@ export default function ContactForm() {
           spellCheck={true}
           autoCorrect="on"
           autoCapitalize="sentences"
-          className="w-full bg-light-navy/50 p-3 rounded-lg border border-gray-600 mb-6 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold transition"
+          className="interactive-focus-ring-soft mb-6 w-full rounded-lg border border-gray-600 bg-light-navy/50 p-3 text-white placeholder:text-gray-400 focus:border-gold focus:outline-none transition"
         ></textarea>
         <button
           type="submit"
           disabled={status === "submitting"}
           aria-disabled={status === "submitting"}
-          className="cta-btn w-full text-dark-navy font-bold py-4 px-8 rounded-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="interactive-focus-ring cta-btn w-full rounded-lg px-8 py-4 text-lg font-bold text-dark-navy disabled:cursor-not-allowed disabled:opacity-50"
         >
           {status === "submitting" ? "Sending..." : "Send Message"}
         </button>
@@ -74,5 +74,4 @@ export default function ContactForm() {
     </div>
   );
 }
-
 

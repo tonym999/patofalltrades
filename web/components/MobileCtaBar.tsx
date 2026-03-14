@@ -116,9 +116,9 @@ export default function MobileCtaBar() {
   }, []);
 
   const secondaryCtaClassName =
-    "group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors motion-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]";
+    "interactive-focus-ring-soft group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border px-3 text-sm font-semibold transition-colors motion-standard";
 
-  const neutralCtaClassName = `${secondaryCtaClassName} mobile-cta-neutral focus-visible:ring-[var(--ring-soft)]`;
+  const neutralCtaClassName = `${secondaryCtaClassName} mobile-cta-neutral`;
 
   return (
     <nav
@@ -158,7 +158,7 @@ export default function MobileCtaBar() {
           <Link
             href="/#contact"
             onClick={handleGetQuote}
-            className="cta-btn motion-emphasis group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--gold)_50%,transparent)] bg-[var(--gold)] px-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] hover:bg-[var(--gold-hover)]"
+            className="interactive-focus-ring cta-btn motion-emphasis group inline-flex h-12 min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--gold)_50%,transparent)] bg-[var(--gold)] px-3 text-sm font-semibold text-[hsl(var(--primary-foreground))] hover:bg-[var(--gold-hover)]"
             data-testid="mobile-cta-link"
             data-action="get-quote"
           >

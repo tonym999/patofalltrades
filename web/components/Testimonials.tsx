@@ -237,7 +237,7 @@ export default function Testimonials() {
               type="button"
               id={getTabId(index)}
               onClick={() => goTo(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-[var(--motion-duration-base-active)] ease-[var(--motion-ease-standard-active)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 cursor-pointer ${
+              className={`interactive-focus-ring-soft w-3 h-3 rounded-full transition-all duration-[var(--motion-duration-base-active)] ease-[var(--motion-ease-standard-active)] cursor-pointer ${
                 index === currentIndex ? "bg-amber-400 scale-110" : "bg-gray-600 hover:bg-gray-500"
               }`}
               aria-label={`Show testimonial ${index + 1}: ${t.name} from ${t.area}`}

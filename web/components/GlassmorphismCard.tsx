@@ -59,7 +59,7 @@ export const GlassmorphismCard = forwardRef<HTMLDivElement, GlassmorphismCardPro
             }
           : {}
       }
-      className={`group relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 rounded-xl ${motionReduceUtilities} ${outerClassName}`}
+      className={`interactive-focus-ring group relative rounded-xl ${motionReduceUtilities} ${outerClassName}`}
       tabIndex={tabIndex}
       {...rest}
     >
