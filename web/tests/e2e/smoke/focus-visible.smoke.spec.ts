@@ -6,9 +6,10 @@ async function expectVisibleFocusIndicator(locator: Locator, label: string) {
     const outlineWidth = Number.parseFloat(styles.outlineWidth || '0')
     const hasOutline = Number.isFinite(outlineWidth) && outlineWidth > 0 && styles.outlineStyle !== 'none'
     const boxShadow = (styles.boxShadow || '').trim().toLowerCase()
+    const hasRingLikeShadow = /(^|,)\s*0(?:px)?\s+0(?:px)?\s+0(?:px)?\s+[1-9]\d*(?:\.\d+)?px\b/.test(boxShadow)
     return {
       hasOutline,
-      hasShadow: boxShadow !== '' && boxShadow !== 'none',
+      hasShadow: hasRingLikeShadow,
     }
   })
 
