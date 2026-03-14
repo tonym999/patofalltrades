@@ -1,15 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { CORE_A11Y_SCOPES } from '../utils/a11y-scopes'
 import { expectNoSeriousViolations, prepareReducedMotionPage } from '../utils/a11y'
-
-const DESKTOP_SCOPES = [
-  { name: 'Header', selector: 'header' },
-  { name: 'Main content', selector: 'main#main-content' },
-  { name: 'Services', selector: '#services' },
-  { name: 'Portfolio', selector: '#portfolio' },
-  { name: 'Testimonials', selector: '#testimonials' },
-  { name: 'Footer', selector: 'footer' },
-] as const
 
 test.describe('A11y baseline - desktop', () => {
   test.use({
@@ -23,7 +15,7 @@ test.describe('A11y baseline - desktop', () => {
     await prepareReducedMotionPage(page)
     await expect(page).toHaveURL(/\/$/)
 
-    for (const scope of DESKTOP_SCOPES) {
+    for (const scope of CORE_A11Y_SCOPES) {
       await test.step(`axe scan: ${scope.name}`, async () => {
         await expectNoSeriousViolations(page, scope.selector, scope.name)
       })

@@ -1,14 +1,10 @@
 import { devices, expect, test } from '@playwright/test'
 
+import { CORE_A11Y_SCOPES } from '../utils/a11y-scopes'
 import { expectNoSeriousViolations, prepareReducedMotionPage } from '../utils/a11y'
 
 const MOBILE_SCOPES = [
-  { name: 'Header', selector: 'header' },
-  { name: 'Main content', selector: 'main#main-content' },
-  { name: 'Services', selector: '#services' },
-  { name: 'Portfolio', selector: '#portfolio' },
-  { name: 'Testimonials', selector: '#testimonials' },
-  { name: 'Footer', selector: 'footer' },
+  ...CORE_A11Y_SCOPES,
   { name: 'Mobile CTA bar', selector: '[data-testid="mobile-cta-bar"]' },
 ] as const
 
