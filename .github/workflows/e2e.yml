@@ -37,7 +37,7 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Start server, wait, and run smoke tests
+      - name: Start server, wait, and run smoke plus a11y tests
         shell: bash
         run: |
           set -euo pipefail
@@ -56,6 +56,7 @@ jobs:
           curl -sf http://localhost:3000 >/dev/null
 
           pnpm run test:e2e:smoke
+          pnpm run test:e2e:a11y
 
       - name: Upload Playwright report on failure
         if: failure()
