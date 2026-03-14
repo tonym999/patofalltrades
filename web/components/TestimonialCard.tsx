@@ -37,7 +37,7 @@ export function TestimonialCard({
   className = "",
   readMore = false,
 }: TestimonialCardProps) {
-  const baseClass = `h-full flex flex-col rounded-2xl border border-slate-200/20 dark:border-slate-700/60 bg-slate-900/20 dark:bg-slate-900/30 shadow-sm hover:shadow-md hover:-translate-y-[2px] antialiased motion-safe:transition-shadow motion-safe:transition-transform motion-reduce:transform-none duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-amber-400/60 focus-visible:ring-offset-slate-900 ${className}`;
+  const baseClass = `interactive-focus-ring h-full flex flex-col rounded-2xl border border-slate-200/20 dark:border-slate-700/60 bg-slate-900/20 dark:bg-slate-900/30 shadow-sm hover:shadow-md hover:-translate-y-[2px] antialiased motion-safe:transition-shadow motion-safe:transition-transform motion-reduce:transform-none duration-200 ${className}`;
 
   const content = (
       <div className="p-5 sm:p-6 md:p-8 flex flex-col gap-4">

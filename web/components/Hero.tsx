@@ -24,7 +24,7 @@ export default function Hero() {
         <div className="flex justify-center">
           <Link
             href="#portfolio"
-            className="btn-secondary motion-standard py-3 sm:py-4 px-6 sm:px-8 rounded-lg font-bold transition-all"
+            className="interactive-focus-ring btn-secondary motion-standard px-6 py-3 font-bold transition-all sm:px-8 sm:py-4 rounded-lg"
           >
             View Portfolio
           </Link>

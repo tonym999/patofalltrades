@@ -148,6 +148,7 @@ The GraphQL example above is intentionally bounded to the first 100 review threa
 
 - Ensure GitHub authentication is configured (`gh auth status`).
 - If Playwright browsers are missing: `pnpm exec playwright install` (add `--with-deps` on Linux/CI).
+- In sandboxed Linux agent sessions, `page.accessibility.snapshot()` can hard-crash headless Chromium even when normal Playwright and Axe scans succeed. Prefer Axe-based assertions or DOM-level checks for CI-stable accessibility coverage unless you have confirmed the snapshot call is safe in the current environment.
 - Retry transient network steps before escalating.
 
 ### GitHub CLI in sandboxed sessions

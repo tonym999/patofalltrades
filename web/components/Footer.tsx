@@ -2,7 +2,7 @@ import { Mail, MessageCircle, Phone } from "lucide-react";
 import { CONTACT_INFO, whatsappHref } from "@/config/contact";
 
 const footerLinkClassName =
-  "group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition-colors motion-standard hover:border-[color:var(--gold)] hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-strong)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e]";
+  "interactive-focus-ring group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition-colors motion-standard hover:border-[color:var(--gold)] hover:bg-white/[0.08]";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

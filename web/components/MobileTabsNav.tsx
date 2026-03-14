@@ -19,6 +19,15 @@ import { focusFirstEditable } from "@/lib/focusFirstEditable";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 import type { OpenMobileMenuDetail } from "@/lib/mobileMenuEvents";
 
+const drawerActionClassName =
+  "interactive-focus-ring rounded transition-colors motion-standard";
+
+const drawerLinkClassName =
+  "interactive-focus-ring flex min-h-[44px] items-center rounded py-3 text-[#d1d5db] transition-colors motion-standard hover:text-[#D4AF37]";
+
+const drawerContactLinkClassName =
+  "interactive-focus-ring inline-flex min-h-[44px] items-center gap-2 rounded py-3 text-[#d1d5db] transition-colors motion-standard hover:text-[#D4AF37]";
+
 export default function MobileTabsNav() {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   // Ref to the element that opened the menu (for focus return)
@@ -209,7 +218,7 @@ export default function MobileTabsNav() {
                 <button
                   type="button"
                   onClick={() => closeMenu("close_button")}
-                  className="transition-colors motion-standard text-[#9ca3af] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
+                  className={`${drawerActionClassName} text-[#9ca3af] hover:text-white`}
                   aria-label="Close menu"
                 >
                   <XIcon size={20} aria-hidden="true" />
@@ -217,22 +226,22 @@ export default function MobileTabsNav() {
               </div>
 
               <div className="grid grid-cols-1 divide-y divide-white/10">
-                <Link href="/#services" onClick={() => handleMenuItemClick("Services")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#services" onClick={() => handleMenuItemClick("Services")} className={drawerLinkClassName}>
                   Services
                 </Link>
-                <Link href="/#portfolio" onClick={() => handleMenuItemClick("Work")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#portfolio" onClick={() => handleMenuItemClick("Work")} className={drawerLinkClassName}>
                   Work
                 </Link>
-                <Link href="/#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#service-area" onClick={() => handleMenuItemClick("Areas We Serve")} className={drawerLinkClassName}>
                   Areas We Serve
                 </Link>
-                <Link href="/#about" onClick={() => handleMenuItemClick("About")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#about" onClick={() => handleMenuItemClick("About")} className={drawerLinkClassName}>
                   About
                 </Link>
-                <Link href="/#testimonials" onClick={() => handleMenuItemClick("Reviews")} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#testimonials" onClick={() => handleMenuItemClick("Reviews")} className={drawerLinkClassName}>
                   Reviews
                 </Link>
-                <Link href="/#contact" onClick={handleGetInTouchClick} className="transition-colors motion-standard py-3 min-h-[44px] flex items-center text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded">
+                <Link href="/#contact" onClick={handleGetInTouchClick} className={drawerLinkClassName}>
                   Get in Touch
                 </Link>
               </div>
@@ -244,7 +253,7 @@ export default function MobileTabsNav() {
                     href={whatsappHref()}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="transition-colors motion-standard py-3 min-h-[44px] inline-flex items-center gap-2 text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
+                    className={drawerContactLinkClassName}
                     aria-label="WhatsApp chat with Pat"
                   >
                     <WhatsAppIcon size={18} aria-hidden="true" />
@@ -252,7 +261,7 @@ export default function MobileTabsNav() {
                   </a>
                   <a
                     href={`mailto:${CONTACT_INFO.email}`}
-                    className="transition-colors motion-standard py-3 min-h-[44px] inline-flex items-center gap-2 text-[#d1d5db] hover:text-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1f2e] rounded"
+                    className={drawerContactLinkClassName}
                     aria-label="Email Pat"
                   >
                     <MailIcon size={18} aria-hidden="true" />

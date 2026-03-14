@@ -6,6 +6,12 @@ import type React from "react";
 import { Menu as MenuIcon } from "lucide-react";
 import { OPEN_MOBILE_MENU, MOBILE_MENU_STATE } from "@/lib/mobileMenuEvents";
 
+const headerNavLinkClassName =
+  "interactive-focus-ring group relative rounded-md px-2 py-1 -mx-2 -my-1 text-body hover:text-[color:var(--gold)]";
+
+const headerActionClassName =
+  "interactive-focus-ring motion-emphasis rounded-full bg-gradient-to-r from-[color:var(--gold)] to-[color:var(--gold-hover)] px-6 py-2 font-semibold text-[color:var(--deep-navy)] hover:scale-105 hover:shadow-lg hover:shadow-[0_0_25px_color-mix(in_srgb,var(--gold)_50%,transparent)]";
+
 export default function Header() {
   // Sync header hamburger aria-expanded with bottom-sheet menu state
   useEffect(() => {
@@ -45,7 +51,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo / Brand */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="interactive-focus-ring flex items-center rounded-lg">
             <Image
               src="/brand/pat-logo-horizontal-light.svg"
               alt="Pat Of All Trades"
@@ -66,25 +72,25 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8" aria-label="Primary">
-            <Link href="/#services" className="group relative text-body hover:text-[color:var(--gold)] transition-colors motion-standard">
+            <Link href="/#services" className={`${headerNavLinkClassName} transition-colors motion-standard`}>
               Services
               <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all motion-standard group-hover:w-full" />
             </Link>
-            <Link href="/#portfolio" className="group relative text-body hover:text-[color:var(--gold)] transition-colors motion-standard">
+            <Link href="/#portfolio" className={`${headerNavLinkClassName} transition-colors motion-standard`}>
               Portfolio
               <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all motion-standard group-hover:w-full" />
             </Link>
-            <Link href="/#about" className="group relative text-body hover:text-[color:var(--gold)] transition-colors motion-standard">
+            <Link href="/#about" className={`${headerNavLinkClassName} transition-colors motion-standard`}>
               About
               <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all motion-standard group-hover:w-full" />
             </Link>
-            <Link href="/#testimonials" className="group relative text-body hover:text-[color:var(--gold)] transition-colors motion-standard">
+            <Link href="/#testimonials" className={`${headerNavLinkClassName} transition-colors motion-standard`}>
               Testimonials
               <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-[color:var(--gold)] transition-all motion-standard group-hover:w-full" />
             </Link>
             <Link
               href="/#contact"
-              className="motion-emphasis bg-gradient-to-r from-[color:var(--gold)] to-[color:var(--gold-hover)] text-[color:var(--deep-navy)] font-semibold px-6 py-2 rounded-full hover:shadow-lg hover:shadow-[0_0_25px_color-mix(in_srgb,var(--gold)_50%,transparent)] hover:scale-105 transition-all"
+              className={`${headerActionClassName} transition-all`}
             >
               Get a Quote
             </Link>
@@ -97,7 +103,7 @@ export default function Header() {
             aria-controls="mobile-menu-panel"
             aria-expanded="false"
             aria-haspopup="dialog"
-            className="md:hidden w-6 h-6 flex items-center justify-center text-white"
+            className="interactive-focus-ring md:hidden flex h-10 w-10 items-center justify-center rounded-full text-white"
             onClick={openMobileMenu}
             data-testid="header-hamburger"
             data-menu-trigger="mobile-menu"

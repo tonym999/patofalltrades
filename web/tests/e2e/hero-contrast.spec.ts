@@ -2,46 +2,6 @@ import { expect, test } from '@playwright/test'
 
 const MIN_CONTRAST = 4.5
 
-type AccessibilityNode = {
-  role?: string
-  name?: string
-  description?: string
-  children?: AccessibilityNode[]
-  [key: string]: unknown
-}
-
-const isDevtoolsButtonNode = (node: AccessibilityNode) =>
-  node.role === 'button' && node.name === 'Open Next.js Dev Tools'
-
-const normalizeAccessibilityTree = (node: AccessibilityNode | null): AccessibilityNode | null => {
-  if (!node || isDevtoolsButtonNode(node)) return null
-
-  const hasDevtoolsButtonSibling = node.children?.some((child) => isDevtoolsButtonNode(child)) ?? false
-  const normalizedName = node.name
-    ?.replace(
-      /© \d{4} Pat Of All Trades\. All Rights Reserved\./,
-      '© YYYY Pat Of All Trades. All Rights Reserved.',
-    )
-    .replace(/^\d{4}$/, 'YYYY')
-  const normalizedChildren = node.children
-    ?.filter((child) => {
-      const isInjectedDevtoolsAlert =
-        hasDevtoolsButtonSibling &&
-        child.role === 'alert' &&
-        !child.name &&
-        !child.description &&
-        (!child.children || child.children.length === 0)
-
-      return !isInjectedDevtoolsAlert
-    })
-    .map((child) => normalizeAccessibilityTree(child))
-    .filter((child): child is AccessibilityNode => child !== null)
-
-  const normalizedNode = normalizedName ? { ...node, name: normalizedName } : { ...node }
-
-  return normalizedChildren ? { ...normalizedNode, children: normalizedChildren } : normalizedNode
-}
-
 test.describe('Hero contrast @smoke', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
@@ -58,12 +18,11 @@ test.describe('Hero contrast @smoke', () => {
     await expect(heroHeading).toBeVisible()
     await expect(heroSubtitle).toBeVisible()
 
-    const accessibilityTree = normalizeAccessibilityTree(await page.accessibility.snapshot())
-    const accessibilitySnapshot = `${JSON.stringify(accessibilityTree, null, 2)}\n`
-    expect(accessibilitySnapshot).toMatchSnapshot('hero-accessibility.json')
-
-    const contrastOf = async (locator: import('@playwright/test').Locator) => {
-      return locator.evaluate(element => {
+    const minimumContrastOf = async (
+      locator: import('@playwright/test').Locator,
+      options: { columns?: number; rows?: number } = {},
+    ) => {
+      return locator.evaluate((element, sampleOptions) => {
         const toLinear = (channel: number): number => {
           const normalized = channel / 255
           return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4)
@@ -85,12 +44,12 @@ test.describe('Hero contrast @smoke', () => {
         }
 
         const clamp01 = (value: number): number => Math.min(0.999999, Math.max(0, value))
+        const sampleCount = {
+          columns: Math.max(sampleOptions?.columns ?? 1, 1),
+          rows: Math.max(sampleOptions?.rows ?? 1, 1),
+        }
 
         const textRgb = parseCssColor(getComputedStyle(element).color)
-
-        const rect = element.getBoundingClientRect()
-        const sampleX = rect.left + rect.width / 2
-        const sampleY = rect.top + rect.height / 2
 
         const heroImage = document.querySelector('img[alt="Handyman hero background"]') as HTMLImageElement | null
         if (!heroImage || !heroImage.naturalWidth || !heroImage.naturalHeight) {
@@ -102,15 +61,6 @@ test.describe('Hero contrast @smoke', () => {
           throw new Error('Hero image has zero-sized client rect')
         }
 
-        const scale = Math.max(imageRect.width / heroImage.naturalWidth, imageRect.height / heroImage.naturalHeight)
-        const displayedWidth = heroImage.naturalWidth * scale
-        const displayedHeight = heroImage.naturalHeight * scale
-        const offsetX = (displayedWidth - imageRect.width) / 2
-        const offsetY = (displayedHeight - imageRect.height) / 2
-
-        const normalizedX = clamp01((sampleX - imageRect.left + offsetX) / displayedWidth)
-        const normalizedY = clamp01((sampleY - imageRect.top + offsetY) / displayedHeight)
-
         const canvas = document.createElement('canvas')
         canvas.width = heroImage.naturalWidth
         canvas.height = heroImage.naturalHeight
@@ -118,39 +68,83 @@ test.describe('Hero contrast @smoke', () => {
         const computedFilter = getComputedStyle(heroImage).filter
         ctx.filter = computedFilter && computedFilter !== 'none' ? computedFilter : 'none'
         ctx.drawImage(heroImage, 0, 0, heroImage.naturalWidth, heroImage.naturalHeight)
-        const pixel = ctx.getImageData(
-          Math.round(normalizedX * (heroImage.naturalWidth - 1)),
-          Math.round(normalizedY * (heroImage.naturalHeight - 1)),
-          1,
-          1,
-        ).data
 
-        let backgroundRgb: [number, number, number] = [pixel[0], pixel[1], pixel[2]]
+        const scale = Math.max(imageRect.width / heroImage.naturalWidth, imageRect.height / heroImage.naturalHeight)
+        const displayedWidth = heroImage.naturalWidth * scale
+        const displayedHeight = heroImage.naturalHeight * scale
+        const offsetX = (displayedWidth - imageRect.width) / 2
+        const offsetY = (displayedHeight - imageRect.height) / 2
 
         const overlay = document.querySelector('[data-testid="hero-overlay"]') as HTMLElement | null
-        if (overlay) {
-          const [or, og, ob, oa] = parseCssColor(getComputedStyle(overlay).backgroundColor)
-          const alpha = clamp01(oa)
-          backgroundRgb = [
-            or * alpha + backgroundRgb[0] * (1 - alpha),
-            og * alpha + backgroundRgb[1] * (1 - alpha),
-            ob * alpha + backgroundRgb[2] * (1 - alpha),
-          ]
+        const overlayColor = overlay ? parseCssColor(getComputedStyle(overlay).backgroundColor) : null
+
+        const backgroundContrastAt = (sampleX: number, sampleY: number): number => {
+          const normalizedX = clamp01((sampleX - imageRect.left + offsetX) / displayedWidth)
+          const normalizedY = clamp01((sampleY - imageRect.top + offsetY) / displayedHeight)
+          const pixel = ctx.getImageData(
+            Math.round(normalizedX * (heroImage.naturalWidth - 1)),
+            Math.round(normalizedY * (heroImage.naturalHeight - 1)),
+            1,
+            1,
+          ).data
+
+          let backgroundRgb: [number, number, number] = [pixel[0], pixel[1], pixel[2]]
+
+          if (overlayColor) {
+            const [or, og, ob, oa] = overlayColor
+            const alpha = clamp01(oa)
+            backgroundRgb = [
+              or * alpha + backgroundRgb[0] * (1 - alpha),
+              og * alpha + backgroundRgb[1] * (1 - alpha),
+              ob * alpha + backgroundRgb[2] * (1 - alpha),
+            ]
+          }
+
+          const textLuminance = luminance(textRgb[0], textRgb[1], textRgb[2])
+          const backgroundLuminance = luminance(backgroundRgb[0], backgroundRgb[1], backgroundRgb[2])
+
+          const lighter = Math.max(textLuminance, backgroundLuminance)
+          const darker = Math.min(textLuminance, backgroundLuminance)
+          return Number(((lighter + 0.05) / (darker + 0.05)).toFixed(2))
         }
 
-        const textLuminance = luminance(textRgb[0], textRgb[1], textRgb[2])
-        const backgroundLuminance = luminance(backgroundRgb[0], backgroundRgb[1], backgroundRgb[2])
+        const rect = element.getBoundingClientRect()
+        const insetX = rect.width * 0.15
+        const insetY = rect.height * 0.2
+        const minX = rect.left + insetX
+        const maxX = rect.right - insetX
+        const minY = rect.top + insetY
+        const maxY = rect.bottom - insetY
+        const contrasts: number[] = []
 
-        const lighter = Math.max(textLuminance, backgroundLuminance)
-        const darker = Math.min(textLuminance, backgroundLuminance)
-        return Number(((lighter + 0.05) / (darker + 0.05)).toFixed(2))
-      })
+        for (let row = 0; row < sampleCount.rows; row += 1) {
+          const yProgress = sampleCount.rows === 1 ? 0.5 : row / (sampleCount.rows - 1)
+          const sampleY = minY + (maxY - minY) * yProgress
+
+          for (let column = 0; column < sampleCount.columns; column += 1) {
+            const xProgress = sampleCount.columns === 1 ? 0.5 : column / (sampleCount.columns - 1)
+            const sampleX = minX + (maxX - minX) * xProgress
+            contrasts.push(backgroundContrastAt(sampleX, sampleY))
+          }
+        }
+
+        if (!contrasts.length) {
+          throw new Error('Unable to calculate hero contrast samples')
+        }
+
+        return {
+          minimumContrast: Math.min(...contrasts),
+          sampleCount: contrasts.length,
+        }
+      }, options)
     }
 
-    const headingContrast = await contrastOf(heroHeading)
-    expect(headingContrast).toBeGreaterThanOrEqual(MIN_CONTRAST)
+    const headingContrast = await minimumContrastOf(heroHeading, { columns: 5, rows: 3 })
+    expect(headingContrast.minimumContrast).toBeGreaterThanOrEqual(MIN_CONTRAST)
+    expect(headingContrast.sampleCount).toBe(15)
 
-    const subtitleContrast = await contrastOf(heroSubtitle)
-    expect(subtitleContrast).toBeGreaterThanOrEqual(MIN_CONTRAST)
+    const subtitleContrast = await minimumContrastOf(heroSubtitle, { columns: 5, rows: 3 })
+    expect(subtitleContrast.minimumContrast).toBeGreaterThanOrEqual(MIN_CONTRAST)
+    expect(subtitleContrast.sampleCount).toBe(15)
   })
 })
