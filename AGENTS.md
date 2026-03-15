@@ -13,7 +13,7 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 - Node version: root [`.nvmrc`](.nvmrc)
 - Hosting: Vercel (auto-deploys on merge to `main`)
 - Project board: [GitHub Projects v2](https://github.com/users/tonym999/projects/2) (`tonym999`, project `2`)
-- AI skills: `.cursor/skills/` — frontend-ui, accessibility-audit, design-review, playwright
+- AI skills: `.cursor/skills/` — repo-bootstrap, frontend-ui, accessibility-audit, design-review, playwright
 
 ## Workflow
 
@@ -45,6 +45,7 @@ When creating issues or PRs, use the GitHub templates under `.github/` so linked
 - Run package-manager commands from [`web/`](web/) so Corepack sees the version pinned by the `packageManager` field in [`web/package.json`](web/package.json).
 - A fresh machine or cache may still require Corepack to prepare that pinned version once before offline agent sessions can use it.
 - After changing [`.codex/environments/environment.toml`](.codex/environments/environment.toml), restart Codex and verify a fresh session resolves `node` and `pnpm` before treating the fix as complete.
+- For repo-specific setup, verification, or troubleshooting steps in fresh shells and agent sessions, use [`.cursor/skills/repo-bootstrap/SKILL.md`](.cursor/skills/repo-bootstrap/SKILL.md).
 
 ## Commit Standards
 
