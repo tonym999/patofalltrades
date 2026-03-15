@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test'
-
-const HERO_IMAGE_ALT = 'Sunrise over the London skyline for local handyman services'
+import { HERO_IMAGE_ALT } from '../utils/a11y-text'
 
 test.describe('Smoke @smoke - Desktop hero CTA regression', () => {
   test('Hero keeps View Portfolio as lone primary CTA', async ({ page }) => {

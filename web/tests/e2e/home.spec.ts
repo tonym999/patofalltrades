@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test'
-
-const HERO_IMAGE_ALT = 'Sunrise over the London skyline for local handyman services'
+import { HERO_IMAGE_ALT } from './utils/a11y-text'
 
 test.describe('Home page', () => {
   test.beforeEach(async ({ page }) => {
@@ -20,4 +19,3 @@ test.describe('Home page', () => {
     expect(allHidden).toBe(true)
   })
 })
-

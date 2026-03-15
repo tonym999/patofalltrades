@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
+import { HERO_IMAGE_ALT } from './utils/a11y-text'
 
 const MIN_CONTRAST = 4.5
-const HERO_IMAGE_ALT = 'Sunrise over the London skyline for local handyman services'
 
 test.describe('Hero contrast @smoke', () => {
   test.beforeEach(async ({ page }) => {

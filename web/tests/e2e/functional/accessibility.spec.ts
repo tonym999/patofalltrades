@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { test, expect, devices } from '@playwright/test'
+import { HERO_IMAGE_ALT } from '../utils/a11y-text'
 
 test.describe('Accessibility focus management', () => {
   test('homepage heading outline keeps one h1 and does not skip levels', async ({ page }) => {
@@ -47,11 +48,17 @@ test.describe('Accessibility focus management', () => {
     await page.goto('/')
     await page.waitForLoadState('domcontentloaded')
 
-    await expect(page.getByRole('img', { name: /sunrise over the london skyline for local handyman services/i })).toBeVisible()
-    await expect(page.getByRole('img', { name: /bedroom refurbishment in southwark, before work begins/i })).toBeVisible()
-    await expect(page.getByRole('img', { name: /bedroom refurbishment in southwark, after completion/i })).toBeVisible()
-    await expect(page.getByRole('img', { name: /staircase refurbishment in colindale, before work begins/i })).toBeVisible()
-    await expect(page.getByRole('img', { name: /staircase refurbishment in colindale, after completion/i })).toBeVisible()
+    const expectedAltNames = [
+      HERO_IMAGE_ALT,
+      /bedroom refurbishment in southwark, before work begins/i,
+      /bedroom refurbishment in southwark, after completion/i,
+      /staircase refurbishment in colindale, before work begins/i,
+      /staircase refurbishment in colindale, after completion/i,
+    ] as const
+
+    for (const altName of expectedAltNames) {
+      await expect(page.getByRole('img', { name: altName })).toBeVisible()
+    }
   })
 
   test('skip link transfers focus to main content region', async ({ page }) => {
