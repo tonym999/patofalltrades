@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { test, expect, devices } from '@playwright/test'
+import { HERO_IMAGE_ALT } from '../utils/a11y-text'
 
 test.describe('Accessibility focus management', () => {
   test('homepage heading outline keeps one h1 and does not skip levels', async ({ page }) => {
@@ -26,18 +27,38 @@ test.describe('Accessibility focus management', () => {
       })
 
       return {
+        emptyHeadings: headings.filter((heading) => heading.text.length === 0),
         h1Count: headings.filter((heading) => heading.tagName === 'H1').length,
         sectionHeadings,
         skipped,
       }
     })
 
+    expect(outline.emptyHeadings).toEqual([])
     expect(outline.h1Count).toBe(1)
     expect(outline.sectionHeadings[0]).toBe('H1')
     expect(outline.sectionHeadings.slice(1)).toEqual(
       Array.from({ length: Math.max(outline.sectionHeadings.length - 1, 0) }, () => 'H2')
     )
     expect(outline.skipped).toEqual([])
+  })
+
+  test('homepage hero and portfolio images use descriptive alt text', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
+
+    const expectedAltNames = [
+      HERO_IMAGE_ALT,
+      /bedroom refurbishment in southwark, before work begins/i,
+      /bedroom refurbishment in southwark, after completion/i,
+      /staircase refurbishment in colindale, before work begins/i,
+      /staircase refurbishment in colindale, after completion/i,
+    ] as const
+
+    for (const altName of expectedAltNames) {
+      await expect(page.getByRole('img', { name: altName })).toBeVisible()
+    }
   })
 
   test('skip link transfers focus to main content region', async ({ page }) => {

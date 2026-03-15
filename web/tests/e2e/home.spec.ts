@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { HERO_IMAGE_ALT } from './utils/a11y-text'
 
 test.describe('Home page', () => {
   test.beforeEach(async ({ page }) => {
@@ -6,7 +7,7 @@ test.describe('Home page', () => {
   })
 
   test('hero renders and image is visible', async ({ page }) => {
-    const heroImg = page.getByRole('img', { name: 'Handyman hero background' })
+    const heroImg = page.getByRole('img', { name: HERO_IMAGE_ALT })
     await expect(heroImg).toBeVisible()
   })
 
@@ -18,5 +19,3 @@ test.describe('Home page', () => {
     expect(allHidden).toBe(true)
   })
 })
-
-

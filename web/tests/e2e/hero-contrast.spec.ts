@@ -1,14 +1,15 @@
 import { expect, test } from '@playwright/test'
+import { HERO_IMAGE_ALT } from './utils/a11y-text'
 
 const MIN_CONTRAST = 4.5
 
 test.describe('Hero contrast @smoke', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await page.waitForFunction(() => {
-      const img = document.querySelector('img[alt="Handyman hero background"]') as HTMLImageElement | null
+    await page.waitForFunction((heroImageAlt) => {
+      const img = document.querySelector(`img[alt="${heroImageAlt}"]`) as HTMLImageElement | null
       return Boolean(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0)
-    })
+    }, HERO_IMAGE_ALT)
   })
 
   test('hero heading and subtitle meet WCAG contrast', async ({ page }) => {
@@ -51,7 +52,7 @@ test.describe('Hero contrast @smoke', () => {
 
         const textRgb = parseCssColor(getComputedStyle(element).color)
 
-        const heroImage = document.querySelector('img[alt="Handyman hero background"]') as HTMLImageElement | null
+        const heroImage = document.querySelector(`img[alt="${sampleOptions.heroImageAlt}"]`) as HTMLImageElement | null
         if (!heroImage || !heroImage.naturalWidth || !heroImage.naturalHeight) {
           throw new Error('Hero image is not ready for sampling')
         }
@@ -136,7 +137,7 @@ test.describe('Hero contrast @smoke', () => {
           minimumContrast: Math.min(...contrasts),
           sampleCount: contrasts.length,
         }
-      }, options)
+      }, { ...options, heroImageAlt: HERO_IMAGE_ALT })
     }
 
     const headingContrast = await minimumContrastOf(heroHeading, { columns: 5, rows: 3 })

@@ -212,9 +212,9 @@ export default function MobileTabsNav() {
             >
               <Drawer.Handle className="mx-auto my-2 h-1.5 w-10 rounded-full bg-white/20" aria-hidden="true" />
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-white font-semibold">
+                <p className="text-white font-semibold">
                   Menu
-                </h2>
+                </p>
                 <button
                   type="button"
                   onClick={() => closeMenu("close_button")}
@@ -247,7 +247,7 @@ export default function MobileTabsNav() {
               </div>
 
               <div className="mt-3 pt-3 border-t border-white/10">
-                <h3 className="sr-only">Contact</h3>
+                <p className="sr-only">Contact</p>
                 <div className="grid grid-cols-1 gap-2">
                   <a
                     href={whatsappHref()}

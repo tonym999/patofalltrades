@@ -4,10 +4,40 @@ import Image from "next/image";
 
 type BeforeAfterPair = {
   title: string;
-  alt: string;
+  beforeAlt: string;
+  afterAlt: string;
   beforeSrc: string;
   afterSrc: string;
 };
+
+const categoryDescriptions: Record<string, string> = {
+  bedroom: "bedroom refurbishment",
+  stairs: "staircase refurbishment",
+};
+
+function fromSlug(slug: string): string {
+  return slug
+    .split(/[-\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function describeProject(category: string): string {
+  const description = categoryDescriptions[category] ?? `${category.replace(/-/g, " ")} project`;
+  return fromSlug(description);
+}
+
+function buildProjectTitle(category: string, location: string, pair: string): string {
+  const pairNumber = Number.parseInt(pair, 10);
+  const pairSuffix = Number.isNaN(pairNumber) || pairNumber <= 1 ? "" : ` (Set ${pairNumber})`;
+  return `${describeProject(category)} in ${fromSlug(location)}${pairSuffix}`;
+}
+
+function buildAltText(category: string, location: string, variant: "before" | "after"): string {
+  const stateDescription = variant === "before" ? "before work begins" : "after completion";
+  return `${describeProject(category)} in ${fromSlug(location)}, ${stateDescription}`;
+}
 
 const sourcePriority: Record<string, number> = {
   avif: 4,
@@ -38,7 +68,8 @@ async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
 
   type PairAccumulator = {
     title: string;
-    alt: string;
+    beforeAlt: string;
+    afterAlt: string;
     beforeSrc?: string;
     afterSrc?: string;
     beforePriority?: number;
@@ -67,8 +98,16 @@ async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
       const priority = sourcePriority[extension] ?? 0;
       const key = `${matchedCategory}-${location}-${pair}`;
       const webPath = `/portfolio/${category}/${file}`;
-      const title = `${matchedCategory.replace(/-/g, " ")}: ${location.replace(/-/g, " ")} #${pair}`;
-      if (!pairs[key]) pairs[key] = { title, alt: `${category} in ${location}`, category, location };
+      const title = buildProjectTitle(matchedCategory, location, pair);
+      if (!pairs[key]) {
+        pairs[key] = {
+          title,
+          beforeAlt: buildAltText(matchedCategory, location, "before"),
+          afterAlt: buildAltText(matchedCategory, location, "after"),
+          category,
+          location,
+        };
+      }
       if (variant.toLowerCase() === "before" && (pairs[key].beforePriority ?? -1) < priority) {
         pairs[key].beforeSrc = webPath;
         pairs[key].beforePriority = priority;
@@ -84,7 +123,8 @@ async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
     .filter(p => p.beforeSrc && p.afterSrc)
     .map(p => ({
       title: p.title as string,
-      alt: p.alt as string,
+      beforeAlt: p.beforeAlt as string,
+      afterAlt: p.afterAlt as string,
       beforeSrc: p.beforeSrc as string,
       afterSrc: p.afterSrc as string,
     }));
@@ -107,12 +147,12 @@ export default async function Portfolio() {
 
         {items.map((p, i) => (
           <div key={i} className="mb-20">
-            <h3 className="text-3xl font-semibold text-center text-white mb-8 tracking-tight capitalize">{p.title}</h3>
+            <h3 className="text-3xl font-semibold text-center text-white mb-8 tracking-tight">{p.title}</h3>
             <div className="comparison-slider max-w-4xl mx-auto rounded-lg shadow-2xl relative">
               <div className="relative w-full aspect-[4/3]">
                 <Image
                   src={p.beforeSrc}
-                  alt={`${p.alt} (before)`}
+                  alt={p.beforeAlt}
                   fill
                   sizes="(max-width: 768px) 100vw, 896px"
                   quality={75}
@@ -121,7 +161,7 @@ export default async function Portfolio() {
                 <div className="after-image">
                   <Image
                     src={p.afterSrc}
-                    alt={`${p.alt} (after)`}
+                    alt={p.afterAlt}
                     fill
                     sizes="(max-width: 768px) 100vw, 896px"
                     quality={75}

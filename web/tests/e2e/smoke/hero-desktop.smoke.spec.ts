@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { HERO_IMAGE_ALT } from '../utils/a11y-text'
 
 test.describe('Smoke @smoke - Desktop hero CTA regression', () => {
   test('Hero keeps View Portfolio as lone primary CTA', async ({ page }) => {
@@ -6,7 +7,7 @@ test.describe('Smoke @smoke - Desktop hero CTA regression', () => {
     await page.goto('/')
 
     const hero = page.locator('main section').first()
-    const heroImage = hero.getByRole('img', { name: 'Handyman hero background' })
+    const heroImage = hero.getByRole('img', { name: HERO_IMAGE_ALT })
     const imagePreloads = page.locator('head link[rel="preload"][as="image"]')
     const viewPortfolio = hero.getByRole('link', { name: 'View Portfolio' })
 

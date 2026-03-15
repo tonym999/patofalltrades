@@ -39,7 +39,7 @@ export function EnhancedHero({ children }: EnhancedHeroProps) {
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0 pointer-events-none">
         <Image
           src="/hero.avif"
-          alt="Handyman hero background"
+          alt="Sunrise over the London skyline for local handyman services"
           fill
           sizes="(max-width: 768px) 100vw, 1440px"
           priority
