@@ -26,18 +26,32 @@ test.describe('Accessibility focus management', () => {
       })
 
       return {
+        emptyHeadings: headings.filter((heading) => heading.text.length === 0),
         h1Count: headings.filter((heading) => heading.tagName === 'H1').length,
         sectionHeadings,
         skipped,
       }
     })
 
+    expect(outline.emptyHeadings).toEqual([])
     expect(outline.h1Count).toBe(1)
     expect(outline.sectionHeadings[0]).toBe('H1')
     expect(outline.sectionHeadings.slice(1)).toEqual(
       Array.from({ length: Math.max(outline.sectionHeadings.length - 1, 0) }, () => 'H2')
     )
     expect(outline.skipped).toEqual([])
+  })
+
+  test('homepage hero and portfolio images use descriptive alt text', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/')
+    await page.waitForLoadState('domcontentloaded')
+
+    await expect(page.getByRole('img', { name: /sunrise over the london skyline for local handyman services/i })).toBeVisible()
+    await expect(page.getByRole('img', { name: /bedroom refurbishment in southwark, before work begins/i })).toBeVisible()
+    await expect(page.getByRole('img', { name: /bedroom refurbishment in southwark, after completion/i })).toBeVisible()
+    await expect(page.getByRole('img', { name: /staircase refurbishment in colindale, before work begins/i })).toBeVisible()
+    await expect(page.getByRole('img', { name: /staircase refurbishment in colindale, after completion/i })).toBeVisible()
   })
 
   test('skip link transfers focus to main content region', async ({ page }) => {
