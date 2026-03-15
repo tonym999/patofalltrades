@@ -13,7 +13,7 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 - Node version: root [`.nvmrc`](.nvmrc)
 - Hosting: Vercel (auto-deploys on merge to `main`)
 - Project board: [GitHub Projects v2](https://github.com/users/tonym999/projects/2) (`tonym999`, project `2`)
-- AI skills: `.cursor/skills/` — frontend-ui, accessibility-audit, design-review
+- AI skills: `.cursor/skills/` — frontend-ui, accessibility-audit, design-review, playwright
 
 ## Workflow
 
@@ -67,6 +67,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 - Include a basic accessibility check (axe-core or `page.accessibility.snapshot()`) in at least one critical-path test.
 - Use shared fixtures under `web/tests/e2e/fixtures/` when setup is common across tests.
 - Run the smallest relevant test set first, then broaden if risk justifies it.
+- For repo-specific Playwright setup, command choices, and artifact conventions, read `.cursor/skills/playwright/SKILL.md` instead of duplicating that guidance elsewhere.
 
 ## Implementation Rules
 

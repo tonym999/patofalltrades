@@ -89,6 +89,7 @@ If `pnpm` prompts Corepack to download a version unexpectedly, confirm the activ
 
 ## Testing — CI Specifics
 
+- Repo-specific Playwright workflow guidance lives in [`.cursor/skills/playwright/SKILL.md`](../.cursor/skills/playwright/SKILL.md). Keep this document focused on policy, CI, and troubleshooting.
 - Run locally: `pnpm run test:e2e:smoke` (from `web/`)
 - Run the cross-device accessibility baseline locally when accessibility-critical UI changes: `pnpm run test:e2e:a11y` (from `web/`)
 - CI: cache Playwright browsers and run `pnpm exec playwright install --with-deps && pnpm run test:e2e:smoke && pnpm run test:e2e:a11y`
@@ -195,5 +196,5 @@ There is no guaranteed sandbox-safe way to always access `gh` for every operatio
 - Read [`AGENTS.md`](../AGENTS.md) first for workflow and rules.
 - Start each new ticket from a freshly updated `main`, not from the last feature branch.
 - Check `.cursorrules` for Cursor-specific behaviour.
-- Check `.cursor/skills/` for domain-specific AI guidance (UI, accessibility, design review).
+- Check `.cursor/skills/` for domain-specific AI guidance (UI, accessibility, design review, Playwright workflow).
 - Review `.cursor/rules/frontend-standards.mdc` for frontend coding standards.

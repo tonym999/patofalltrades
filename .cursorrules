@@ -53,6 +53,7 @@ Check `.cursor/skills/` for domain-specific guidance:
 - `frontend-ui` — building/refactoring UI components
 - `accessibility-audit` — auditing and improving accessibility
 - `design-review` — reviewing visual hierarchy, spacing, polish
+- `playwright` — repo-specific Playwright setup, test selection, and artifact conventions
 
 ## Definition of Done (per ticket)
 
