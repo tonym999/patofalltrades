@@ -13,7 +13,7 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 - Node version: root [`.nvmrc`](.nvmrc)
 - Hosting: Vercel (auto-deploys on merge to `main`)
 - Project board: [GitHub Projects v2](https://github.com/users/tonym999/projects/2) (`tonym999`, project `2`)
-- AI skills: `.cursor/skills/` — repo-bootstrap, frontend-ui, accessibility-audit, design-review, playwright
+- AI skills: `.cursor/skills/` — repo-bootstrap, frontend-ui, accessibility-audit, design-review, playwright, coderabbit-triage
 
 ## Workflow
 
@@ -26,7 +26,7 @@ Supporting workflow detail lives in [`docs/ai-workflow.md`](docs/ai-workflow.md)
 7. Commit with a conventional commit message. Include `Closes #N` when the work completes a ticket.
 8. Push the branch and create a PR scoped to the ticket. Link the PR to the issue.
 9. Keep the issue as the project board item of record. The board automation moves linked issues from `In Progress` to `In Review` when a PR is linked, then to `Done` when that PR is merged. Do not add PRs to the board by default.
-10. After code review (CodeRabbit), triage feedback and address it. See [Code Review Handling](#code-review-handling).
+10. After code review (CodeRabbit), triage feedback and address it. Use [`.cursor/skills/coderabbit-triage/SKILL.md`](.cursor/skills/coderabbit-triage/SKILL.md).
 
 When creating issues or PRs, use the GitHub templates under `.github/` so linked tickets contain the structured context CodeRabbit uses for PR validation.
 
@@ -88,18 +88,14 @@ Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## Code Review Handling
 
-PRs are reviewed by CodeRabbit. After a review is posted:
+PRs are reviewed by CodeRabbit. Use [`.cursor/skills/coderabbit-triage/SKILL.md`](.cursor/skills/coderabbit-triage/SKILL.md) for the repo's exact fetch, classification, and resolution flow.
 
-1. **Fetch** all review threads on the PR.
-2. **Filter** to threads where any comment author is `coderabbitai[bot]`.
-3. **Split** into unresolved and resolved threads using GraphQL `reviewThreads` or GitHub MCP, because the REST comment endpoints do not expose `isResolved`.
-4. **Classify** unresolved threads:
-   - **Change requests** — direct issues, bugs, or required fixes (`🔧`, `⚠️`, `🐛`, `🚨`)
-   - **Nitpicks** — minor style or naming suggestions (`💭`, `📝`)
-   - **Informational** — suggestions or enhancements with no required action (`💡`, `✨`)
-5. **Summarise** each thread using the latest comment, but keep the full thread available for context.
-6. **Address** change requests first, then nitpicks if reasonable. Informational items are optional.
-7. **Push** fixes and resolve threads. Do not resolve threads that haven't been addressed.
+Keep these guardrails in mind:
+
+1. Fetch all CodeRabbit review surfaces before deciding what is unresolved.
+2. Use GraphQL `reviewThreads` resolution metadata, not REST review comments alone, to tell resolved from unresolved inline feedback.
+3. Address change requests first, then nitpicks if reasonable; informational comments are optional.
+4. Resolve only the threads that were actually addressed.
 
 ## Error Handling
 
