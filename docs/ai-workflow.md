@@ -68,6 +68,8 @@ Use labels intentionally so open issues can be filtered, prioritized, and triage
 
 Use the repo-root [`.nvmrc`](../.nvmrc) to select the project's Node version in fresh shells before running project commands. In this repository, `pnpm` is pinned in [`web/package.json`](../web/package.json) and is typically provided by Corepack through the active `nvm` Node installation rather than a standalone binary in `~/.local/share/pnpm`.
 
+For reusable step-by-step setup and troubleshooting guidance, use [`.cursor/skills/repo-bootstrap/SKILL.md`](../.cursor/skills/repo-bootstrap/SKILL.md). Keep that skill aligned with the repo instructions here and in [`AGENTS.md`](../AGENTS.md).
+
 For Codex sessions, [`.codex/environments/environment.toml`](../.codex/environments/environment.toml) should:
 
 - point temp/cache directories at writable Linux paths
@@ -195,6 +197,7 @@ There is no guaranteed sandbox-safe way to always access `gh` for every operatio
 
 - Read [`AGENTS.md`](../AGENTS.md) first for workflow and rules.
 - Start each new ticket from a freshly updated `main`, not from the last feature branch.
+- Use [`.cursor/skills/repo-bootstrap/SKILL.md`](../.cursor/skills/repo-bootstrap/SKILL.md) when validating a fresh shell, a Codex environment change, or any `pnpm` / Corepack bootstrap issue.
 - Check `.cursorrules` for Cursor-specific behaviour.
 - Check `.cursor/skills/` for domain-specific AI guidance (UI, accessibility, design review, Playwright workflow).
 - Review `.cursor/rules/frontend-standards.mdc` for frontend coding standards.
