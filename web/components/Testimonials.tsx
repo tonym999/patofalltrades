@@ -21,13 +21,13 @@ export default function Testimonials() {
   const [isInView, setIsInView] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const [isUserPaused, setIsUserPaused] = useState(false);
-  const [liveAnnouncement, setLiveAnnouncement] = useState("");
 
   const testimonials = testimonialsData;
   const total = testimonials.length;
   const idPrefix = useId();
   const tabPanelId = `${idPrefix}-tabpanel`;
   const getTabId = (index: number) => `${idPrefix}-tab-${index}`;
+  const liveAnnouncement = total ? `Slide ${currentIndex + 1} of ${total}` : "";
 
   useEffect(() => {
     const observeTarget = sectionRef.current;
@@ -77,11 +77,6 @@ export default function Testimonials() {
       if (autoplayIntervalRef.current) window.clearInterval(autoplayIntervalRef.current);
     };
   }, []);
-
-  useEffect(() => {
-    if (!total) return;
-    setLiveAnnouncement(`Slide ${currentIndex + 1} of ${total}`);
-  }, [currentIndex, total]);
 
   type GoToOptions = {
     pauseForMs?: number;
