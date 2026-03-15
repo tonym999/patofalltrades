@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react';
 import { ScrollProgress } from "../components/ScrollProgress";
 import dynamic from "next/dynamic";
@@ -8,11 +7,6 @@ const MobileCtaBar = dynamic(() => import("../components/MobileCtaBar"));
 const MobileTabsNav = dynamic(() => import("../components/MobileTabsNav"));
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['Arial', 'Helvetica', 'sans-serif'],
-})
 const FALLBACK_SITE_URL = 'https://patofalltrades.co.uk'
 
 const resolveMetadataBase = () => {
@@ -65,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth motion-enabled dark">
-      <body className={`${inter.className} bg-background text-foreground antialiased`}>
+      <body className="bg-background text-foreground antialiased">
         <SkipNavLink />
         <ScrollProgress />
         {children}

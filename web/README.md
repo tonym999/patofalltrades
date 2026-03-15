@@ -22,7 +22,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Typography is served from a vendored local Inter subset at `public/fonts/inter-latin-variable.woff2`, so production builds do not depend on fetching Google Fonts during compilation.
 
 ## Development workflow
 
@@ -33,6 +33,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 - **When to restart**: Changes to `next.config.ts`, `tsconfig.json`, or dependencies usually require stopping and re-running `pnpm dev`.
 - **Windows note**: Avoid running `pnpm build` while the dev server is active; Windows can lock `.next` files. Use one or the other.
 - **Production build**: `pnpm build` then `pnpm start` to serve the optimized output.
+- **Offline build verification**: In a restricted or offline shell, run `pnpm build` and confirm it completes without errors mentioning `fonts.googleapis.com` or `fonts.gstatic.com`.
 - **Images**: When using `next/image` with `fill`, ensure the parent has a positioned container (e.g., `relative` + explicit size or `absolute inset-0`) so the image can render.
 
 ## Package manager
