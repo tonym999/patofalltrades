@@ -9,13 +9,24 @@ type BeforeAfterPair = {
   afterSrc: string;
 };
 
+const sourcePriority: Record<string, number> = {
+  avif: 4,
+  webp: 3,
+  png: 2,
+  jpg: 1,
+  jpeg: 1,
+};
+
 async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
   const publicDir = path.join(process.cwd(), "public", "portfolio");
 
   async function safeReadDirectory(dirPath: string): Promise<string[]> {
     try {
       const entries = await fs.readdir(dirPath, { withFileTypes: true });
-      return entries.filter(e => e.isDirectory()).map(e => e.name);
+      return entries
+        .filter(e => e.isDirectory())
+        .map(e => e.name)
+        .sort((left, right) => left.localeCompare(right));
     } catch {
       return [];
     }
@@ -23,13 +34,15 @@ async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
 
   const categories = await safeReadDirectory(publicDir);
 
-  const filenameRegex = /^(?:([a-z0-9-]+))-([a-z0-9-]+)-(\d{3})-(before|after)\.(?:jpg|jpeg|png|webp)$/i;
+  const filenameRegex = /^(?:([a-z0-9-]+))-([a-z0-9-]+)-(\d{3})-(before|after)\.(?:avif|webp|jpg|jpeg|png)$/i;
 
   type PairAccumulator = {
     title: string;
     alt: string;
     beforeSrc?: string;
     afterSrc?: string;
+    beforePriority?: number;
+    afterPriority?: number;
     category?: string;
     location?: string;
   };
@@ -39,7 +52,9 @@ async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
     const categoryDir = path.join(publicDir, category);
     let files: string[] = [];
     try {
-      files = (await fs.readdir(categoryDir)).filter(f => filenameRegex.test(f));
+      files = (await fs.readdir(categoryDir))
+        .filter(f => filenameRegex.test(f))
+        .sort((left, right) => left.localeCompare(right));
     } catch {
       // ignore
     }
@@ -48,12 +63,20 @@ async function discoverBeforeAfterPairs(): Promise<BeforeAfterPair[]> {
       const match = file.match(filenameRegex);
       if (!match) continue;
       const [, matchedCategory, location, pair, variant] = match;
+      const extension = path.extname(file).slice(1).toLowerCase();
+      const priority = sourcePriority[extension] ?? 0;
       const key = `${matchedCategory}-${location}-${pair}`;
       const webPath = `/portfolio/${category}/${file}`;
       const title = `${matchedCategory.replace(/-/g, " ")}: ${location.replace(/-/g, " ")} #${pair}`;
       if (!pairs[key]) pairs[key] = { title, alt: `${category} in ${location}`, category, location };
-      if (variant.toLowerCase() === "before") pairs[key].beforeSrc = webPath;
-      else pairs[key].afterSrc = webPath;
+      if (variant.toLowerCase() === "before" && (pairs[key].beforePriority ?? -1) < priority) {
+        pairs[key].beforeSrc = webPath;
+        pairs[key].beforePriority = priority;
+      }
+      if (variant.toLowerCase() === "after" && (pairs[key].afterPriority ?? -1) < priority) {
+        pairs[key].afterSrc = webPath;
+        pairs[key].afterPriority = priority;
+      }
     }
   }
 
@@ -86,10 +109,24 @@ export default async function Portfolio() {
           <div key={i} className="mb-20">
             <h3 className="text-3xl font-semibold text-center text-white mb-8 tracking-tight capitalize">{p.title}</h3>
             <div className="comparison-slider max-w-4xl mx-auto rounded-lg shadow-2xl relative">
-              <div className="relative w-full aspect-[16/9]">
-                <Image src={p.beforeSrc} alt={`${p.alt} (before)`} fill sizes="(max-width: 1280px) 100vw, 1280px" className="before-image object-cover" />
+              <div className="relative w-full aspect-[4/3]">
+                <Image
+                  src={p.beforeSrc}
+                  alt={`${p.alt} (before)`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 896px"
+                  quality={75}
+                  className="before-image object-cover"
+                />
                 <div className="after-image">
-                  <Image src={p.afterSrc} alt={`${p.alt} (after)`} fill sizes="(max-width: 1280px) 100vw, 1280px" className="after-image-content object-cover" />
+                  <Image
+                    src={p.afterSrc}
+                    alt={`${p.alt} (after)`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 896px"
+                    quality={75}
+                    className="after-image-content object-cover"
+                  />
                 </div>
               </div>
               <div className="slider-handle"></div>
@@ -100,5 +137,3 @@ export default async function Portfolio() {
     </section>
   );
 }
-
-
