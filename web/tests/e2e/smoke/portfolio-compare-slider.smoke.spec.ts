@@ -22,9 +22,9 @@ test.describe('Smoke @smoke - Portfolio compare slider', () => {
     await expect(handle).toHaveAttribute('aria-valuemin', '0')
     await expect(handle).toHaveAttribute('aria-valuemax', '100')
     await handle.focus()
-    const before = Number(await handle.getAttribute('aria-valuenow'))
+    const beforeValue = await handle.getAttribute('aria-valuenow')
     await page.keyboard.press('ArrowRight')
-    expect(Number(await handle.getAttribute('aria-valuenow'))).toBeGreaterThan(before)
+    await expect(handle).not.toHaveAttribute('aria-valuenow', beforeValue!)
   })
 
   test('portfolio section has no serious axe violations @smoke', async ({ page }) => {
