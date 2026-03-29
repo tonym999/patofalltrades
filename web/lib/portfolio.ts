@@ -63,7 +63,7 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
 
   const categories = await safeReadDirectory(publicDir);
 
-  const filenameRegex = /^(?:([a-z0-9-]+))-([a-z0-9-]+)-(\d{3})-(before|after)\.(?:avif|webp|jpg|jpeg|png)$/i;
+  const filenameRegex = /^([a-z0-9-]+)-([a-z0-9-]+)-(\d{3})-(before|after)\.(?:avif|webp|jpg|jpeg|png)$/i;
 
   type PairAccumulator = {
     title: string;
@@ -95,6 +95,8 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
       const [, matchedCategory, location, pair, variant] = match;
       const extension = path.extname(file).slice(1).toLowerCase();
       const priority = sourcePriority[extension] ?? 0;
+      // key uses matchedCategory (from filename) for consistent grouping;
+      // webPath uses category (directory) for the correct public URL
       const key = `${matchedCategory}-${location}-${pair}`;
       const webPath = `/portfolio/${category}/${file}`;
       const title = buildProjectTitle(matchedCategory, location, pair);
@@ -118,13 +120,17 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
     }
   }
 
+  type CompletePair = PairAccumulator & { beforeSrc: string; afterSrc: string };
+  const isCompletePair = (p: PairAccumulator): p is CompletePair =>
+    Boolean(p.beforeSrc && p.afterSrc);
+
   return Object.values(pairs)
-    .filter(p => p.beforeSrc && p.afterSrc)
-    .map(p => ({
-      title: p.title as string,
-      beforeAlt: p.beforeAlt as string,
-      afterAlt: p.afterAlt as string,
-      beforeSrc: p.beforeSrc as string,
-      afterSrc: p.afterSrc as string,
+    .filter(isCompletePair)
+    .map(({ title, beforeAlt, afterAlt, beforeSrc, afterSrc }) => ({
+      title,
+      beforeAlt,
+      afterAlt,
+      beforeSrc,
+      afterSrc,
     }));
 }

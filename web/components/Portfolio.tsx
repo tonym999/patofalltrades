@@ -16,8 +16,8 @@ export default async function Portfolio() {
           <p className="text-lg text-gray-300/90 mt-4">Quality you can see. Results that last.</p>
         </div>
 
-        {items.map((p, i) => (
-          <div key={i} className="mb-20">
+        {items.map((p) => (
+          <div key={p.beforeSrc} className="mb-20">
             <h3 className="text-3xl font-semibold text-center text-white mb-8 tracking-tight">{p.title}</h3>
             <div className="max-w-4xl mx-auto">
               <CompareSlider
