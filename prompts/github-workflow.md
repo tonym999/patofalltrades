@@ -41,7 +41,7 @@ gh project item-add 2 --owner tonym999 --url <ISSUE_URL>
 ### 2. Branch Creation
 
 ```bash
-git checkout main && git pull origin main
+git checkout main && git pull --ff-only origin main
 git checkout -b feature/<ticket-id>-<brief-description>
 cd web && pnpm install
 ```

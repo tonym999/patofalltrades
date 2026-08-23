@@ -87,7 +87,9 @@ A ticket is done when all of the following hold:
 
 - Branch created from an updated `main` following the naming pattern
 - Implementation complete and lint-clean
-- Playwright smoke test present for the change
+- Validation appropriate to the change: a Playwright smoke test for user-facing UI work;
+  for documentation, policy, or workflow changes, the relevant checks instead (lint, link
+  checks, or a stated reason why no automated check applies)
 - Commit(s) use conventional commits
 - Branch pushed and PR created, linked to the issue
 - Issue sits in the correct project board column
