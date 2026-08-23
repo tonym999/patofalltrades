@@ -1,17 +1,9 @@
----
-description: Frontend standards for Next.js App Router, React 19, and Tailwind v4 UI code
-globs:
-  - "web/app/**/*.tsx"
-  - "web/app/**/*.css"
-  - "web/components/**/*.tsx"
-  - "web/components/**/*.ts"
-  - "web/hooks/**/*.ts"
-alwaysApply: true
----
+# Frontend Standards
 
-You are working in a Next.js 16 App Router codebase with React 19 and Tailwind v4.
+Standards for Next.js App Router, React 19, and Tailwind v4 UI code in this repo.
 
-Follow these standards unless the user explicitly asks otherwise:
+Applies to `web/app/**`, `web/components/**`, and `web/hooks/**`. Read this before writing or
+refactoring UI code, and follow it unless the user explicitly asks otherwise.
 
 ## General
 - Prefer existing patterns in the repo over inventing new ones

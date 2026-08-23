@@ -41,11 +41,10 @@ Thumbs.db
 **/logs/
 **/*.log
 
-# Local overrides and Cursor config
-.cursor/*
-!.cursor/rules/
-!.cursor/skills/
-.claude/
-.cursorignore
-.cursorrules.local
+# Local agent overrides
+# Repo-defined skills under .claude/skills/ are tracked and shared; local settings and
+# personal skills are not.
+.claude/*
+!.claude/skills/
+.claude/skills/svg-logo-designer.md
 prompts/local/**
