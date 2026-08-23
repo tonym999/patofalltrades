@@ -182,7 +182,7 @@ it — editing a project field value is a remote write that requires explicit ap
 5. **Branch, implement, commit, test** — local git and `pnpm`, no approval needed
 6. **Push branch (approval required)** — `git push -u origin <branch>`
 7. **Open PR (approval required)** — `gh pr create --base main --body-file <path>`
-8. **Verify board status** — resolve project 2's ID with `gh project view 2 --owner tonym999`, then match `projectItems` on that ID; report a mismatch, do not silently fix it
+8. **Verify board status** — resolve project 2's ID with `gh project view 2 --owner tonym999 --format json -q .id`, then match `projectItems` on that ID; report a mismatch, do not silently fix it
 9. **Check CI** — `gh pr checks <N>` / `gh run list --branch <branch>`
 10. **Triage review feedback** — see below
 11. **Resolve threads (approval required)** — GraphQL `resolveReviewThread`
