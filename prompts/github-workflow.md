@@ -126,11 +126,21 @@ template and match its sections — Summary, Linked Issue, Validation Against Is
 Risks, Screenshots / Evidence, Checklist. `--web` is the interactive alternative.
 
 Board automation moves the linked issue to In Review once the PR is linked, and to Done on merge. Do
-not add PRs to the board by default. Verify rather than assume:
+not add PRs to the board by default. Verify both halves rather than assuming either — that the PR
+links to the issue, and that automation actually moved the issue's board status:
 
 ```bash
+# 1. the PR closes the issue
 gh pr view <PR_NUMBER> --repo tonym999/patofalltrades --json number,title,url,state,closingIssuesReferences
+
+# 2. automation moved the issue to In Review
+gh issue view <ISSUE_NUMBER> --repo tonym999/patofalltrades --json number,projectItems \
+  -q '.projectItems[] | "\(.title): \(.status.name)"'
 ```
+
+Both are read-only. If the status did not move, report the mismatch and ask before changing it —
+editing a project field value is a remote write that requires explicit approval under
+[`AGENTS.md`](../AGENTS.md#ai-agent-access-policy). Do not silently correct it.
 
 ## Required `gh` Operations
 
@@ -141,9 +151,10 @@ gh pr view <PR_NUMBER> --repo tonym999/patofalltrades --json number,title,url,st
 5. **Branch, implement, commit, test** — local git and `pnpm`, no approval needed
 6. **Push branch (approval required)** — `git push -u origin <branch>`
 7. **Open PR (approval required)** — `gh pr create --base main --body-file <path>`
-8. **Check CI** — `gh pr checks <N>` / `gh run list --branch <branch>`
-9. **Triage review feedback** — see below
-10. **Resolve threads (approval required)** — GraphQL `resolveReviewThread`
+8. **Verify board status** — `gh issue view <N> --json projectItems`; report a mismatch, do not silently fix it
+9. **Check CI** — `gh pr checks <N>` / `gh run list --branch <branch>`
+10. **Triage review feedback** — see below
+11. **Resolve threads (approval required)** — GraphQL `resolveReviewThread`
 
 ## Output Requirements
 
@@ -171,7 +182,7 @@ gh pr view <PR_NUMBER> --repo tonym999/patofalltrades --json number,title,url,st
 - [ ] PR opened and linked to the issue
 - [ ] CI green
 - [ ] CodeRabbit review triaged
-- [ ] Issue in the correct board column
+- [ ] Issue confirmed In Review via `projectItems`, not assumed
 ```
 
 ## Error Handling
