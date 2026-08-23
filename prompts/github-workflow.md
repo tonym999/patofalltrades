@@ -20,9 +20,11 @@ Repo constants used throughout: owner `tonym999`, repo `patofalltrades`, project
 ### 1. Project and Ticket Management
 
 ```bash
-gh project item-list 2 --owner tonym999 --format json
+gh project item-list 2 --owner tonym999 --limit 200 --format json
 ```
 
+- `--limit` is required. The default returns only 30 items and the board holds more than that, so an
+  In Progress ticket past position 30 is silently invisible without it.
 - Pick the top item whose status is In Progress. Column naming varies ("In-Progress", "In Progress") — match flexibly.
 - If none exists, ask the user for a new ticket idea instead of inventing one.
 - Fetch the full ticket, including acceptance criteria and linked PRs:
@@ -34,9 +36,23 @@ gh issue view <ISSUE_NUMBER> --repo tonym999/patofalltrades --json number,title,
 - New issues must be created from the templates in `.github/` and added to the project board:
 
 ```bash
-gh issue create --repo tonym999/patofalltrades --template "Work Item"
+# Interactive: opens the rendered Work Item form in a browser
+gh issue create --repo tonym999/patofalltrades --web
+
+# Non-interactive: write the body yourself, matching the form's sections exactly
+gh issue create --repo tonym999/patofalltrades --title "<title>" --body-file <path> \
+  --label "<type>" --label "<area>" --label "priority: <level>"
+
 gh project item-add 2 --owner tonym999 --url <ISSUE_URL>
 ```
+
+`--template` does not work here. `work-item.yml` is a YAML issue *form*, and GitHub's
+`issueTemplates` API exposes only markdown templates — it returns an empty list for this repo, so
+`gh` cannot resolve the form by name or filename. When using `--body-file`, read
+[`.github/ISSUE_TEMPLATE/work-item.yml`](../.github/ISSUE_TEMPLATE/work-item.yml) first and reproduce
+its sections — Problem, Expected Solution, Affected Components, Acceptance Criteria, Non-Goals,
+Implementation Notes — in that order, then apply one type label, one to three area labels, and
+exactly one priority label.
 
 ### 2. Branch Creation
 
@@ -67,9 +83,12 @@ web/tests/e2e/
 └── fixtures/    [test-data].json               # shared setup
 ```
 
-Include an accessibility check on at least one critical path — `page.accessibility.snapshot()` or
-`@axe-core/playwright`. Use [`.claude/skills/accessibility-audit/SKILL.md`](../.claude/skills/accessibility-audit/SKILL.md)
-when the change touches forms, dialogs, or navigation.
+Include an accessibility check on at least one critical path. Prefer `@axe-core/playwright` or
+DOM-level assertions: [`docs/ai-workflow.md`](../docs/ai-workflow.md#troubleshooting) records that
+`page.accessibility.snapshot()` can hard-crash headless Chromium in sandboxed Linux agent sessions,
+so reach for it only after confirming it is stable in the current environment. Use
+[`.claude/skills/accessibility-audit/SKILL.md`](../.claude/skills/accessibility-audit/SKILL.md) when
+the change touches forms, dialogs, or navigation.
 
 ### 5. Code Quality Checks
 
@@ -97,8 +116,14 @@ git commit -m "feat(auth): implement user login
 Closes #<ISSUE_NUMBER>"
 
 git push -u origin feature/<ticket-id>-<brief-description>
-gh pr create --repo tonym999/patofalltrades --base main --fill
+gh pr create --repo tonym999/patofalltrades --base main --title "<conventional commit title>" \
+  --body-file <path>
 ```
+
+Do not use `--fill`. It builds the body from commit messages and silently skips the required
+structure in [`.github/pull_request_template.md`](../.github/pull_request_template.md). Read that
+template and match its sections — Summary, Linked Issue, Validation Against Issue, Changes, Testing,
+Risks, Screenshots / Evidence, Checklist. `--web` is the interactive alternative.
 
 Board automation moves the linked issue to In Review once the PR is linked, and to Done on merge. Do
 not add PRs to the board by default. Verify rather than assume:
@@ -109,13 +134,13 @@ gh pr view <PR_NUMBER> --repo tonym999/patofalltrades --json number,title,url,st
 
 ## Required `gh` Operations
 
-1. **List project items** — `gh project item-list 2 --owner tonym999 --format json`
+1. **List project items** — `gh project item-list 2 --owner tonym999 --limit 200 --format json`
 2. **Read issue** — `gh issue view <N> --json ...`
-3. **Create issue (approval required)** — `gh issue create --template "Work Item"`
+3. **Create issue (approval required)** — `gh issue create --web`, or `--body-file` matching the form
 4. **Add to project (approval required)** — `gh project item-add 2 --owner tonym999 --url <URL>`
-5. **Branch, implement, test** — local git and `pnpm`, no approval needed
+5. **Branch, implement, commit, test** — local git and `pnpm`, no approval needed
 6. **Push branch (approval required)** — `git push -u origin <branch>`
-7. **Open PR (approval required)** — `gh pr create --base main --fill`
+7. **Open PR (approval required)** — `gh pr create --base main --body-file <path>`
 8. **Check CI** — `gh pr checks <N>` / `gh run list --branch <branch>`
 9. **Triage review feedback** — see below
 10. **Resolve threads (approval required)** — GraphQL `resolveReviewThread`
@@ -166,7 +191,11 @@ before concluding it is an auth failure. Document repo-specific surprises in
 
 ## Additional Considerations
 
-- **Branch protection**: check rules before pushing — `gh api repos/tonym999/patofalltrades/branches/main/protection`
+- **Branch protection**: `main` is governed by a *ruleset*, not classic branch protection. Query
+  `gh api repos/tonym999/patofalltrades/rules/branches/main` for the rules that apply, or
+  `gh api repos/tonym999/patofalltrades/rulesets` for the rulesets themselves. The classic
+  `/branches/main/protection` endpoint returns 404 "Branch not protected" here, which reads as
+  unprotected when it is not.
 - **CI/CD**: confirm the push triggered the expected workflows
 - **Docs**: update `docs/ai-workflow.md` when workflow expectations change
 - **Dependencies**: avoid new dependencies unless clearly justified

@@ -45,8 +45,9 @@ This policy applies to all AI agents, coding assistants, automations, integratio
   - create local branches
   - edit files in the working tree
   - stage local changes
+  - create local commits on a feature branch, which stay unpublished until pushed
   - run non-destructive local builds, tests, and validation
-  - draft commit messages, issues, PR text, or review replies without publishing them
+  - draft issues, PR text, or review replies without publishing them
 - Normal remote writes require explicit approval:
   - create, edit, close, or reopen issues
   - add, edit, remove, or reprioritize project items and project field values
