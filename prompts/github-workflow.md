@@ -133,13 +133,44 @@ links to the issue, and that automation actually moved the issue's board status:
 # 1. the PR closes the issue
 gh pr view <PR_NUMBER> --repo tonym999/patofalltrades --json number,title,url,state,closingIssuesReferences
 
-# 2. automation moved the issue to In Review
-gh issue view <ISSUE_NUMBER> --repo tonym999/patofalltrades --json number,projectItems \
-  -q '.projectItems[] | "\(.title): \(.status.name)"'
+# 2. resolve project 2's GraphQL ID, then read the status of the item belonging to that project
+PROJECT_ID=$(gh project view 2 --owner tonym999 --format json -q .id)
+
+gh api graphql -f query='
+  query($owner:String!, $repo:String!, $issue:Int!) {
+    repository(owner:$owner, name:$repo) {
+      issue(number:$issue) {
+        projectItems(first: 20) {
+          nodes {
+            project { id number title }
+            fieldValueByName(name: "Status") {
+              ... on ProjectV2ItemFieldSingleSelectValue { name }
+            }
+          }
+        }
+      }
+    }
+  }' -f owner=tonym999 -f repo=patofalltrades -F issue=<ISSUE_NUMBER> \
+  --jq ".data.repository.issue.projectItems.nodes[]
+        | select(.project.id == \"$PROJECT_ID\")
+        | .fieldValueByName.name"
 ```
 
-Both are read-only. If the status did not move, report the mismatch and ask before changing it —
-editing a project field value is a remote write that requires explicit approval under
+Match on the resolved project ID, not on the project's name or on whichever status happens to come
+back first. An issue can belong to several projects, and `gh issue view --json projectItems` exposes
+only the project title and status — no ID or number — so it cannot tell you which project a status
+came from. Resolving `PROJECT_ID` first also fails loudly if the account cannot see project 2,
+instead of quietly returning nothing.
+
+Read the result like this:
+
+- `In Review` — automation worked, nothing to do.
+- any other status — automation did not move it.
+- **empty output** — the issue is not on project 2 at all, which is also a mismatch. Do not read an
+  empty result as success.
+
+Both commands are read-only. If the status did not move, report the mismatch and ask before changing
+it — editing a project field value is a remote write that requires explicit approval under
 [`AGENTS.md`](../AGENTS.md#ai-agent-access-policy). Do not silently correct it.
 
 ## Required `gh` Operations
@@ -151,7 +182,7 @@ editing a project field value is a remote write that requires explicit approval 
 5. **Branch, implement, commit, test** — local git and `pnpm`, no approval needed
 6. **Push branch (approval required)** — `git push -u origin <branch>`
 7. **Open PR (approval required)** — `gh pr create --base main --body-file <path>`
-8. **Verify board status** — `gh issue view <N> --json projectItems`; report a mismatch, do not silently fix it
+8. **Verify board status** — resolve project 2's ID with `gh project view 2 --owner tonym999`, then match `projectItems` on that ID; report a mismatch, do not silently fix it
 9. **Check CI** — `gh pr checks <N>` / `gh run list --branch <branch>`
 10. **Triage review feedback** — see below
 11. **Resolve threads (approval required)** — GraphQL `resolveReviewThread`
@@ -182,7 +213,7 @@ editing a project field value is a remote write that requires explicit approval 
 - [ ] PR opened and linked to the issue
 - [ ] CI green
 - [ ] CodeRabbit review triaged
-- [ ] Issue confirmed In Review via `projectItems`, not assumed
+- [ ] Issue confirmed In Review on project 2 specifically, matched by project ID, not assumed
 ```
 
 ## Error Handling
