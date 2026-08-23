@@ -42,7 +42,7 @@ body:
       description: List the files, subsystems, pages, or workflows expected to change.
       placeholder: |
         - AGENTS.md
-        - .cursorrules
+        - .claude/skills/
         - docs/ai-workflow.md
     validations:
       required: true

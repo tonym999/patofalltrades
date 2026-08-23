@@ -41,11 +41,18 @@ Thumbs.db
 **/logs/
 **/*.log
 
-# Local overrides and Cursor config
-.cursor/*
-!.cursor/rules/
-!.cursor/skills/
-.claude/
-.cursorignore
-.cursorrules.local
+# Local agent overrides
+# Repo-defined skills under .claude/skills/ are tracked and shared; local settings and
+# personal skills are not.
+.claude/*
+!.claude/skills/
+.claude/skills/svg-logo-designer.md
 prompts/local/**
+
+# Cursor was retired on 2026-08-23 and its config removed from this repo.
+# These entries remain only so stale local files in an older clone cannot be
+# committed by accident. Remove them once no working copy has Cursor files left.
+.cursor/
+.cursorrules
+.cursorrules.local
+.cursorignore

@@ -73,7 +73,7 @@ gh api graphql -f query='query {
 }'
 ```
 
-The example above is intentionally bounded. For unusually large PRs, use cursor pagination or GitHub MCP so additional threads or replies are not missed.
+The example above is intentionally bounded. For unusually large PRs, page through the results with GraphQL cursors so additional threads or replies are not missed.
 
 ## Triage flow
 
@@ -130,7 +130,7 @@ For each item, include:
 ## Practical notes
 - Review summaries and issue comments do not carry `isResolved`; use them as triage input, not as thread-resolution state.
 - GraphQL thread metadata is the authoritative way to distinguish unresolved from resolved inline feedback in this repo.
-- If a PR is unusually large, prefer paginated GraphQL or GitHub MCP over assuming the `first: 100` and `first: 20` bounds are sufficient.
+- If a PR is unusually large, prefer paginated GraphQL over assuming the `first: 100` and `first: 20` bounds are sufficient.
 
 ## Related repo docs
 - `AGENTS.md`

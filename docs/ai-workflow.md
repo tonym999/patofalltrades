@@ -2,7 +2,7 @@
 
 The canonical rules live in [`AGENTS.md`](../AGENTS.md). This document covers supporting detail, CI specifics, review integration, and troubleshooting.
 
-## MCP Step Sequence
+## Workflow Step Sequence
 
 Get Project Items → Get Issue Details → Return to Main → Update Main from Origin → Create Branch → Sync Deps → Implement → Test → Commit → Push → Open Linked PR → Verify Issue in In Review (or move it manually if automation is unavailable) → Triage Review → Fix → Resolve Threads → Merge → Verify Issue in Done (or move it manually if automation is unavailable)
 
@@ -68,7 +68,7 @@ Use labels intentionally so open issues can be filtered, prioritized, and triage
 
 Use the repo-root [`.nvmrc`](../.nvmrc) to select the project's Node version in fresh shells before running project commands. In this repository, `pnpm` is pinned in [`web/package.json`](../web/package.json) and is typically provided by Corepack through the active `nvm` Node installation rather than a standalone binary in `~/.local/share/pnpm`.
 
-For reusable step-by-step setup and troubleshooting guidance, use [`.cursor/skills/repo-bootstrap/SKILL.md`](../.cursor/skills/repo-bootstrap/SKILL.md). Keep that skill aligned with the repo instructions here and in [`AGENTS.md`](../AGENTS.md).
+For reusable step-by-step setup and troubleshooting guidance, use [`.claude/skills/repo-bootstrap/SKILL.md`](../.claude/skills/repo-bootstrap/SKILL.md). Keep that skill aligned with the repo instructions here and in [`AGENTS.md`](../AGENTS.md).
 
 For Codex sessions, [`.codex/environments/environment.toml`](../.codex/environments/environment.toml) should:
 
@@ -89,9 +89,45 @@ pnpm -v
 
 If `pnpm` prompts Corepack to download a version unexpectedly, confirm the active Node version from [`.nvmrc`](../.nvmrc), whether the environment runner actually applied the repo bootstrap, and whether the machine has already prepared the package-manager version pinned in [`web/package.json`](../web/package.json) at least once.
 
+## AI Agent Access Policy Support
+
+The canonical AI agent access policy lives in [`AGENTS.md`](../AGENTS.md). Use this document for supporting implementation detail, audit notes, and troubleshooting.
+
+### Enforcement Split
+
+- Technically enforced controls in the current setup include the local filesystem sandbox used by Codex sessions, approval prompts for outside-sandbox command execution, repository rulesets, and the default read-only workflow permissions on GitHub Actions.
+- Trust-based or process-based controls include whether an agent actually follows `AGENTS.md`, whether it loads repo skills at the right time, and whether user-managed credentials or connectors are used only after explicit approval.
+- When a control is trust-based rather than enforced, say so directly in docs and prefer a narrower credential or a stronger approval gate instead of implying the repo already enforces it.
+
+### Current Audit Snapshot
+
+Re-verified on 2026-08-23. The Codex workspace, GitHub CLI, Actions, and ruleset rows were
+re-checked against the live repository on that date and were unchanged from the first audit on
+2026-03-29. The GitHub connector and CodeRabbit rows were **not** re-verified — their permission
+maps need the GitHub UI, which repo-local tooling cannot read. Treat those two rows as carrying
+the 2026-03-29 date.
+
+| Integration / path | Identity or credential | Observed access | Approval gate | Control type | Alignment | Notes |
+|---|---|---|---|---|---|---|
+| Codex local workspace | Codex desktop session with workspace-write sandbox | Read repository contents, edit local files, create local branches, and run local validation inside the checkout | Outside-sandbox commands require explicit user approval; local draft work does not | Technical | Aligned | Matches the `auto-read` plus local-draft model. |
+| GitHub CLI | Personal GitHub identity `tonym999`, authenticated with a `gho_` OAuth app token issued by the `gh` CLI | Repo permission is `admin`; `X-Oauth-Scopes` reports `admin:public_key`, `gist`, `project`, `read:org`, `repo` — unchanged since 2026-03-29 | Mixed: some network escapes are technically approval-gated, but the credential itself is not repo-enforced | Mixed technical/process | Partially aligned | More access than least privilege. `gh auth status` reported healthy on 2026-08-23, but it can report invalid credentials even while `gh api` works — confirm with a real API call before concluding auth failed. |
+| GitHub connector / app path in Codex | GitHub app installation on user account `tonym999` | Issue, PR, repository, check, and status workflows are available through the connector | Process-based: agents must follow repo policy before using write-capable connector actions | Trust-based | Partially aligned | The installation is present, but the exact permission map is not fully visible from repo-local tooling. |
+| Claude Code local agent | User-managed local toolchain via `CLAUDE.md` -> `AGENTS.md` | Local repo access and whatever remote access the user's configured credentials allow | Depends on local tool prompts and user-managed credentials | Mostly trust-based | Partially aligned | Repo skills in `.claude/skills/` are auto-discovered, so skill discovery is no longer documentation-only. Credential scope is still user-managed. |
+| GitHub Actions `GITHUB_TOKEN` | Workflow-scoped token issued by GitHub | Actions are enabled; default workflow permission is `read`; pull request review approval is disabled for this token; an active ruleset protects `main` (all re-verified 2026-08-23) | Governed by workflow permissions and repository settings | Technical | Aligned | Safer default than a broad personal token; jobs must opt into more when justified. |
+| CodeRabbit | GitHub App used for review comments and status checks | Active on repo PR workflows and expected by repo process | Governed by app installation and repo settings | Technical + process | Partially aligned | Review surfaces are active, but a deeper app-permission inventory would need GitHub UI confirmation. |
+| Cursor local agent | Formerly a user-managed local toolchain with `.cursorrules`, `.cursor/rules/`, `.cursor/skills/`, and `.cursor/mcp.json` | None. Cursor is no longer used for this repo and all of its configuration was deleted on 2026-08-23 | Not applicable | Removed | Removed | The skills moved to `.claude/skills/` and the frontend rules to `docs/frontend-standards.md`; both are tool-neutral and stay in use. The two Docker-hosted MCP servers it configured went with it. Re-adding Cursor would mean re-auditing this row. |
+| GitHub MCP environment path | Session-provided MCP-oriented credential path | The GitHub MCP server was not running when this audit checked it, and the exposed MCP token path did not behave like a normal GitHub API token when tested directly | Opaque | Unknown | Removed | The repo no longer configures any MCP server. The Docker-hosted GitHub and Playwright MCP servers were removed with the Cursor config; agent GitHub access now goes through the `gh` CLI path audited above. |
+
+### Gaps And Follow-Ups
+
+- The observed GitHub CLI credential path is broader than least privilege for routine agent work. Prefer a fine-grained token scoped to this repo, and separate read-mostly automation from human-admin access where possible.
+- If workflow-file changes are rare, do not grant workflow-edit capability to always-on agent credentials by default. Use a narrower token for day-to-day repo work and a separately approved path when `.github/workflows/` changes must be published.
+- The GitHub connector path is only partially auditable from inside the repo. If it will remain part of the workflow, record its installed permission set in the relevant tool config or in a future audit ticket.
+- The MCP path was resolved by removal: the repo no longer ships MCP configuration, so no MCP-specific credential is expected in an agent session. If one appears, stop using it, report it to the user, and request explicit approval before rotating it — rotation is an administrative action under the policy in [`AGENTS.md`](../AGENTS.md#ai-agent-access-policy). Any future MCP server must be added with its permission set documented in this table before use.
+
 ## Testing — CI Specifics
 
-- Repo-specific Playwright workflow guidance lives in [`.cursor/skills/playwright/SKILL.md`](../.cursor/skills/playwright/SKILL.md). Keep this document focused on policy, CI, and troubleshooting.
+- Repo-specific Playwright workflow guidance lives in [`.claude/skills/playwright/SKILL.md`](../.claude/skills/playwright/SKILL.md). Keep this document focused on policy, CI, and troubleshooting.
 - Run locally: `pnpm run test:e2e:smoke` (from `web/`)
 - Run the cross-device accessibility baseline locally when accessibility-critical UI changes: `pnpm run test:e2e:a11y` (from `web/`)
 - CI: cache Playwright browsers and run `pnpm exec playwright install --with-deps && pnpm run test:e2e:smoke && pnpm run test:e2e:a11y`
@@ -99,7 +135,7 @@ If `pnpm` prompts Corepack to download a version unexpectedly, confirm the activ
 
 ## CodeRabbit Review Integration
 
-Use [`.cursor/skills/coderabbit-triage/SKILL.md`](../.cursor/skills/coderabbit-triage/SKILL.md) for the repo-defined CodeRabbit workflow. That skill is the source of truth for:
+Use [`.claude/skills/coderabbit-triage/SKILL.md`](../.claude/skills/coderabbit-triage/SKILL.md) for the repo-defined CodeRabbit workflow. That skill is the source of truth for:
 
 - the required REST and GraphQL fetch steps
 - how to separate resolved versus unresolved inline threads
@@ -137,6 +173,7 @@ Interpret the results like this:
 - If `gh api user` and `gh project view` succeed, GitHub CLI access is at least partially working even if `gh auth status` looks unhealthy.
 - If a mutating command fails with `error connecting to api.github.com`, treat it as a likely sandbox/network restriction first.
 - Retry up to 2 times with exponential backoff as required by repo policy before escalating.
+- If you need to audit the live credential rather than just test connectivity, inspect the headers from `gh api -i user` and read `X-Oauth-Scopes` instead of inferring scopes from `gh auth status`. That header is not a complete audit: it is populated only for classic PATs and OAuth app tokens, which is what the `gh` CLI issues today. A fine-grained PAT returns no scopes header at all — audit its repository access and granular permissions instead — and a GitHub App credential needs its installation permissions checked separately. Since the follow-up below recommends moving to a fine-grained token, expect this check to stop applying once that happens.
 
 Preferred handling for agents:
 
@@ -148,15 +185,16 @@ There is no guaranteed sandbox-safe way to always access `gh` for every operatio
 
 ## Security & Secrets
 
-- Store GITHUB_TOKEN via GitHub CLI (`gh auth login`) or repo/org secrets; never commit tokens.
-- Minimum scopes: `repo`, `workflow`. For PR automation from forks, use a fine-grained PAT or `GITHUB_TOKEN` with `permissions` set in the workflow.
+- Never commit tokens or copy live secrets into docs, comments, or issues.
+- Prefer fine-grained tokens scoped to this repository and only to the actions the agent is expected to perform.
+- If a classic PAT must be used, record its scopes in the audit and keep them no broader than necessary. Workflow-file publishing may require additional scope; do not grant that to always-on agent credentials unless the task needs it.
+- Store GitHub credentials via GitHub CLI, OS keychain, or repo/org secrets rather than ad hoc environment files.
 - Add a `.env.example` documenting required env vars if the project needs them.
 
 ## Onboarding
 
 - Read [`AGENTS.md`](../AGENTS.md) first for workflow and rules.
 - Start each new ticket from a freshly updated `main`, not from the last feature branch.
-- Use [`.cursor/skills/repo-bootstrap/SKILL.md`](../.cursor/skills/repo-bootstrap/SKILL.md) when validating a fresh shell, a Codex environment change, or any `pnpm` / Corepack bootstrap issue.
-- Check `.cursorrules` for Cursor-specific behaviour.
-- Check `.cursor/skills/` for domain-specific AI guidance (UI, accessibility, design review, Playwright workflow, CodeRabbit triage).
-- Review `.cursor/rules/frontend-standards.mdc` for frontend coding standards.
+- Use [`.claude/skills/repo-bootstrap/SKILL.md`](../.claude/skills/repo-bootstrap/SKILL.md) when validating a fresh shell, a Codex environment change, or any `pnpm` / Corepack bootstrap issue.
+- Check [`.claude/skills/`](../.claude/skills/) for domain-specific AI guidance (UI, accessibility, design review, Playwright workflow, CodeRabbit triage).
+- Review [`docs/frontend-standards.md`](frontend-standards.md) for frontend coding standards.
