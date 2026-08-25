@@ -51,13 +51,13 @@ pnpm install
 - Check that the active Node version still matches `.nvmrc`.
 - Confirm you are running `pnpm` from `web/`, not the repo root.
 - On a fresh machine or cache, let Corepack prepare the pinned version once, then retry the command.
-- If the error points at a Windows path under `/mnt/c/Users/...`, check the user-level Codex `[shell_environment_policy.set]` table for Linux `TMPDIR`, `TMP`, `TEMP`, `XDG_CACHE_HOME`, and `COREPACK_HOME` values.
+- If the error points at a Windows path under `/mnt/c/Users/...`, verify `TMPDIR`, `TMP`, `TEMP`, `XDG_CACHE_HOME`, and `COREPACK_HOME` as effective values in a fresh Codex task. If any are wrong, ask the user to set them under `[shell_environment_policy.set]`; do not inspect or print their user-level Codex configuration.
 - If the failure occurs while creating a worktree, also check `.codex/environments/environment.toml` for the v1 setup schema, `nvm` activation, and Linux temp/cache paths.
 
 ### Fresh-session bootstrap drift
 - If the user-level `~/.codex/config.toml` shell policy changed, fully restart Codex before judging the fix, then run the verification checklist in a fresh task.
 - If `.codex/environments/environment.toml` changed, create a fresh Codex worktree to exercise it. The setup script runs at worktree creation; its exports do not persist into subsequent commands.
-- If `node` resolves but `pnpm` behavior changed, compare `.nvmrc`, `web/package.json`, the user-level shell policy, and the tracked worktree setup before changing docs or scripts.
+- If `node` resolves but `pnpm` behavior changed, compare `.nvmrc`, `web/package.json`, the effective values in a fresh task, and the tracked worktree setup before changing docs or scripts.
 - If Codex replaces a valid v1 environment file with an empty generated stub, record it as a desktop tooling regression rather than treating the stub as the desired repository configuration.
 
 ## Practical guardrails
