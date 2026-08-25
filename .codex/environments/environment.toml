@@ -8,6 +8,11 @@ script = ""
 script = '''
 set -e
 
+if [ -z "${CODEX_WORKTREE_PATH:-}" ]; then
+  echo "CODEX_WORKTREE_PATH is required for Codex worktree setup" >&2
+  exit 1
+fi
+
 # Keep worktree setup caches on the Linux filesystem.
 export TMPDIR=/tmp
 export TMP=/tmp
@@ -17,7 +22,11 @@ export COREPACK_HOME=/tmp/corepack
 mkdir -p "$XDG_CACHE_HOME" "$COREPACK_HOME"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+  echo "nvm initialization script not found at $NVM_DIR/nvm.sh" >&2
+  exit 1
+fi
+. "$NVM_DIR/nvm.sh"
 
 cd "$CODEX_WORKTREE_PATH"
 nvm use --silent

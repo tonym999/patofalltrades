@@ -89,7 +89,9 @@ COREPACK_HOME = "/tmp/corepack"
 Exports in the worktree setup script do not persist into subsequent commands. After changing the user-level shell policy, fully restart Codex and validate a fresh task. After changing the tracked worktree setup, ask the user to create, or explicitly approve creating, a fresh Codex task/worktree to exercise it. A minimal fresh-task verification looks like:
 
 ```bash
-printf '%s\n' "$TMPDIR" "$TMP" "$TEMP" "$XDG_CACHE_HOME" "$COREPACK_HOME"
+printf 'TMPDIR=%s\nTMP=%s\nTEMP=%s\nXDG_CACHE_HOME=%s\nCOREPACK_HOME=%s\n' \
+  "${TMPDIR-<unset>}" "${TMP-<unset>}" "${TEMP-<unset>}" \
+  "${XDG_CACHE_HOME-<unset>}" "${COREPACK_HOME-<unset>}"
 command -v node
 node -v
 cd web
