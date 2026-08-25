@@ -75,7 +75,7 @@ Codex has two separate environment mechanisms:
 - [`.codex/environments/environment.toml`](../.codex/environments/environment.toml) is a versioned, tracked worktree-creation script. Its Linux setup should use `CODEX_WORKTREE_PATH`, point setup-time temp/cache directories at writable Linux paths, source `nvm`, activate the version from `.nvmrc`, and run `pnpm install` from `web/`.
 - The user-level `~/.codex/config.toml` `[shell_environment_policy.set]` table supplies persistent variables to later Codex commands. This machine-local file should set `TMPDIR`, `TMP`, `TEMP`, `XDG_CACHE_HOME`, and `COREPACK_HOME` to writable Linux paths and must not be committed.
 
-If `[shell_environment_policy.set]` already exists, merge these entries into that table and preserve its other values; do not add a duplicate table header. If it does not exist, add the complete block:
+An agent must obtain explicit user approval before making this persistent machine-local edit and must limit the change to the five keys below. If `[shell_environment_policy.set]` already exists, merge these entries into that table and preserve every other value; do not add a duplicate table header. If it does not exist, add the complete block:
 
 ```toml
 [shell_environment_policy.set]
@@ -86,7 +86,7 @@ XDG_CACHE_HOME = "/tmp/codex-cache"
 COREPACK_HOME = "/tmp/corepack"
 ```
 
-Exports in the worktree setup script do not persist into subsequent commands. After changing the user-level shell policy, fully restart Codex and validate a fresh task. After changing the tracked worktree setup, create a fresh Codex worktree to exercise it. A minimal fresh-task verification looks like:
+Exports in the worktree setup script do not persist into subsequent commands. After changing the user-level shell policy, fully restart Codex and validate a fresh task. After changing the tracked worktree setup, ask the user to create, or explicitly approve creating, a fresh Codex task/worktree to exercise it. A minimal fresh-task verification looks like:
 
 ```bash
 printf '%s\n' "$TMPDIR" "$TMP" "$TEMP" "$XDG_CACHE_HOME" "$COREPACK_HOME"
