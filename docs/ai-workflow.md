@@ -99,6 +99,13 @@ command -v pnpm
 pnpm -v
 ```
 
+### Worktree setup failures
+
+The v1 Linux setup requires both a Codex-provided worktree path and a working nvm installation. Missing either prerequisite is fatal because continuing could install dependencies in the wrong directory or with the wrong Node toolchain.
+
+- `CODEX_WORKTREE_PATH is required for Codex worktree setup` means Codex did not supply the required worktree path. Do not set it manually or rerun the setup script from an arbitrary directory. Ask the user to create, or explicitly approve creating, a fresh Codex task/worktree. If the same error recurs, record it as a Codex tooling regression.
+- `nvm initialization script not found at ...` means the required nvm initialization script is unavailable. Ask the user to install or repair nvm so `~/.nvm/nvm.sh` exists, then retry with a fresh approved Codex task/worktree.
+
 If `pnpm` prompts Corepack to download a version unexpectedly, confirm the active Node version from [`.nvmrc`](../.nvmrc), the persistent shell-policy values, and whether the machine has already prepared the package-manager version pinned in [`web/package.json`](../web/package.json) at least once.
 
 ### Codex Desktop v1 environment migration

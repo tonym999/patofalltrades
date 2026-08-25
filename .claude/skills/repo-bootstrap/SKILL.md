@@ -42,6 +42,10 @@ pnpm install
 
 ## Troubleshooting
 
+### Worktree setup aborts
+- `CODEX_WORKTREE_PATH is required for Codex worktree setup` means Codex did not supply the required worktree path. Do not set it manually or rerun the setup script from an arbitrary directory. Ask the user to create, or explicitly approve creating, a fresh Codex task/worktree; if the error repeats, record it as a Codex tooling regression.
+- `nvm initialization script not found at ...` means nvm is a required prerequisite but its initialization script is unavailable. Ask the user to install or repair nvm so `~/.nvm/nvm.sh` exists, then retry with a fresh approved Codex task/worktree.
+
 ### `pnpm` is missing
 - Confirm `nvm use` ran successfully from the repo root instead of another directory.
 - Do not assume `pnpm` lives in `~/.local/share/pnpm`; this repo expects it to come from Corepack through the active Node installation.
