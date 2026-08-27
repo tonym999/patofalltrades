@@ -109,7 +109,9 @@ A ticket is done when all of the following hold:
 - Do not assume `pnpm` lives in `~/.local/share/pnpm`; in this repo it may resolve from the active `nvm` Node toolchain instead.
 - Run package-manager commands from [`web/`](web/) so Corepack sees the version pinned by the `packageManager` field in [`web/package.json`](web/package.json).
 - A fresh machine or cache may still require Corepack to prepare that pinned version once before offline agent sessions can use it.
-- After changing [`.codex/environments/environment.toml`](.codex/environments/environment.toml), restart Codex and verify a fresh session resolves `node` and `pnpm` before treating the fix as complete.
+- [`.codex/environments/environment.toml`](.codex/environments/environment.toml) uses Codex's v1 schema and runs only when Codex creates a worktree; exports in its setup script do not persist into later tool commands.
+- Persistent Codex command variables such as Linux temp and Corepack paths belong in the user-level `~/.codex/config.toml` `[shell_environment_policy.set]` table, which is machine-local and must not be committed.
+- After changing the user-level Codex shell policy, fully restart Codex and verify a fresh task resolves `node` and `pnpm`. After changing the tracked worktree setup, create a fresh Codex worktree to verify it.
 - For repo-specific setup, verification, or troubleshooting steps in fresh shells and agent sessions, use [`.claude/skills/repo-bootstrap/SKILL.md`](.claude/skills/repo-bootstrap/SKILL.md).
 
 ## Commit Standards
